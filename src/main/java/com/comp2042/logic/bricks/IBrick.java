@@ -3,7 +3,7 @@ package com.comp2042.logic.bricks;
 import com.comp2042.MatrixOperations;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.List;//to store rotations in a list
 
 final class IBrick implements Brick {
 

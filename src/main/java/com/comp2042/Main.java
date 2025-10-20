@@ -1,3 +1,11 @@
+/**
+ * Main
+ * ----
+ * The entry point of the JavaFX Tetris game.
+ * Loads the game layout
+ * launches the main game window
+ */
+
 package com.comp2042;
 
 import javafx.application.Application;

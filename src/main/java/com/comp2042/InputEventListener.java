@@ -1,3 +1,8 @@
+/**
+ * connection point between user and programme especially when it
+ * comes to keys
+ */
+
 package com.comp2042;
 
 public interface InputEventListener {

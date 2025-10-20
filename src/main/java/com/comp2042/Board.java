@@ -1,6 +1,10 @@
+/**
+ * includes ;ogic of brick movement in the game to be later done in simpleboard
+ */
+
 package com.comp2042;
-//  test1 commit by Jana arab
-//testing merge/push and refactoring
+
+
 public interface Board {
 
     boolean moveBrickDown();

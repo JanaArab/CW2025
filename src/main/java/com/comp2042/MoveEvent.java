@@ -1,3 +1,8 @@
+/**
+ * Represents a single movement or rotation event in the game.
+ * Used by the GUI to tell the GameController what kind of action occurred
+ */
+
 package com.comp2042;
 
 public final class MoveEvent {

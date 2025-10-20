@@ -1,3 +1,8 @@
+/**
+ * used to keep up with the next rotation of brick
+ * the index of rotation and the matrix
+ */
+
 package com.comp2042;
 
 public final class NextShapeInfo {

@@ -1,3 +1,7 @@
+/**
+ * connects the player , GUI and game logic
+ */
+
 package com.comp2042;
 
 public class GameController implements InputEventListener {

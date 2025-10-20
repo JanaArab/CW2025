@@ -1,3 +1,7 @@
+/**
+ * keep track of score and keep updating it on the screen
+ */
+
 package com.comp2042;
 
 import javafx.beans.property.IntegerProperty;

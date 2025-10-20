@@ -1,3 +1,7 @@
+/**
+ * used to display score labels floating on the screen
+ */
+
 package com.comp2042;
 
 import javafx.animation.FadeTransition;

@@ -1,3 +1,8 @@
+/**
+ * updates the screen, notifications and game over
+ * it is basically what the player sees
+ */
+
 package com.comp2042;
 
 import javafx.animation.KeyFrame;

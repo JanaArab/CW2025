@@ -1,3 +1,8 @@
+/**
+ * this class works on doing all calculations related to te game
+ * like merging, collision checks, making sure blocks are in bound and cleaning rows
+ */
+
 package com.comp2042;
 
 import java.util.ArrayDeque;

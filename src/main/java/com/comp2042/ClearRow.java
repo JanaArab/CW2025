@@ -1,3 +1,8 @@
+/**
+ * stores the matrix the includes all data regarding roe deletion
+ * represents the result of deleting a row
+ */
+
 package com.comp2042;
 
 public final class ClearRow {
