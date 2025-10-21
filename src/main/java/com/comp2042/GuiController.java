@@ -24,6 +24,9 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
+import javafx.scene.control.Label;
+import javafx.scene.control.Button;
+
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -31,6 +34,12 @@ import java.util.ResourceBundle;
 public class GuiController implements Initializable {
 
     private static final int BRICK_SIZE = 20;
+
+    @FXML//add button for pausing
+    private Button pauseButton ;
+
+    @FXML //add label for pausing
+    private Label pauseLabel;
 
     @FXML
     private GridPane gamePanel;
@@ -84,6 +93,9 @@ public class GuiController implements Initializable {
                 }
                 if (keyEvent.getCode() == KeyCode.N) {
                     newGame(null);
+                }
+                if (keyEvent.getCode() == KeyCode.P) {
+                    pauseGame(null); //use this key to pause
                 }
             }
         });
@@ -224,7 +236,20 @@ public class GuiController implements Initializable {
         isGameOver.setValue(Boolean.FALSE);
     }
 
+
     public void pauseGame(ActionEvent actionEvent) {
+        //this is implied to be able to pause with a pause button
+        if (!isPause.getValue()) {
+            timeLine.pause();
+            isPause.setValue(true);
+            if (pauseLabel != null) pauseLabel.setVisible(true);
+            if (pauseButton != null) pauseButton.setText("Resume");
+        } else {
+            timeLine.play();
+            isPause.setValue(false);
+            if (pauseLabel != null) pauseLabel.setVisible(false);
+            if (pauseButton != null) pauseButton.setText("Pause");
+        }
         gamePanel.requestFocus();
     }
 }
