@@ -5,18 +5,17 @@
 
 package com.comp2042;
 
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.effect.Reflection;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -66,46 +65,66 @@ public class GuiController implements Initializable {
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
-        gamePanel.setFocusTraversable(true);
-        gamePanel.requestFocus();
-        gamePanel.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
-                    if (keyEvent.getCode() == KeyCode.LEFT || keyEvent.getCode() == KeyCode.A) {
-                        refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
-                        keyEvent.consume();
-                    }
-                    if (keyEvent.getCode() == KeyCode.RIGHT || keyEvent.getCode() == KeyCode.D) {
-                        refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER)));
-                        keyEvent.consume();
-                    }
-                    if (keyEvent.getCode() == KeyCode.UP || keyEvent.getCode() == KeyCode.W) {
-                        refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER)));
-                        keyEvent.consume();
-                    }
-                    if (keyEvent.getCode() == KeyCode.DOWN || keyEvent.getCode() == KeyCode.S) {
-                        moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
-                        keyEvent.consume();
-                    }
-                }
-                if (keyEvent.getCode() == KeyCode.N) {
-                    newGame(null);
-                }
-                if (keyEvent.getCode() == KeyCode.P) {
-                    pauseGame(null); //use this key to pause
-                }
-            }
-        });
+    public void initialize(URL location, ResourceBundle resources) { //I refactored this block of code to make it easier to read
+        //split initialize into smaller helper methods to make it clearer
+        setupFont();
+        setupGamePanelKeyListener();
+        setupReflectionEffect();
         gameOverPanel.setVisible(false);
+    }
 
-        final Reflection reflection = new Reflection();
+    private void setupFont(){
+        Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
+    }
+
+    private void setupReflectionEffect(){
+        Reflection reflection = new Reflection();
         reflection.setFraction(0.8);
         reflection.setTopOpacity(0.9);
         reflection.setTopOffset(-12);
     }
+    private void setupGamePanelKeyListener(){
+       gamePanel.setFocusTraversable(true);
+       gamePanel.requestFocus();
+       gamePanel.setOnKeyPressed(this::handleKeyInput);
+    }
+
+
+
+            private void handleKeyInput(KeyEvent keyEvent) {//changed the name of method to make it clearer F
+               //replaced the huge nested if statement with a switch to make the code more visible,clean and organized
+                if (isPause.get() || isGameOver.get()) return;
+
+                switch (keyEvent.getCode()) {
+                    case LEFT, A -> handleLeftMove();//used helper methods to handle input logic
+                    case RIGHT, D -> handleRightMove();
+                    case UP, W -> handleRotate();
+                    case DOWN, S -> handleDown();
+                    case N -> newGame(null);
+                    case P -> pauseGame(null);
+                    default -> {}
+                }
+                keyEvent.consume();
+            }
+
+    private void handleLeftMove() {
+        refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
+    }
+
+    private void handleRightMove() {
+        refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER)));
+    }
+
+    private void handleRotate() {
+        refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER)));
+    }
+
+    private void handleDown() {
+        moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
+    }
+
+
+
 
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
@@ -135,7 +154,7 @@ public class GuiController implements Initializable {
                 Duration.millis(400),
                 ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
         ));
-        timeLine.setCycleCount(Timeline.INDEFINITE);
+        timeLine.setCycleCount(Animation.INDEFINITE);//changed timeline-> Animation because constant is defined in parent class Animation
         timeLine.play();
     }
 
@@ -203,12 +222,12 @@ public class GuiController implements Initializable {
     private void moveDown(MoveEvent event) {
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onDownEvent(event);
-            if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
-                NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
+            if (downData.clearRow() != null && downData.clearRow().getLinesRemoved() > 0) {
+                NotificationPanel notificationPanel = new NotificationPanel("+" + downData.clearRow().getScoreBonus());
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
             }
-            refreshBrick(downData.getViewData());
+            refreshBrick(downData.viewData());
         }
         gamePanel.requestFocus();
     }
@@ -217,7 +236,7 @@ public class GuiController implements Initializable {
         this.eventListener = eventListener;
     }
 
-    public void bindScore(IntegerProperty integerProperty) {
+   public void bindScore(IntegerProperty integerProperty) {
     }
 
     public void gameOver() {
@@ -252,4 +271,6 @@ public class GuiController implements Initializable {
         }
         gamePanel.requestFocus();
     }
+
+
 }
