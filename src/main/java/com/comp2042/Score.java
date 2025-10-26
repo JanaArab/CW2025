@@ -9,17 +9,18 @@ import javafx.beans.property.SimpleIntegerProperty;
 
 public final class Score {
 
-    private final IntegerProperty score = new SimpleIntegerProperty(0);
+    private final IntegerProperty value = new SimpleIntegerProperty(0);
 
     public IntegerProperty scoreProperty() {
-        return score;
+        return value;
     }
 
     public void add(int i){
-        score.setValue(score.getValue() + i);
+        value.setValue(value.getValue() + i);
     }
 
     public void reset() {
-        score.setValue(0);
+        value.setValue(0);
     }
 }
+//changed the field name score to value to avoid confusion between method name and field name

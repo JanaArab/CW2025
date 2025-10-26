@@ -1,5 +1,5 @@
 /**
- * responsable for displaying the state of the game with the help of gui
+ * responsible for displaying the state of the game with the help of gui
  */
 
 package com.comp2042;
@@ -32,5 +32,6 @@ public final class ViewData {
 
     public int[][] getNextBrickData() {
         return MatrixOperations.copy(nextBrickData);
+        //this method will be used later on to show next brick
     }
 }

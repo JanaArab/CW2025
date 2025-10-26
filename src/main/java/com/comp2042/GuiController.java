@@ -237,6 +237,7 @@ public class GuiController implements Initializable {
     }
 
    public void bindScore(IntegerProperty integerProperty) {
+       //it exists to bind the score updates with gui(view for player)
     }
 
     public void gameOver() {
