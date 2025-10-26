@@ -4,7 +4,10 @@
 
 package com.comp2042;
 
+
 public class GameController implements InputEventListener {
+
+    private static final int DropScore = 1;
 
     private Board board = new SimpleBoard(25, 10);
 
@@ -28,6 +31,9 @@ public class GameController implements InputEventListener {
             if (clearRow.linesRemoved() > 0) {
                 board.getScore().add(clearRow. scoreBonus());
             }
+
+            /* as mentioned previously in Board, if returns true when game is over
+            * and false when there is space for a new brick */
             if (board.createNewBrick()) {
                 viewGuiController.gameOver();
             }
@@ -36,7 +42,8 @@ public class GameController implements InputEventListener {
 
         } else {
             if (event.getEventSource() == EventSource.USER) {
-                board.getScore().add(1);
+                board.getScore().add(DropScore);/*replaced the 1 with a constant
+                that way changing it in the future will be easier*/
             }
         }
         return new DownData(clearRow, board.getViewData());
