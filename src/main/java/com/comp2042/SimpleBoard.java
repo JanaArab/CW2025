@@ -75,7 +75,7 @@ public class SimpleBoard implements Board {
     @Override
     public boolean rotateLeftBrick() {
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
-        NextShapeInfo nextShape = brickRotator.getNextShape();
+        NextShapeInfo nextShape = brickRotator.peekNextRotation();
         boolean conflict = MatrixOperations.intersect(currentMatrix, nextShape.getShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
         if (conflict) {
             return false;
@@ -89,7 +89,7 @@ public class SimpleBoard implements Board {
     public boolean createNewBrick() {
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
-        currentOffset = new Point(4, 1);//fixed the appearance of bricks to start from top instead of row 10 by changing y to 1 instead of 10
+        currentOffset = new Point(4, 1);//changed y coordinate from 10 to 1 so the bricks drop point is correct
         return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
     }
 
@@ -111,7 +111,7 @@ public class SimpleBoard implements Board {
     @Override
     public ClearRow clearRows() {
         ClearRow clearRow = MatrixOperations.checkRemoving(currentGameMatrix);
-        currentGameMatrix = clearRow.getNewMatrix();
+        currentGameMatrix = clearRow.newMatrix();
         return clearRow;
 
     }
