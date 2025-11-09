@@ -12,23 +12,25 @@ import com.comp2042.tetris.model.data.MatrixOperations;
 import com.comp2042.tetris.model.data.ViewData;
 import com.comp2042.tetris.model.event.NextShapeInfo;
 import com.comp2042.tetris.model.score.Score;
+import java.awt.Point;
 
-import java.awt.*;
+
 
 public class SimpleBoard implements Board {
 
-    private final int width;
-    private final int height;
+    //changed width -> rows, height -> cols
+    private final int rows;
+    private final int cols;
     private final BrickGenerator brickGenerator;
     private final BrickRotator brickRotator;
     private int[][] currentGameMatrix;
     private Point currentOffset;
     private final Score score;
 
-    public SimpleBoard(int width, int height) {
-        this.width = width;
-        this.height = height;
-        currentGameMatrix = new int[width][height];
+    public SimpleBoard(int rows, int cols) {
+        this.rows = rows;
+        this.cols = cols;
+        currentGameMatrix = new int[rows][cols];
         brickGenerator = new RandomBrickGenerator();
         brickRotator = new BrickRotator();
         score = new Score();
@@ -79,23 +81,42 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean rotateLeftBrick() {
+        // fixed the rotation next to borders bug
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
         NextShapeInfo nextShape = brickRotator.peekNextRotation();
-        boolean conflict = MatrixOperations.intersect(currentMatrix, nextShape.getShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
-        if (conflict) {
-            return false;
-        } else {
+        int[][] nextShapeMatrix = nextShape.getShape();
+
+        int currentX = (int) currentOffset.getX();
+        int currentY = (int) currentOffset.getY();
+
+
+        boolean conflict = MatrixOperations.intersect(currentMatrix, nextShapeMatrix, currentX, currentY);
+        if (!conflict) {
             brickRotator.setCurrentShape(nextShape.getPosition());
             return true;
         }
+
+        int[] kicks ={-1,1,-2,2};
+        for(int dx:kicks){
+            if (!MatrixOperations.intersect(currentMatrix, nextShapeMatrix, currentX + dx, currentY)) {
+                // Update X offset since we applied a kick
+                currentOffset = new Point(currentX + dx, currentY);
+                brickRotator.setCurrentShape(nextShape.getPosition());
+                return true;
+            }
+
+        }
+        return false;
     }
 
     @Override
     public boolean createNewBrick() {
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
-        currentOffset = new Point(4, 1);//changed y coordinate from 10 to 1 so the bricks drop point is correct
+        // Use y=2: board rows 0-1 are hidden; row index 2 maps to the top visible row
+        currentOffset = new Point(4, 1);
         return MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
+
     }
 
     @Override
@@ -129,7 +150,7 @@ public class SimpleBoard implements Board {
 
     @Override
     public void newGame() {
-        currentGameMatrix = new int[width][height];
+        currentGameMatrix = new int[rows][cols];
         score.reset();
         createNewBrick();
     }
