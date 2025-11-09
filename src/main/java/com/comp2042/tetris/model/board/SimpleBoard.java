@@ -81,7 +81,7 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean rotateLeftBrick() {
-        // fixed the rotation next to borders bug
+        // fixed the rotation next to borders bug so player can rotate if possible
         int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
         NextShapeInfo nextShape = brickRotator.peekNextRotation();
         int[][] nextShapeMatrix = nextShape.getShape();
