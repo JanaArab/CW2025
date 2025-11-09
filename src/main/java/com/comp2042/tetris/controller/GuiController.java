@@ -15,6 +15,7 @@ import com.comp2042.tetris.view.GameOverPanel;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.util.Duration;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -28,7 +29,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.util.Duration;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 
@@ -76,7 +76,8 @@ public class GuiController implements Initializable {
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) { //I refactored this block of code to make it easier to read
+    public void initialize(URL location, ResourceBundle resources) {
+        //I refactored this block of code to make it easier to read
         //split initialize into smaller helper methods to make it clearer
         setupFont();
         setupGamePanelKeyListener();
@@ -149,7 +150,7 @@ public class GuiController implements Initializable {
             for (int j = 0; j < boardMatrix[i].length; j++) {
                 Rectangle rectangle = createTile(Color.TRANSPARENT);
                 displayMatrix[i][j] = rectangle;
-                gamePanel.add(rectangle, j, i - 2);
+                gamePanel.add(rectangle, j, i-2 );
             }
         }
 
@@ -164,13 +165,7 @@ public class GuiController implements Initializable {
         brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap() + brick.getxPosition() * BRICK_SIZE);
         brickPanel.setLayoutY(BOARD_TOP_OFFSET + gamePanel.getLayoutY() + brick.getyPosition() * brickPanel.getHgap() + brick.getyPosition() * BRICK_SIZE);
 
-
-        timeLine = new Timeline(new KeyFrame(
-                Duration.millis(400),
-                ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
-        ));
-        timeLine.setCycleCount(Animation.INDEFINITE);//changed timeline-> Animation because constant is defined in parent class Animation
-        timeLine.play();
+        startTimeline();
     }
 
     private Paint getFillColor(int i) {
@@ -245,6 +240,19 @@ public class GuiController implements Initializable {
         return rectangle;
     }
 
+    private void startTimeline(){
+        //created a startTimeline method to make the code cleaner
+        if(timeLine != null){
+            timeLine.stop();
+        }
+        timeLine = new Timeline(new KeyFrame(
+                 Duration.millis(400),
+                actionEvent -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
+        ));
+        timeLine.setCycleCount(Animation.INDEFINITE);
+        timeLine.play();
+    }
+
     private void moveDown(MoveEvent event) {
         if (isPause.getValue() == Boolean.FALSE) {
             DownData downData = eventListener.onDownEvent(event);
@@ -272,24 +280,31 @@ public class GuiController implements Initializable {
     }
 
     public void gameOver() {
-        timeLine.stop();
+        if(timeLine!= null){
+            timeLine.stop();
+        }
+
         gameOverPanel.setVisible(true);
         isGameOver.setValue(Boolean.TRUE);
     }
 
     public void newGame(ActionEvent actionEvent) {
-        timeLine.stop();
+        if(timeLine!= null){
+            timeLine.stop();
+        }
         gameOverPanel.setVisible(false);
-        eventListener.createNewGame();
-        gamePanel.requestFocus();
-        timeLine.play();
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
+        eventListener.createNewGame();
+        startTimeline();
+        gamePanel.requestFocus();
+
     }
 
 
     public void pauseGame(ActionEvent actionEvent) {
         //this is implied to be able to pause with a pause button
+        if (timeLine == null) return;
         if (!isPause.getValue()) {
             timeLine.pause();
             isPause.setValue(true);
