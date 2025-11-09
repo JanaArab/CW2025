@@ -37,7 +37,7 @@ public class GameController implements InputEventListener {
             board.mergeBrickToBackground();
             clearRow = board.clearRows();
             if (clearRow.linesRemoved() > 0) {
-                board.getScore().add(clearRow. scoreBonus());
+                board.getScore().add(clearRow.scoreBonus());
             }
 
             /* as mentioned previously in Board, if returns true when game is over
