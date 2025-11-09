@@ -34,9 +34,11 @@ public class MatrixOperations {
         return false;
     }
 
-    //simplified if statement
+    //the point of the if statement added is to fix the logic of OutOfBounds
+    //now if player attempts to rotate on the edges it gets blocked
     private static boolean checkOutOfBound(int[][] matrix, int targetX, int targetY) {
-        return !(targetX >= 0 && targetY < matrix.length && targetX < matrix[targetY].length);
+        if (targetY<0||targetY>=matrix.length) return true;
+        return targetX < 0 || targetX >= matrix[targetY].length;
     }
 
 
