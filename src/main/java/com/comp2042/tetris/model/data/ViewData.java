@@ -22,11 +22,11 @@ public final class ViewData {
         return MatrixOperations.copy(brickData);
     }
 
-    public int getxPosition() {
+    public int getXPosition() {
         return xPosition;
     }
 
-    public int getyPosition() {
+    public int getYPosition() {
         return yPosition;
     }
 
