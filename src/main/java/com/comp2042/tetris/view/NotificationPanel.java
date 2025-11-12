@@ -2,7 +2,7 @@
  * used to display score labels floating on the screen
  */
 
-package com.comp2042.tetris.model.score;
+package com.comp2042.tetris.view;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;

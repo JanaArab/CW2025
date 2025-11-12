@@ -10,8 +10,8 @@ import com.comp2042.tetris.model.data.ViewData;
 import com.comp2042.tetris.model.event.EventSource;
 import com.comp2042.tetris.model.event.EventType;
 import com.comp2042.tetris.model.event.MoveEvent;
-import com.comp2042.tetris.model.score.NotificationPanel;
 import com.comp2042.tetris.view.GameOverPanel;
+import com.comp2042.tetris.view.NotificationPanel;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -36,7 +36,7 @@ import javafx.scene.control.Button;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class GuiController implements Initializable {
+public class GuiController implements Initializable, IGuiController {
 
     //replaced the numbers in code with actual constants to amke editing easier
     private static final int BRICK_SIZE = 20; //size of each tile
@@ -65,7 +65,7 @@ public class GuiController implements Initializable {
 
     private Rectangle[][] displayMatrix;
 
-    private InputEventListener eventListener;
+    private IGameController gameController;
 
     private Rectangle[][] rectangles;
 
@@ -81,7 +81,6 @@ public class GuiController implements Initializable {
         //split initialize into smaller helper methods to make it clearer
         setupFont();
         setupGamePanelKeyListener();
-        // setupReflectionEffect();
         gameOverPanel.setVisible(false);
     }
 
@@ -89,16 +88,7 @@ public class GuiController implements Initializable {
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
     }
 
-    /*private void setupReflectionEffect(){
-    commenting this method for now because it is not used and the effect is not nice
-        Reflection reflection = new Reflection();
-        reflection.setFraction(0.8);
-        reflection.setTopOpacity(0.9);
-        reflection.setTopOffset(-12);
-        if (scoreLabel != null) {
-            scoreLabel.setEffect(reflection);
-        }
-    }*/
+
     private void setupGamePanelKeyListener(){
 
         gamePanel.setFocusTraversable(true);
@@ -126,15 +116,15 @@ public class GuiController implements Initializable {
     }
 
     private void handleLeftMove() {
-        refreshBrick(eventListener.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
+        refreshBrick(gameController.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
     }
 
     private void handleRightMove() {
-        refreshBrick(eventListener.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER)));
+        refreshBrick(gameController.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER)));
     }
 
     private void handleRotate() {
-        refreshBrick(eventListener.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER)));
+        refreshBrick(gameController.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER)));
     }
 
     private void handleDown() {
@@ -144,6 +134,7 @@ public class GuiController implements Initializable {
 
 
 
+    @Override
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
         for (int i = 2; i < boardMatrix.length; i++) {
@@ -215,7 +206,8 @@ public class GuiController implements Initializable {
         }
     }
 
-    public void refreshGameBackground(int[][] board) {
+   @Override
+   public void refreshGameBackground(int[][] board) {
         for (int i = 2; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 setRectangleData(board[i][j], displayMatrix[i][j]);
@@ -255,7 +247,7 @@ public class GuiController implements Initializable {
 
     private void moveDown(MoveEvent event) {
         if (isPause.getValue() == Boolean.FALSE) {
-            DownData downData = eventListener.onDownEvent(event);
+            DownData downData = gameController.onDownEvent(event);
             if (downData.clearRow() != null && downData.clearRow().linesRemoved() > 0) {
                 NotificationPanel notificationPanel = new NotificationPanel("+" + downData.clearRow().scoreBonus());
                 groupNotification.getChildren().add(notificationPanel);
@@ -266,10 +258,12 @@ public class GuiController implements Initializable {
         gamePanel.requestFocus();
     }
 
-    public void setEventListener(InputEventListener eventListener) {
-        this.eventListener = eventListener;
+    @Override
+    public void setGameController(IGameController gameController) {
+        this.gameController = gameController;
     }
 
+    @Override
     public void bindScore(IntegerProperty integerProperty) {
         if(scoreLabel == null){ //throw null exception in case  scoreLabel is not initialized
             throw new IllegalStateException("scoreLabel is null. ");
@@ -279,6 +273,7 @@ public class GuiController implements Initializable {
         //it exists to bind the score updates with gui(view for player) and added a scoreLabel to keep the changes
     }
 
+    @Override
     public void gameOver() {
         if(timeLine!= null){
             timeLine.stop();
@@ -288,6 +283,7 @@ public class GuiController implements Initializable {
         isGameOver.setValue(Boolean.TRUE);
     }
 
+
     public void newGame(ActionEvent actionEvent) {
         if(timeLine!= null){
             timeLine.stop();
@@ -295,11 +291,12 @@ public class GuiController implements Initializable {
         gameOverPanel.setVisible(false);
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
-        eventListener.createNewGame();
+        gameController.createNewGame();
         startTimeline();
         gamePanel.requestFocus();
 
     }
+
 
 
     public void pauseGame(ActionEvent actionEvent) {

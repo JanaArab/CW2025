@@ -6,7 +6,7 @@
  * launches the main game window
  */
 
-package com.comp2042.tetris.view;
+package com.comp2042.tetris.main;
 
 import com.comp2042.tetris.controller.GameController;
 import com.comp2042.tetris.controller.GuiController;

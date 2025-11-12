@@ -13,18 +13,18 @@ import com.comp2042.tetris.model.data.ViewData;
 import com.comp2042.tetris.model.event.EventSource;
 import com.comp2042.tetris.model.event.MoveEvent;
 
-public class GameController implements InputEventListener {
+public class GameController implements IGameController {
 
     private static final int DropScore = 1;
 
     private Board board = new SimpleBoard(25, 10);
 
-    private final GuiController viewGuiController;
+    private final IGuiController viewGuiController;
 
-    public GameController(GuiController c) {
+    public GameController(IGuiController c) {
         viewGuiController = c;
         board.createNewBrick();
-        viewGuiController.setEventListener(this);
+        viewGuiController.setGameController(this);
         viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
         viewGuiController.bindScore(board.getScore().scoreProperty());
     }
