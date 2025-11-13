@@ -7,78 +7,95 @@ package com.comp2042.tetris.controller;
 
 import com.comp2042.tetris.model.board.Board;
 import com.comp2042.tetris.model.board.ClearRow;
-import com.comp2042.tetris.model.board.DownData;
 import com.comp2042.tetris.model.board.SimpleBoard;
-import com.comp2042.tetris.model.data.ViewData;
+import com.comp2042.tetris.model.event.GameStateSnapshot;
+import com.comp2042.tetris.model.event.GameEventPublisher;
 import com.comp2042.tetris.model.event.EventSource;
 import com.comp2042.tetris.model.event.MoveEvent;
+
+
 
 public class GameController implements IGameController {
 
     private static final int DropScore = 1;
 
-    private Board board = new SimpleBoard(25, 10);
 
-    private final IGuiController viewGuiController;
+    private final Board board;
 
-    public GameController(IGuiController c) {
-        viewGuiController = c;
-        board.createNewBrick();
-        viewGuiController.setGameController(this);
-        viewGuiController.initGameView(board.getBoardMatrix(), board.getViewData());
-        viewGuiController.bindScore(board.getScore().scoreProperty());
+    private final GameEventPublisher eventPublisher;
+
+
+    public GameController(GameEventPublisher eventPublisher) {
+        this(new SimpleBoard(25, 10), eventPublisher);
     }
 
+    public GameController(Board board, GameEventPublisher eventPublisher) {
+        this.board = board;
+        this.eventPublisher = eventPublisher;
+        board.createNewBrick();
+        eventPublisher.publishGameInitialized(new GameStateSnapshot(board.getBoardMatrix(), board.getViewData()), board.getScore().scoreProperty());
+    }
+
+    private void publishInitialState() {
+        eventPublisher.publishGameInitialized(new GameStateSnapshot(board.getBoardMatrix(), board.getViewData()),
+                board.getScore().scoreProperty());
+    }
+
+
     @Override
-    public DownData onDownEvent(MoveEvent event) {
+    public void onDownEvent(MoveEvent event) {
         boolean canMove = board.moveBrickDown();
-        ClearRow clearRow = null;
         if (!canMove) {
             board.mergeBrickToBackground();
-            clearRow = board.clearRows();
+            ClearRow clearRow = board.clearRows();
+            eventPublisher.publishBoardUpdated(board.getBoardMatrix());
             if (clearRow.linesRemoved() > 0) {
                 board.getScore().add(clearRow.scoreBonus());
+                eventPublisher.publishLinesCleared(clearRow);
             }
 
             /* as mentioned previously in Board, if returns true when game is over
-            * and false when there is space for a new brick */
+             * and false when there is space for a new brick */
             if (board.createNewBrick()) {
-                viewGuiController.gameOver();
+                eventPublisher.publishGameOver();
+                return;
+
             }
 
-            viewGuiController.refreshGameBackground(board.getBoardMatrix());
-
+            eventPublisher.publishBrickUpdated(board.getViewData());
         } else {
             if (event.getEventSource() == EventSource.USER) {
                 board.getScore().add(DropScore);/*replaced the 1 with a constant
                 that way changing it in the future will be easier*/
             }
+            eventPublisher.publishBrickUpdated(board.getViewData());
         }
-        return new DownData(clearRow, board.getViewData());
+
     }
 
     @Override
-    public ViewData onLeftEvent(MoveEvent event) {
+    public void onLeftEvent(MoveEvent event) {
         board.moveBrickLeft();
-        return board.getViewData();
+        eventPublisher.publishBrickUpdated(board.getViewData());
     }
 
     @Override
-    public ViewData onRightEvent(MoveEvent event) {
+    public void onRightEvent(MoveEvent event) {
         board.moveBrickRight();
-        return board.getViewData();
+        eventPublisher.publishBrickUpdated(board.getViewData());
     }
 
     @Override
-    public ViewData onRotateEvent(MoveEvent event) {
+    public void onRotateEvent(MoveEvent event) {
         board.rotateLeftBrick();
-        return board.getViewData();
+        eventPublisher.publishBrickUpdated(board.getViewData());
     }
 
-
-    @Override
-    public void createNewGame() {
-        board.newGame();
-        viewGuiController.refreshGameBackground(board.getBoardMatrix());
+        @Override
+        public void createNewGame () {
+            board.newGame();
+            eventPublisher.publishBoardUpdated(board.getBoardMatrix());
+            eventPublisher.publishBrickUpdated(board.getViewData());
+        }
     }
-}
+

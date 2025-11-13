@@ -5,19 +5,19 @@
 
 package com.comp2042.tetris.controller;
 
-import com.comp2042.tetris.model.board.DownData;
+
 import com.comp2042.tetris.model.event.MoveEvent;
-import com.comp2042.tetris.model.data.ViewData;
+
 
 public interface InputEventListener {
 
-    DownData onDownEvent(MoveEvent event);
+    void onDownEvent(MoveEvent event);
 
-    ViewData onLeftEvent(MoveEvent event);
+    void onLeftEvent(MoveEvent event);
 
-    ViewData onRightEvent(MoveEvent event);
+    void onRightEvent(MoveEvent event);
 
-    ViewData onRotateEvent(MoveEvent event);
+    void  onRotateEvent(MoveEvent event);
 
     void createNewGame();
 }

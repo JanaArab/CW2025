@@ -5,7 +5,9 @@
 
 package com.comp2042.tetris.controller;
 
-import com.comp2042.tetris.model.board.DownData;
+import com.comp2042.tetris.model.event.GameEventListener;
+import com.comp2042.tetris.model.event.GameStateSnapshot;
+import com.comp2042.tetris.model.board.ClearRow;
 import com.comp2042.tetris.model.data.ViewData;
 import com.comp2042.tetris.model.event.EventSource;
 import com.comp2042.tetris.model.event.EventType;
@@ -36,7 +38,7 @@ import javafx.scene.control.Button;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class GuiController implements Initializable, IGuiController {
+public class GuiController implements Initializable, IGuiController, GameEventListener {
 
     //replaced the numbers in code with actual constants to amke editing easier
     private static final int BRICK_SIZE = 20; //size of each tile
@@ -74,6 +76,7 @@ public class GuiController implements Initializable, IGuiController {
     private final BooleanProperty isPause = new SimpleBooleanProperty();
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -116,15 +119,21 @@ public class GuiController implements Initializable, IGuiController {
     }
 
     private void handleLeftMove() {
-        refreshBrick(gameController.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER)));
+        if (gameController != null) {
+            gameController.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER));
+        }
     }
 
     private void handleRightMove() {
-        refreshBrick(gameController.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER)));
+        if (gameController != null) {
+            gameController.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER));
+        }
     }
 
     private void handleRotate() {
-        refreshBrick(gameController.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER)));
+        if (gameController != null) {
+            gameController.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER));
+        }
     }
 
     private void handleDown() {
@@ -247,13 +256,9 @@ public class GuiController implements Initializable, IGuiController {
 
     private void moveDown(MoveEvent event) {
         if (isPause.getValue() == Boolean.FALSE) {
-            DownData downData = gameController.onDownEvent(event);
-            if (downData.clearRow() != null && downData.clearRow().linesRemoved() > 0) {
-                NotificationPanel notificationPanel = new NotificationPanel("+" + downData.clearRow().scoreBonus());
-                groupNotification.getChildren().add(notificationPanel);
-                notificationPanel.showScore(groupNotification.getChildren());
+            if (gameController != null) {
+                gameController.onDownEvent(event);
             }
-            refreshBrick(downData.viewData());
         }
         gamePanel.requestFocus();
     }
@@ -291,7 +296,9 @@ public class GuiController implements Initializable, IGuiController {
         gameOverPanel.setVisible(false);
         isPause.setValue(Boolean.FALSE);
         isGameOver.setValue(Boolean.FALSE);
-        gameController.createNewGame();
+        if(gameController != null){
+            gameController.createNewGame();
+        }
         startTimeline();
         gamePanel.requestFocus();
 
@@ -314,6 +321,36 @@ public class GuiController implements Initializable, IGuiController {
             if (pauseButton != null) pauseButton.setText("Pause");
         }
         gamePanel.requestFocus();
+    }
+
+    @Override
+    public void onGameInitialized(GameStateSnapshot snapshot, IntegerProperty scoreProperty) {
+        initGameView(snapshot.boardMatrix(), snapshot.viewData());
+        bindScore(scoreProperty);
+    }
+
+    @Override
+    public void onBrickUpdated(ViewData viewData) {
+        refreshBrick(viewData);
+    }
+
+    @Override
+    public void onBoardUpdated(int[][] boardMatrix) {
+        refreshGameBackground(boardMatrix);
+    }
+
+    @Override
+    public void onLinesCleared(ClearRow clearRow) {
+        if (clearRow.linesRemoved() > 0) {
+            NotificationPanel notificationPanel = new NotificationPanel("+" + clearRow.scoreBonus());
+            groupNotification.getChildren().add(notificationPanel);
+            notificationPanel.showScore(groupNotification.getChildren());
+        }
+    }
+
+    @Override
+    public void onGameOver() {
+        gameOver();
     }
 
 

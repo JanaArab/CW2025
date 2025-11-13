@@ -9,12 +9,16 @@
 package com.comp2042.tetris.main;
 
 import com.comp2042.tetris.controller.GameController;
-import com.comp2042.tetris.controller.GuiController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import com.comp2042.tetris.controller.IGuiController;
+import com.comp2042.tetris.controller.GuiController;
+import com.comp2042.tetris.model.event.SimpleGameEventBus;
+import com.comp2042.tetris.model.event.GameEventListener;
+
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -34,7 +38,16 @@ public class Main extends Application {
         Scene scene = new Scene(root, 300, 510);
         primaryStage.setScene(scene);
         primaryStage.show();
-        new GameController(c);
+        SimpleGameEventBus eventBus = new SimpleGameEventBus();
+        IGuiController guiController = c ;
+        if(guiController instanceof GameEventListener listener){
+            eventBus.registerListener(listener);
+        }
+        else{
+            throw new IllegalStateException("GuiController must implement GameEventListener");
+        }
+        GameController gameController = new GameController(eventBus);
+        guiController.setGameController(gameController);
     }
 
 
