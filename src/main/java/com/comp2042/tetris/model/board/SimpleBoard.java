@@ -27,6 +27,7 @@ public class SimpleBoard implements Board {
     private Point currentOffset;
     private final Score score;
 
+
     public SimpleBoard(int rows, int cols) {
         this.rows = rows;
         this.cols = cols;
@@ -114,7 +115,6 @@ public class SimpleBoard implements Board {
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
         // Compute horizontal spawn so the piece is centered for any board width.
-        // Use y=1: rows 0..1 are treated as hidden buffer
         int[][] shape = brickRotator.getCurrentShape();
         int shapeWidth = (shape != null && shape.length > 0) ? shape[0].length : 0;
 
@@ -123,7 +123,8 @@ public class SimpleBoard implements Board {
         if (spawnX < 0) spawnX = 0;
         if (spawnX > cols - shapeWidth) spawnX = Math.max(0, cols - shapeWidth);
 
-        currentOffset = new Point(spawnX, 1);
+
+       currentOffset = new Point(spawnX, 1);
         // return whether there is an immediate collision (true => collided)
         return MatrixOperations.intersect(currentGameMatrix, shape, (int) currentOffset.getX(), (int) currentOffset.getY());
 

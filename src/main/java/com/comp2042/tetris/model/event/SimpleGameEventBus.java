@@ -10,10 +10,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class SimpleGameEventBus implements GameEventPublisher {
     private final List<GameEventListener> listeners = new CopyOnWriteArrayList<>();
 
+    @Override
     public void registerListener(GameEventListener listener) {
         listeners.add(listener);
     }
 
+    @Override
     public void unregisterListener(GameEventListener listener) {
         listeners.remove(listener);
     }

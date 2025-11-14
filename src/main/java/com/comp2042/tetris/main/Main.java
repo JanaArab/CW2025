@@ -8,16 +8,17 @@
 
 package com.comp2042.tetris.main;
 
-import com.comp2042.tetris.controller.GameController;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import com.comp2042.tetris.controller.IGuiController;
 import com.comp2042.tetris.controller.GuiController;
-import com.comp2042.tetris.model.event.SimpleGameEventBus;
+import com.comp2042.tetris.controller.IGuiController;
+import com.comp2042.tetris.model.event.GameEventBusProvider;
 import com.comp2042.tetris.model.event.GameEventListener;
+import com.comp2042.tetris.model.event.GameEventPublisher;
 
 
 import java.net.URL;
@@ -33,21 +34,25 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(location, resources);
         Parent root = fxmlLoader.load();
         GuiController c = fxmlLoader.getController();
+        IGuiController guiController = c;
+
+        GameComponentBuilder builder = GameComponentBuilder.createDefault();
+        GameComponentBuilder.GameComponents components;
+
+        if (guiController instanceof GameEventListener listener) {
+            components = builder.build(eventBus -> eventBus.registerListener(listener));
+        } else {
+            throw new IllegalStateException("GuiController must implement GameEventListener");
+        }
+        GameEventPublisher eventBus = components.eventBus();
+        GameEventBusProvider.initialize(eventBus);
+        guiController.setGameController(components.gameController());
 
         primaryStage.setTitle("TetrisJFX");
         Scene scene = new Scene(root, 300, 510);
         primaryStage.setScene(scene);
         primaryStage.show();
-        SimpleGameEventBus eventBus = new SimpleGameEventBus();
-        IGuiController guiController = c ;
-        if(guiController instanceof GameEventListener listener){
-            eventBus.registerListener(listener);
-        }
-        else{
-            throw new IllegalStateException("GuiController must implement GameEventListener");
-        }
-        GameController gameController = new GameController(eventBus);
-        guiController.setGameController(gameController);
+
     }
 
 
