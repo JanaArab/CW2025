@@ -10,8 +10,8 @@ import com.comp2042.tetris.model.event.GameStateSnapshot;
 import com.comp2042.tetris.model.board.ClearRow;
 import com.comp2042.tetris.model.data.ViewData;
 import com.comp2042.tetris.model.event.EventSource;
-import com.comp2042.tetris.model.event.EventType;
-import com.comp2042.tetris.model.event.MoveEvent;
+
+import com.comp2042.tetris.view.BoardRenderer;
 import com.comp2042.tetris.view.GameOverPanel;
 import com.comp2042.tetris.view.NotificationPanel;
 import javafx.animation.Animation;
@@ -27,9 +27,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
@@ -65,11 +62,11 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     @FXML
     private GameOverPanel gameOverPanel;
 
-    private Rectangle[][] displayMatrix;
+
 
     private IGameController gameController;
 
-    private Rectangle[][] rectangles;
+
 
     private Timeline timeLine;
 
@@ -77,6 +74,9 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
 
+    private final InputHandler inputHandler = new InputHandler(isPause::get, isGameOver::get);
+
+    private BoardRenderer boardRenderer;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -85,6 +85,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         setupFont();
         setupGamePanelKeyListener();
         gameOverPanel.setVisible(false);
+        boardRenderer = new BoardRenderer(gamePanel, brickPanel, BRICK_SIZE, BOARD_TOP_OFFSET);
     }
 
     private void setupFont(){
@@ -102,42 +103,26 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
 
 
-    private void handleKeyInput(KeyEvent keyEvent) {//changed the name of method to make it clearer F
-        //replaced the huge nested if statement with a switch to make the code more visible,clean and organized
-        if (isPause.get() || isGameOver.get()) return;
-
-        switch (keyEvent.getCode()) {
-            case LEFT, A -> handleLeftMove();//used helper methods to handle input logic
-            case RIGHT, D -> handleRightMove();
-            case UP, W -> handleRotate();
-            case DOWN, S -> handleDown();
-            case N -> newGame(null);
-            case P -> pauseGame(null);
-            default -> {}
+    private void handleKeyInput(KeyEvent keyEvent) {
+        //changed the name of method to make it clearer F
+        boolean  handled = inputHandler.handle(keyEvent);
+        if(! handled) {
+            switch (keyEvent.getCode()) {
+                case N -> {
+                    newGame(null);
+                    keyEvent.consume();
+                }
+                case P -> {
+                    pauseGame(null);
+                    keyEvent.consume();
+                    // Do nothing for other keys
+                }
+                default -> {
+                }
+            }
         }
-        keyEvent.consume();
-    }
 
-    private void handleLeftMove() {
-        if (gameController != null) {
-            gameController.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER));
-        }
-    }
-
-    private void handleRightMove() {
-        if (gameController != null) {
-            gameController.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER));
-        }
-    }
-
-    private void handleRotate() {
-        if (gameController != null) {
-            gameController.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER));
-        }
-    }
-
-    private void handleDown() {
-        moveDown(new MoveEvent(EventType.DOWN, EventSource.USER));
+        gamePanel.requestFocus();
     }
 
 
@@ -145,101 +130,22 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     @Override
     public void initGameView(int[][] boardMatrix, ViewData brick) {
-        displayMatrix = new Rectangle[boardMatrix.length][boardMatrix[0].length];
-        for (int i = 2; i < boardMatrix.length; i++) {
-            for (int j = 0; j < boardMatrix[i].length; j++) {
-                Rectangle rectangle = createTile(Color.TRANSPARENT);
-                displayMatrix[i][j] = rectangle;
-                gamePanel.add(rectangle, j, i-2 );
-            }
+        if(boardRenderer != null){
+            boardRenderer.initialize(boardMatrix, brick);
         }
-
-        rectangles = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
-        for (int i = 0; i < brick.getBrickData().length; i++) {
-            for (int j = 0; j < brick.getBrickData()[i].length; j++) {
-                Rectangle rectangle = createTile((Color) getFillColor(brick.getBrickData()[i][j]));
-                rectangles[i][j] = rectangle;
-                brickPanel.add(rectangle, j, i);
-            }
-        }
-        brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getXPosition() * brickPanel.getVgap() + brick.getXPosition() * BRICK_SIZE);
-        brickPanel.setLayoutY(BOARD_TOP_OFFSET + gamePanel.getLayoutY() + brick.getYPosition() * brickPanel.getHgap() + brick.getYPosition() * BRICK_SIZE);
 
         startTimeline();
     }
 
-    private Paint getFillColor(int i) {
-        Paint returnPaint;
-        switch (i) {
-            case 0:
-                returnPaint = Color.TRANSPARENT;
-                break;
-            case 1:
-                returnPaint = Color.AQUA;
-                break;
-            case 2:
-                returnPaint = Color.BLUEVIOLET;
-                break;
-            case 3:
-                returnPaint = Color.DARKGREEN;
-                break;
-            case 4:
-                returnPaint = Color.YELLOW;
-                break;
-            case 5:
-                returnPaint = Color.RED;
-                break;
-            case 6:
-                returnPaint = Color.BEIGE;
-                break;
-            case 7:
-                returnPaint = Color.BURLYWOOD;
-                break;
-            default:
-                returnPaint = Color.WHITE;
-                break;
-        }
-        return returnPaint;
-    }
-
-
-    private void refreshBrick(ViewData brick) {
-        if (isPause.getValue() == Boolean.FALSE) {
-            brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getXPosition() * brickPanel.getVgap() + brick.getXPosition() * BRICK_SIZE);
-            brickPanel.setLayoutY(BOARD_TOP_OFFSET + gamePanel.getLayoutY() + brick.getYPosition() * brickPanel.getHgap() + brick.getYPosition() * BRICK_SIZE);
-            for (int i = 0; i < brick.getBrickData().length; i++) {
-                for (int j = 0; j < brick.getBrickData()[i].length; j++) {
-                    setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
-                }
-            }
-        }
-    }
 
    @Override
    public void refreshGameBackground(int[][] board) {
-        for (int i = 2; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                setRectangleData(board[i][j], displayMatrix[i][j]);
+        if(boardRenderer != null){
+            boardRenderer.refreshGameBackground(board);
             }
         }
-    }
 
-    private void setRectangleData(int color, Rectangle rectangle) {
-        rectangle.setFill(getFillColor(color));
 
-    }
-
-    /**
-     * Helper to create a tile rectangle with consistent size, corner arcs and fill color instead of having repeated lines of
-     * code in multiple methods it is in one place
-     */
-    private Rectangle createTile(Color color) {
-        Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
-        rectangle.setArcHeight(9);
-        rectangle.setArcWidth(9);
-        rectangle.setFill(color);
-        return rectangle;
-    }
 
     private void startTimeline(){
         //created a startTimeline method to make the code cleaner
@@ -248,24 +154,20 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         }
         timeLine = new Timeline(new KeyFrame(
                  Duration.millis(400),
-                actionEvent -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD))
+                actionEvent -> {
+                     inputHandler.handleDown(EventSource.THREAD);
+                     gamePanel.requestFocus();}
         ));
+
         timeLine.setCycleCount(Animation.INDEFINITE);
         timeLine.play();
     }
 
-    private void moveDown(MoveEvent event) {
-        if (isPause.getValue() == Boolean.FALSE) {
-            if (gameController != null) {
-                gameController.onDownEvent(event);
-            }
-        }
-        gamePanel.requestFocus();
-    }
 
     @Override
     public void setGameController(IGameController gameController) {
         this.gameController = gameController;
+        inputHandler.setGameController(gameController);
     }
 
     @Override
@@ -331,7 +233,9 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     @Override
     public void onBrickUpdated(ViewData viewData) {
-        refreshBrick(viewData);
+       if (boardRenderer != null){
+           boardRenderer.refreshBrick(viewData, isPause.getValue());
+       }
     }
 
     @Override
