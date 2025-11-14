@@ -5,23 +5,17 @@
 
 package com.comp2042.tetris.controller;
 
-import com.comp2042.tetris.model.event.GameEventListener;
-import com.comp2042.tetris.model.event.GameStateSnapshot;
+import com.comp2042.tetris.model.event.EventSource;
 import com.comp2042.tetris.model.board.ClearRow;
 import com.comp2042.tetris.model.data.ViewData;
-import com.comp2042.tetris.model.event.EventSource;
-
+import com.comp2042.tetris.model.event.GameEventListener;
+import com.comp2042.tetris.model.event.GameStateSnapshot;
+import com.comp2042.tetris.model.event.ScoreChangeEvent;
 import com.comp2042.tetris.view.BoardRenderer;
 import com.comp2042.tetris.view.GameOverPanel;
 import com.comp2042.tetris.view.NotificationPanel;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.util.Duration;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -30,6 +24,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
+import javafx.util.Duration;
 
 
 import java.net.URL;
@@ -42,7 +37,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     private static final int BOARD_TOP_OFFSET = -42; //offset to align the board in gui
 
     @FXML//add button for pausing
-    private Button pauseButton ;
+    private Button pauseButton;
 
     @FXML
     private Label scoreLabel;
@@ -63,18 +58,14 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     private GameOverPanel gameOverPanel;
 
 
-
     private IGameController gameController;
 
 
+    private GameLoop gameLoop;
 
-    private Timeline timeLine;
+    private final GameStateManager gameStateManager = new GameStateManager();
 
-    private final BooleanProperty isPause = new SimpleBooleanProperty();
-
-    private final BooleanProperty isGameOver = new SimpleBooleanProperty();
-
-    private final InputHandler inputHandler = new InputHandler(isPause::get, isGameOver::get);
+    private final InputHandler inputHandler = new InputHandler(gameStateManager::isPaused, gameStateManager::isGameOver);
 
     private BoardRenderer boardRenderer;
 
@@ -88,12 +79,12 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         boardRenderer = new BoardRenderer(gamePanel, brickPanel, BRICK_SIZE, BOARD_TOP_OFFSET);
     }
 
-    private void setupFont(){
+    private void setupFont() {
         Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
     }
 
 
-    private void setupGamePanelKeyListener(){
+    private void setupGamePanelKeyListener() {
 
         gamePanel.setFocusTraversable(true);
         gamePanel.requestFocus();
@@ -102,11 +93,10 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     }
 
 
-
     private void handleKeyInput(KeyEvent keyEvent) {
         //changed the name of method to make it clearer F
-        boolean  handled = inputHandler.handle(keyEvent);
-        if(! handled) {
+        boolean handled = inputHandler.handle(keyEvent);
+        if (!handled) {
             switch (keyEvent.getCode()) {
                 case N -> {
                     newGame(null);
@@ -126,136 +116,120 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     }
 
 
-
-
     @Override
     public void initGameView(int[][] boardMatrix, ViewData brick) {
-        if(boardRenderer != null){
+        if (boardRenderer != null) {
             boardRenderer.initialize(boardMatrix, brick);
         }
 
-        startTimeline();
+        startGameLoop();
     }
 
 
-   @Override
-   public void refreshGameBackground(int[][] board) {
-        if(boardRenderer != null){
+    @Override
+    public void refreshGameBackground(int[][] board) {
+        if (boardRenderer != null) {
             boardRenderer.refreshGameBackground(board);
+        }
+    }
+
+
+    private void startGameLoop() {
+        //created a startTimeline method to make the code cleaner
+        ensureGameLoopInitialized();
+        gameStateManager.onGameStarted(gameLoop);
+        updatePauseUi(false);
+    }
+
+    private void ensureGameLoopInitialized() {
+        if (gameLoop == null) {
+            gameLoop = new GameLoop(Duration.millis(400), () -> {
+                inputHandler.handleDown(EventSource.THREAD);
+                gamePanel.requestFocus();
+            });
+        }
+    }
+
+    private void updatePauseUi(boolean paused) {
+        if (pauseLabel != null) {
+            pauseLabel.setVisible(paused);
+        }
+        if (pauseButton != null) {
+            pauseButton.setText(paused ? "Resume" : "Pause");
+        }
+    }
+
+        @Override
+        public void setGameController (IGameController gameController){
+            this.gameController = gameController;
+            inputHandler.setGameController(gameController);
+        }
+
+
+        @Override
+        public void gameOver () {
+            gameStateManager.onGameOver(gameLoop);
+            gameOverPanel.setVisible(true);
+            updatePauseUi(false);
+        }
+
+
+        public void newGame (ActionEvent actionEvent){
+
+            gameOverPanel.setVisible(false);
+            updatePauseUi(false);
+            ensureGameLoopInitialized();
+            if (gameController != null) {
+                gameController.createNewGame();
+            }
+            gameStateManager.onGameStarted(gameLoop);
+            gamePanel.requestFocus();
+
+        }
+
+        public void pauseGame (ActionEvent actionEvent){
+            if (gameLoop == null || gameStateManager.isGameOver()) return;
+            gameStateManager.togglePause(gameLoop);
+            updatePauseUi(gameStateManager.isPaused());
+            gamePanel.requestFocus();
+        }
+
+        @Override
+        public void onGameInitialized (GameStateSnapshot snapshot ){
+            initGameView(snapshot.boardMatrix(), snapshot.viewData());
+        }
+        @Override
+        public void onScoreChanged (ScoreChangeEvent event){
+            if (scoreLabel == null) {
+                throw new IllegalStateException("scoreLabel is null.");
+            }
+            Platform.runLater(() -> scoreLabel.setText(String.valueOf(event.newScore())));
+        }
+
+        @Override
+        public void onBrickUpdated(ViewData viewData){
+            if (boardRenderer != null) {
+                boardRenderer.refreshBrick(viewData, gameStateManager.isPaused());
             }
         }
 
-
-
-    private void startTimeline(){
-        //created a startTimeline method to make the code cleaner
-        if(timeLine != null){
-            timeLine.stop();
-        }
-        timeLine = new Timeline(new KeyFrame(
-                 Duration.millis(400),
-                actionEvent -> {
-                     inputHandler.handleDown(EventSource.THREAD);
-                     gamePanel.requestFocus();}
-        ));
-
-        timeLine.setCycleCount(Animation.INDEFINITE);
-        timeLine.play();
-    }
-
-
-    @Override
-    public void setGameController(IGameController gameController) {
-        this.gameController = gameController;
-        inputHandler.setGameController(gameController);
-    }
-
-    @Override
-    public void bindScore(IntegerProperty integerProperty) {
-        if(scoreLabel == null){ //throw null exception in case  scoreLabel is not initialized
-            throw new IllegalStateException("scoreLabel is null. ");
-        }
-        scoreLabel.textProperty().unbind();//prevent double binding when restarting the game
-        scoreLabel.textProperty().bind(integerProperty.asString());
-        //it exists to bind the score updates with gui(view for player) and added a scoreLabel to keep the changes
-    }
-
-    @Override
-    public void gameOver() {
-        if(timeLine!= null){
-            timeLine.stop();
+        @Override
+        public void onBoardUpdated(int[][] boardMatrix){
+            refreshGameBackground(boardMatrix);
         }
 
-        gameOverPanel.setVisible(true);
-        isGameOver.setValue(Boolean.TRUE);
-    }
-
-
-    public void newGame(ActionEvent actionEvent) {
-        if(timeLine!= null){
-            timeLine.stop();
+        @Override
+        public void onLinesCleared(ClearRow clearRow){
+            if (clearRow.linesRemoved() > 0) {
+                NotificationPanel notificationPanel = new NotificationPanel("+" + clearRow.scoreBonus());
+                groupNotification.getChildren().add(notificationPanel);
+                notificationPanel.showScore(groupNotification.getChildren());
+            }
         }
-        gameOverPanel.setVisible(false);
-        isPause.setValue(Boolean.FALSE);
-        isGameOver.setValue(Boolean.FALSE);
-        if(gameController != null){
-            gameController.createNewGame();
-        }
-        startTimeline();
-        gamePanel.requestFocus();
 
-    }
-
-
-
-    public void pauseGame(ActionEvent actionEvent) {
-        //this is implied to be able to pause with a pause button
-        if (timeLine == null) return;
-        if (!isPause.getValue()) {
-            timeLine.pause();
-            isPause.setValue(true);
-            if (pauseLabel != null) pauseLabel.setVisible(true);
-            if (pauseButton != null) pauseButton.setText("Resume");
-        } else {
-            timeLine.play();
-            isPause.setValue(false);
-            if (pauseLabel != null) pauseLabel.setVisible(false);
-            if (pauseButton != null) pauseButton.setText("Pause");
-        }
-        gamePanel.requestFocus();
-    }
-
-    @Override
-    public void onGameInitialized(GameStateSnapshot snapshot, IntegerProperty scoreProperty) {
-        initGameView(snapshot.boardMatrix(), snapshot.viewData());
-        bindScore(scoreProperty);
-    }
-
-    @Override
-    public void onBrickUpdated(ViewData viewData) {
-       if (boardRenderer != null){
-           boardRenderer.refreshBrick(viewData, isPause.getValue());
-       }
-    }
-
-    @Override
-    public void onBoardUpdated(int[][] boardMatrix) {
-        refreshGameBackground(boardMatrix);
-    }
-
-    @Override
-    public void onLinesCleared(ClearRow clearRow) {
-        if (clearRow.linesRemoved() > 0) {
-            NotificationPanel notificationPanel = new NotificationPanel("+" + clearRow.scoreBonus());
-            groupNotification.getChildren().add(notificationPanel);
-            notificationPanel.showScore(groupNotification.getChildren());
+        @Override
+        public void onGameOver() {
+            gameOver();
         }
     }
 
-    @Override
-    public void onGameOver() {
-        gameOver();
-    }
-
-
-}

@@ -7,7 +7,7 @@
 package com.comp2042.tetris.controller;
 
 import com.comp2042.tetris.model.data.ViewData ;
-import javafx.beans.property.IntegerProperty ;
+
 
 
 public interface IGuiController {
@@ -16,8 +16,6 @@ public interface IGuiController {
     void initGameView(int[][] boardMatrix, ViewData viewData) ;
 
     void refreshGameBackground(int[][] boardMatrix) ;
-
-    void bindScore(IntegerProperty scoreProperty) ;
 
     void gameOver() ;
 

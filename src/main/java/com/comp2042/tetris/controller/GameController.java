@@ -12,12 +12,12 @@ import com.comp2042.tetris.model.event.GameStateSnapshot;
 import com.comp2042.tetris.model.event.GameEventPublisher;
 import com.comp2042.tetris.model.event.EventSource;
 import com.comp2042.tetris.model.event.MoveEvent;
-
+import com.comp2042.tetris.model.event.ScoreChangeEvent;
 
 
 public class GameController implements IGameController {
 
-    private static final int DropScore = 1;
+    private static final int DROP_SCORE = 1;
 
 
     private final Board board;
@@ -33,12 +33,16 @@ public class GameController implements IGameController {
         this.board = board;
         this.eventPublisher = eventPublisher;
         board.createNewBrick();
-        eventPublisher.publishGameInitialized(new GameStateSnapshot(board.getBoardMatrix(), board.getViewData()), board.getScore().scoreProperty());
+        publishInitialState();
     }
 
     private void publishInitialState() {
-        eventPublisher.publishGameInitialized(new GameStateSnapshot(board.getBoardMatrix(), board.getViewData()),
-                board.getScore().scoreProperty());
+        eventPublisher.publishGameInitialized(new GameStateSnapshot(board.getBoardMatrix(), board.getViewData()));
+                publishScoreChanged();
+    }
+
+    private void publishScoreChanged() {
+        eventPublisher.publishScoreChanged(new ScoreChangeEvent(board.getScore().getValue()));
     }
 
 
@@ -51,6 +55,7 @@ public class GameController implements IGameController {
             eventPublisher.publishBoardUpdated(board.getBoardMatrix());
             if (clearRow.linesRemoved() > 0) {
                 board.getScore().add(clearRow.scoreBonus());
+                publishScoreChanged();
                 eventPublisher.publishLinesCleared(clearRow);
             }
 
@@ -65,8 +70,9 @@ public class GameController implements IGameController {
             eventPublisher.publishBrickUpdated(board.getViewData());
         } else {
             if (event.getEventSource() == EventSource.USER) {
-                board.getScore().add(DropScore);/*replaced the 1 with a constant
+                board.getScore().add(DROP_SCORE);/*replaced the 1 with a constant
                 that way changing it in the future will be easier*/
+                publishScoreChanged();
             }
             eventPublisher.publishBrickUpdated(board.getViewData());
         }
@@ -96,6 +102,7 @@ public class GameController implements IGameController {
             board.newGame();
             eventPublisher.publishBoardUpdated(board.getBoardMatrix());
             eventPublisher.publishBrickUpdated(board.getViewData());
+            publishScoreChanged();
         }
     }
 

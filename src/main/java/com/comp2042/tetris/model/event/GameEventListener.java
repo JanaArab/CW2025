@@ -5,7 +5,10 @@ import com.comp2042.tetris.model.data.ViewData;
 import javafx.beans.property.IntegerProperty;
 
 public interface GameEventListener {
-    void onGameInitialized(GameStateSnapshot snapshot, IntegerProperty scoreProperty);
+    void onGameInitialized(GameStateSnapshot snapshot);
+
+    void onScoreChanged(ScoreChangeEvent event);
+
 
     void onBrickUpdated(ViewData viewData);
 

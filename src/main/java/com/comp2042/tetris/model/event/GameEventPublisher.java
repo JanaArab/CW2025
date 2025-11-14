@@ -2,10 +2,13 @@ package com.comp2042.tetris.model.event;
 
 import com.comp2042.tetris.model.board.ClearRow;
 import com.comp2042.tetris.model.data.ViewData;
-import javafx.beans.property.IntegerProperty;
 
 public interface GameEventPublisher {
-    void publishGameInitialized(GameStateSnapshot snapshot, IntegerProperty scoreProperty);
+
+    void publishGameInitialized(GameStateSnapshot snapshot);
+
+    void publishScoreChanged(ScoreChangeEvent event);
+
 
     void publishBrickUpdated(ViewData viewData);
 

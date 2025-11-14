@@ -2,7 +2,7 @@ package com.comp2042.tetris.model.event;
 
 import com.comp2042.tetris.model.board.ClearRow;
 import com.comp2042.tetris.model.data.ViewData;
-import javafx.beans.property.IntegerProperty;
+
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -19,11 +19,19 @@ public class SimpleGameEventBus implements GameEventPublisher {
     }
 
     @Override
-    public void publishGameInitialized(GameStateSnapshot snapshot, IntegerProperty scoreProperty) {
+    public void publishGameInitialized(GameStateSnapshot snapshot) {
         for (GameEventListener listener : listeners) {
-            listener.onGameInitialized(snapshot, scoreProperty);
+            listener.onGameInitialized(snapshot);
         }
     }
+
+    @Override
+    public void publishScoreChanged(ScoreChangeEvent event) {
+        for (GameEventListener listener : listeners) {
+            listener.onScoreChanged(event);
+        }
+    }
+
 
     @Override
     public void publishBrickUpdated(ViewData viewData) {
