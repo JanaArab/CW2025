@@ -12,11 +12,12 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 import java.util.EnumMap;
+import java.util.Objects;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 public class InputHandler {
-    // map keys are KeyCode (keyboard codes), not EventType
-    private final Map<KeyCode, GameCommand> commandMap = new EnumMap<>(KeyCode.class);
+    private final Map<KeyCode, GameCommand> gameplayCommands = new EnumMap<>(KeyCode.class);
+    private final Map<KeyCode, GameCommand> globalCommands = new EnumMap<>(KeyCode.class);
     private final BooleanSupplier isPauseSupplier;
     private final BooleanSupplier isGameOverSupplier;
     private  IGameController gameController;
@@ -32,11 +33,22 @@ public class InputHandler {
     }
 
     public boolean handle(KeyEvent keyEvent) {
-        if (keyEvent == null || isInteractionDisabled()) {
+        if (keyEvent == null)  {
             return false;
         }
 
-        GameCommand command = commandMap.get(keyEvent.getCode());
+        GameCommand command = globalCommands.get(keyEvent.getCode());
+        if (command != null) {
+            command.execute();
+            keyEvent.consume();
+            return true;
+        }
+
+        if (isInteractionDisabled()) {
+            return false;
+        }
+
+        command = gameplayCommands.get(keyEvent.getCode());
         if (command == null) {
             return false;
         }
@@ -83,7 +95,7 @@ public class InputHandler {
     }
 
     private void registerCommands() {
-        commandMap.clear();
+        gameplayCommands.clear();
         if (gameController == null) {
             return;
         }
@@ -93,16 +105,17 @@ public class InputHandler {
         GameCommand downCommand = new MoveDownCommand(this);
         GameCommand rotateCommand = new RotateCommand(this);
 
-        commandMap.put(KeyCode.LEFT, leftCommand);
-        commandMap.put(KeyCode.A, leftCommand);
-
-        commandMap.put(KeyCode.RIGHT, rightCommand);
-        commandMap.put(KeyCode.D, rightCommand);
-
-        commandMap.put(KeyCode.DOWN, downCommand);
-        commandMap.put(KeyCode.S, downCommand);
-
-        commandMap.put(KeyCode.UP, rotateCommand);
-        commandMap.put(KeyCode.W, rotateCommand);
+        registerCommand(leftCommand, true, KeyCode.LEFT, KeyCode.A);
+        registerCommand(rightCommand, true, KeyCode.RIGHT, KeyCode.D);
+        registerCommand(downCommand, true, KeyCode.DOWN, KeyCode.S);
+        registerCommand(rotateCommand, true, KeyCode.UP, KeyCode.W);
+    }
+    public void registerCommand(GameCommand command, boolean requiresActiveGame, KeyCode... keyCodes) {
+        Objects.requireNonNull(command, "command cannot be null");
+        Objects.requireNonNull(keyCodes, "keyCodes cannot be null");
+        Map<KeyCode, GameCommand> targetMap = requiresActiveGame ? gameplayCommands : globalCommands;
+        for (KeyCode keyCode : keyCodes) {
+            targetMap.put(keyCode, command);
+        }
     }
 }
