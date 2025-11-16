@@ -16,6 +16,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import com.comp2042.tetris.controller.GuiController;
 import com.comp2042.tetris.controller.IGuiController;
+import com.comp2042.tetris.controller.DefaultGuiControllerDependenciesFactory;
 import com.comp2042.tetris.model.event.GameEventBusProvider;
 import com.comp2042.tetris.model.event.GameEventListener;
 import com.comp2042.tetris.model.event.GameEventPublisher;
@@ -35,6 +36,9 @@ public class Main extends Application {
         Parent root = fxmlLoader.load();
         GuiController c = fxmlLoader.getController();
         IGuiController guiController = c;
+
+        DefaultGuiControllerDependenciesFactory dependenciesFactory = new DefaultGuiControllerDependenciesFactory();
+        c.setDependencies(dependenciesFactory.create(c));
 
         GameComponentBuilder builder = GameComponentBuilder.createDefault();
         GameComponentBuilder.GameComponents components;

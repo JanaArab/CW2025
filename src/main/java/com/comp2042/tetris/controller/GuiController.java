@@ -5,17 +5,14 @@
 
 package com.comp2042.tetris.controller;
 
-import com.comp2042.tetris.controller.command.CommandRegistry;
-import com.comp2042.tetris.controller.command.DefaultCommandRegistry;
-import com.comp2042.tetris.model.event.EventSource;
 import com.comp2042.tetris.model.board.ClearRow;
+import com.comp2042.tetris.model.event.EventSource;
 import com.comp2042.tetris.model.data.ViewData;
 import com.comp2042.tetris.model.event.GameEventListener;
 import com.comp2042.tetris.model.event.GameStateSnapshot;
 import com.comp2042.tetris.model.event.ScoreChangeEvent;
 import com.comp2042.tetris.view.BoardRenderer;
 import com.comp2042.tetris.view.GameOverPanel;
-import com.comp2042.tetris.view.UIConstants;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -57,7 +54,6 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     private IGameController gameController;
 
-    private final GameStateManager gameStateManager = new GameStateManager();
 
     private AnimationHandler animationHandler;
 
@@ -67,24 +63,24 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     private GameViewPresenter gameViewPresenter;
 
-    private CommandRegistry commandRegistry ;
+    private GuiControllerDependencies dependencies;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupFont();
         gameOverPanel.setVisible(false);
-        animationHandler = new AnimationHandler(gameStateManager, UIConstants.DEFAULT_DROP_INTERVAL, this::handleTick);
-        // Ensure a CommandRegistry is available (allow external injection via setCommandRegistry)
-        if (this.commandRegistry == null) {
-            this.commandRegistry = new DefaultCommandRegistry();
-        }
-        inputHandler = new InputHandler(animationHandler::isPaused, animationHandler::isGameOver, this.commandRegistry);
-        configureInputCommands();
-        setupGamePanelKeyListener();
 
-        boardRenderer = new BoardRenderer(gamePanel, brickPanel, UIConstants.BRICK_SIZE, UIConstants.BOARD_TOP_OFFSET);
-        gameViewPresenter = new GameViewPresenter(boardRenderer, scoreLabel, groupNotification, gameOverPanel);
+        setupGamePanelKeyListener();
+    }
+    public void setDependencies(GuiControllerDependencies dependencies) {
+        this.dependencies = Objects.requireNonNull(dependencies, "dependencies");
+        this.animationHandler = dependencies.animationHandler();
+        this.inputHandler = dependencies.inputHandler();
+        this.boardRenderer = dependencies.boardRenderer();
+        this.gameViewPresenter = dependencies.gameViewPresenter();
+        configureInputCommands();
+        updatePauseUi(false);
 
     }
 
@@ -98,11 +94,14 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         gamePanel.setOnKeyPressed(this::handleKeyInput);
     }
     private void configureInputCommands() {
+        if (inputHandler == null) {
+            return;
+        }
         inputHandler.registerCommand(this::startNewGame, false, KeyCode.N);
         inputHandler.registerCommand(this::togglePauseState, false, KeyCode.P);
     }
 
-    private void handleTick() {
+    void handleTick() {
         if (inputHandler != null) {
             inputHandler.handleDown(EventSource.THREAD);
         }
@@ -118,6 +117,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     @Override
     public void initGameView(int[][] boardMatrix, ViewData brick) {
+        ensureConfigured();
         if (gameViewPresenter != null) {
             gameViewPresenter.initializeGame(new GameStateSnapshot(boardMatrix, brick));
         }
@@ -129,6 +129,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     @Override
     public void refreshGameBackground(int[][] board) {
+        ensureConfigured();
         if (gameViewPresenter != null) {
             gameViewPresenter.refreshBoard(board);
         }
@@ -151,13 +152,9 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         }
     }
 
-    public void setCommandRegistry(CommandRegistry commandRegistry) {
-        this.commandRegistry = Objects.requireNonNull(commandRegistry, "commandRegistry");
-    }
-
-
     @Override
     public void gameOver() {
+        ensureConfigured();
         if (animationHandler != null) {
             animationHandler.onGameOver();
         }
@@ -174,6 +171,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     }
 
     private void startNewGame() {
+        ensureConfigured();
         if (animationHandler == null) {
             return;
         }
@@ -191,6 +189,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     }
 
     private void togglePauseState() {
+        ensureConfigured();
         if (animationHandler == null || animationHandler.isGameOver()) {
             return;
         }
@@ -214,6 +213,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     @Override
     public void onBrickUpdated(ViewData viewData) {
+        ensureConfigured();
         if (gameViewPresenter != null) {
             boolean paused = animationHandler != null && animationHandler.isPaused();
             gameViewPresenter.refreshBrick(viewData, paused);
@@ -221,10 +221,12 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     }
     @Override
     public void onBoardUpdated(int[][] boardMatrix) {
+        ensureConfigured();
         refreshGameBackground(boardMatrix);
     }
     @Override
     public void onLinesCleared(ClearRow clearRow) {
+        ensureConfigured();
         if (gameViewPresenter != null) {
             gameViewPresenter.handleLinesCleared(clearRow);
         }
@@ -232,5 +234,30 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     @Override
     public void onGameOver() {
         gameOver();
+    }
+    private void ensureConfigured() {
+        if (dependencies == null) {
+            throw new IllegalStateException("GuiController dependencies have not been configured. Inject dependencies before use.");
+        }
+    }
+
+    GridPane getGamePanel() {
+        return gamePanel;
+    }
+
+    GridPane getBrickPanel() {
+        return brickPanel;
+    }
+
+    Label getScoreLabel() {
+        return scoreLabel;
+    }
+
+    Group getGroupNotification() {
+        return groupNotification;
+    }
+
+    GameOverPanel getGameOverPanel() {
+        return gameOverPanel;
     }
 }
