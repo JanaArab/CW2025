@@ -30,7 +30,6 @@ import java.util.ResourceBundle;
 
 public class GuiController implements Initializable, IGuiController, GameEventListener {
 
-
     @FXML//add button for pausing
     private Button pauseButton;
 
@@ -53,7 +52,6 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     private GameOverPanel gameOverPanel;
 
     private IGameController gameController;
-
 
     private AnimationHandler animationHandler;
 
@@ -103,7 +101,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     void handleTick() {
         if (inputHandler != null) {
-            inputHandler.handleDown(EventSource.THREAD);
+            inputHandler.moveDown(EventSource.THREAD);
         }
         gamePanel.requestFocus();
     }

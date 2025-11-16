@@ -1,16 +1,16 @@
 package com.comp2042.tetris.controller.command;
 
-import com.comp2042.tetris.controller.InputHandler;
+import com.comp2042.tetris.controller.GameActionInvoker;
 public class RotateCommand implements GameCommand{
-    private final InputHandler inputHandler;
+    private final  GameActionInvoker gameActionInvoker;
 
-    public RotateCommand(InputHandler inputHandler) {
-        this.inputHandler = inputHandler;
+    public RotateCommand(GameActionInvoker gameActionInvoker) {
+        this.gameActionInvoker = gameActionInvoker;
     }
 
     @Override
     public void execute() {
-        inputHandler.handleRotate();
+        gameActionInvoker.rotate();
     }
 
 

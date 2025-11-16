@@ -2,6 +2,8 @@ package com.comp2042.tetris.controller;
 
 import com.comp2042.tetris.controller.command.CommandRegistry;
 import com.comp2042.tetris.controller.command.DefaultCommandRegistry;
+import com.comp2042.tetris.controller.command.DefaultInputCommandFactory;
+import com.comp2042.tetris.controller.command.InputCommandFactory;
 import com.comp2042.tetris.view.BoardRenderer;
 import com.comp2042.tetris.view.GameOverPanel;
 import com.comp2042.tetris.view.UIConstants;
@@ -28,7 +30,12 @@ public class DefaultGuiControllerDependenciesFactory {
         );
 
         CommandRegistry commandRegistry = new DefaultCommandRegistry();
-        InputHandler inputHandler = new InputHandler(animationHandler::isPaused, animationHandler::isGameOver, commandRegistry);
+        InputCommandFactory inputCommandFactory = new DefaultInputCommandFactory();
+        InputHandler inputHandler = new InputHandler(
+                animationHandler::isPaused,
+                animationHandler::isGameOver,
+                commandRegistry,
+                inputCommandFactory);
 
         BoardRenderer boardRenderer = new BoardRenderer(gamePanel, brickPanel, UIConstants.BRICK_SIZE, UIConstants.BOARD_TOP_OFFSET);
         GameViewPresenter gameViewPresenter = new GameViewPresenter(boardRenderer, scoreLabel, groupNotification, gameOverPanel);

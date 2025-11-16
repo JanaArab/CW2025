@@ -1,0 +1,28 @@
+package com.comp2042.tetris.controller.command;
+
+import com.comp2042.tetris.controller.GameActionInvoker;
+
+public class DefaultInputCommandFactory implements InputCommandFactory  {
+    @Override
+    public GameCommand createMoveLeftCommand(GameActionInvoker gameActionInvoker) {
+        return new MoveLeftCommand(gameActionInvoker);
+    }
+
+    @Override
+    public GameCommand createMoveRightCommand(GameActionInvoker gameActionInvoker) {
+        return new MoveRightCommand(gameActionInvoker);
+    }
+
+    @Override
+    public GameCommand createMoveDownCommand(GameActionInvoker gameActionInvoker) {
+        return new MoveDownCommand(gameActionInvoker);
+    }
+
+    @Override
+    public GameCommand createRotateCommand(GameActionInvoker gameActionInvoker) {
+        return new RotateCommand(gameActionInvoker);
+    }
+
+
+
+}

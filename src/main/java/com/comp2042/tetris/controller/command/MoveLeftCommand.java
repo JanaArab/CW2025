@@ -1,16 +1,15 @@
 package com.comp2042.tetris.controller.command;
 
-import com.comp2042.tetris.controller.InputHandler;
-
+import com.comp2042.tetris.controller.GameActionInvoker;
 public class MoveLeftCommand implements GameCommand{
-    private final InputHandler inputHandler;
+    private final GameActionInvoker gameActionInvoker;
 
-    public MoveLeftCommand(InputHandler inputHandler) {
-        this.inputHandler = inputHandler;
+    public MoveLeftCommand(GameActionInvoker gameActionInvoker) {
+        this.gameActionInvoker = gameActionInvoker;
     }
 
     @Override
     public void execute() {
-        inputHandler.handleLeftMove();
+        gameActionInvoker.moveLeft();
     }
 }

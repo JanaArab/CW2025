@@ -1,17 +1,17 @@
 package com.comp2042.tetris.controller.command;
 
-import com.comp2042.tetris.controller.InputHandler;
+import com.comp2042.tetris.controller.GameActionInvoker;
 public class MoveDownCommand implements GameCommand{
 
-    private final InputHandler inputHandler;
+    private final GameActionInvoker gameActionInvoker;
 
-    public MoveDownCommand(InputHandler inputHandler) {
-        this.inputHandler = inputHandler;
+    public MoveDownCommand(GameActionInvoker gameActionInvoker) {
+        this.gameActionInvoker = gameActionInvoker;
     }
 
     @Override
     public void execute() {
-        inputHandler.handleDown();
+        gameActionInvoker.moveDown();
     }
 
 

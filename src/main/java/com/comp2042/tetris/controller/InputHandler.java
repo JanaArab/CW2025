@@ -1,6 +1,7 @@
 package com.comp2042.tetris.controller;
 
 import com.comp2042.tetris.controller.command.GameCommand;
+import com.comp2042.tetris.controller.command.InputCommandFactory;
 import com.comp2042.tetris.controller.command.CommandRegistry;
 import com.comp2042.tetris.model.event.EventSource;
 import com.comp2042.tetris.model.event.EventType;
@@ -12,16 +13,21 @@ import java.util.EnumMap;
 import java.util.Objects;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
-public class InputHandler {
+public class InputHandler implements GameActionInvoker, InputCommandRegistrar {
     private final Map<KeyCode, GameCommand> gameplayCommands = new EnumMap<>(KeyCode.class);
     private final Map<KeyCode, GameCommand> globalCommands = new EnumMap<>(KeyCode.class);
     private final BooleanSupplier isPauseSupplier;
     private final BooleanSupplier isGameOverSupplier;
     private final CommandRegistry commandRegistry;
+    private final InputCommandFactory inputCommandFactory;
     private  IGameController gameController;
 
-    public InputHandler(BooleanSupplier isPauseSupplier, BooleanSupplier isGameOverSupplier, CommandRegistry commandRegistry) {
+    public InputHandler(BooleanSupplier isPauseSupplier,
+                        BooleanSupplier isGameOverSupplier,
+                        CommandRegistry commandRegistry,
+                        InputCommandFactory inputCommandFactory) {
         this.commandRegistry = Objects.requireNonNull(commandRegistry, "commandRegistry");
+        this.inputCommandFactory = Objects.requireNonNull(inputCommandFactory, "inputCommandFactory");
         this.isPauseSupplier = isPauseSupplier;
         this.isGameOverSupplier = isGameOverSupplier;
     }
@@ -29,7 +35,7 @@ public class InputHandler {
     public void setGameController(IGameController gameController) {
         this.gameController = gameController;
         gameplayCommands.clear();
-        commandRegistry.registerCommands(this);
+        commandRegistry.registerCommands(this, this, inputCommandFactory);
     }
 
     public boolean handle(KeyEvent keyEvent) {
@@ -58,7 +64,8 @@ public class InputHandler {
         return true;
     }
 
-    public void handleDown(EventSource source) {
+    @Override
+    public void moveDown(EventSource source) {
         if (isInteractionDisabled()) {
             return;
         }
@@ -67,23 +74,27 @@ public class InputHandler {
         }
     }
 
-    public void handleDown() {
-        handleDown(EventSource.USER);
+    @Override
+    public void moveDown() {
+        moveDown(EventSource.USER);
     }
 
-    public void handleLeftMove() {
+    @Override
+    public void moveLeft() {
         if (gameController != null) {
             gameController.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER));
         }
     }
 
-    public void handleRightMove() {
+    @Override
+    public void moveRight() {
         if (gameController != null) {
             gameController.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER));
         }
     }
 
-    public void handleRotate() {
+    @Override
+    public void rotate() {
         if (gameController != null) {
             gameController.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER));
         }
@@ -95,6 +106,8 @@ public class InputHandler {
     }
 
 
+
+    @Override
     public void registerCommand(GameCommand command, boolean requiresActiveGame, KeyCode... keyCodes) {
         Objects.requireNonNull(command, "command cannot be null");
         Objects.requireNonNull(keyCodes, "keyCodes cannot be null");
