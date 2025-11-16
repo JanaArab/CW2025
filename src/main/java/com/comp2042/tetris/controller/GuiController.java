@@ -5,6 +5,8 @@
 
 package com.comp2042.tetris.controller;
 
+import com.comp2042.tetris.controller.command.CommandRegistry;
+import com.comp2042.tetris.controller.command.DefaultCommandRegistry;
 import com.comp2042.tetris.model.event.EventSource;
 import com.comp2042.tetris.model.board.ClearRow;
 import com.comp2042.tetris.model.data.ViewData;
@@ -13,9 +15,7 @@ import com.comp2042.tetris.model.event.GameStateSnapshot;
 import com.comp2042.tetris.model.event.ScoreChangeEvent;
 import com.comp2042.tetris.view.BoardRenderer;
 import com.comp2042.tetris.view.GameOverPanel;
-import com.comp2042.tetris.view.NotificationPanel;
 import com.comp2042.tetris.view.UIConstants;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -27,7 +27,7 @@ import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.event.ActionEvent;
 
-
+import java.util.Objects;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -65,17 +65,26 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     private BoardRenderer boardRenderer;
 
+    private GameViewPresenter gameViewPresenter;
+
+    private CommandRegistry commandRegistry ;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupFont();
         gameOverPanel.setVisible(false);
         animationHandler = new AnimationHandler(gameStateManager, UIConstants.DEFAULT_DROP_INTERVAL, this::handleTick);
-        inputHandler = new InputHandler(animationHandler::isPaused, animationHandler::isGameOver);
+        // Ensure a CommandRegistry is available (allow external injection via setCommandRegistry)
+        if (this.commandRegistry == null) {
+            this.commandRegistry = new DefaultCommandRegistry();
+        }
+        inputHandler = new InputHandler(animationHandler::isPaused, animationHandler::isGameOver, this.commandRegistry);
         configureInputCommands();
         setupGamePanelKeyListener();
 
         boardRenderer = new BoardRenderer(gamePanel, brickPanel, UIConstants.BRICK_SIZE, UIConstants.BOARD_TOP_OFFSET);
+        gameViewPresenter = new GameViewPresenter(boardRenderer, scoreLabel, groupNotification, gameOverPanel);
 
     }
 
@@ -109,8 +118,8 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     @Override
     public void initGameView(int[][] boardMatrix, ViewData brick) {
-        if (boardRenderer != null) {
-            boardRenderer.initialize(boardMatrix, brick);
+        if (gameViewPresenter != null) {
+            gameViewPresenter.initializeGame(new GameStateSnapshot(boardMatrix, brick));
         }
         if (animationHandler != null) {
             animationHandler.start();
@@ -120,8 +129,8 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     @Override
     public void refreshGameBackground(int[][] board) {
-        if (boardRenderer != null) {
-            boardRenderer.refreshGameBackground(board);
+        if (gameViewPresenter != null) {
+            gameViewPresenter.refreshBoard(board);
         }
     }
 
@@ -142,12 +151,19 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         }
     }
 
+    public void setCommandRegistry(CommandRegistry commandRegistry) {
+        this.commandRegistry = Objects.requireNonNull(commandRegistry, "commandRegistry");
+    }
+
+
     @Override
     public void gameOver() {
         if (animationHandler != null) {
             animationHandler.onGameOver();
         }
-        gameOverPanel.setVisible(true);
+        if (gameViewPresenter != null) {
+            gameViewPresenter.showGameOver();
+        }
         updatePauseUi(false);
     }
     public void newGame(ActionEvent actionEvent) {
@@ -161,7 +177,9 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         if (animationHandler == null) {
             return;
         }
-        gameOverPanel.setVisible(false);
+        if (gameViewPresenter != null) {
+            gameViewPresenter.hideGameOver();
+        }
         updatePauseUi(false);
 
         animationHandler.ensureInitialized();
@@ -189,17 +207,16 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     @Override
     public void onScoreChanged(ScoreChangeEvent event) {
-        if (scoreLabel == null) {
-            throw new IllegalStateException("scoreLabel is null.");
+        if (gameViewPresenter != null) {
+            gameViewPresenter.updateScore(event);
         }
-        Platform.runLater(() -> scoreLabel.setText(String.valueOf(event.newScore())));
     }
 
     @Override
     public void onBrickUpdated(ViewData viewData) {
-        if (boardRenderer != null) {
+        if (gameViewPresenter != null) {
             boolean paused = animationHandler != null && animationHandler.isPaused();
-            boardRenderer.refreshBrick(viewData, paused);
+            gameViewPresenter.refreshBrick(viewData, paused);
         }
     }
     @Override
@@ -208,10 +225,8 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     }
     @Override
     public void onLinesCleared(ClearRow clearRow) {
-        if (clearRow.linesRemoved() > 0) {
-            NotificationPanel notificationPanel = new NotificationPanel("+" + clearRow.scoreBonus());
-            groupNotification.getChildren().add(notificationPanel);
-            notificationPanel.showScore(groupNotification.getChildren());
+        if (gameViewPresenter != null) {
+            gameViewPresenter.handleLinesCleared(clearRow);
         }
     }
     @Override

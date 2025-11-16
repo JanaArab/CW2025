@@ -1,10 +1,7 @@
 package com.comp2042.tetris.controller;
 
 import com.comp2042.tetris.controller.command.GameCommand;
-import com.comp2042.tetris.controller.command.MoveDownCommand;
-import com.comp2042.tetris.controller.command.MoveLeftCommand;
-import com.comp2042.tetris.controller.command.MoveRightCommand;
-import com.comp2042.tetris.controller.command.RotateCommand;
+import com.comp2042.tetris.controller.command.CommandRegistry;
 import com.comp2042.tetris.model.event.EventSource;
 import com.comp2042.tetris.model.event.EventType;
 import com.comp2042.tetris.model.event.MoveEvent;
@@ -20,16 +17,19 @@ public class InputHandler {
     private final Map<KeyCode, GameCommand> globalCommands = new EnumMap<>(KeyCode.class);
     private final BooleanSupplier isPauseSupplier;
     private final BooleanSupplier isGameOverSupplier;
+    private final CommandRegistry commandRegistry;
     private  IGameController gameController;
 
-    public InputHandler(BooleanSupplier isPauseSupplier, BooleanSupplier isGameOverSupplier ) {
+    public InputHandler(BooleanSupplier isPauseSupplier, BooleanSupplier isGameOverSupplier, CommandRegistry commandRegistry) {
+        this.commandRegistry = Objects.requireNonNull(commandRegistry, "commandRegistry");
         this.isPauseSupplier = isPauseSupplier;
         this.isGameOverSupplier = isGameOverSupplier;
     }
 
     public void setGameController(IGameController gameController) {
         this.gameController = gameController;
-        registerCommands();
+        gameplayCommands.clear();
+        commandRegistry.registerCommands(this);
     }
 
     public boolean handle(KeyEvent keyEvent) {
@@ -94,22 +94,7 @@ public class InputHandler {
                 || (isGameOverSupplier != null && isGameOverSupplier.getAsBoolean());
     }
 
-    private void registerCommands() {
-        gameplayCommands.clear();
-        if (gameController == null) {
-            return;
-        }
 
-        GameCommand leftCommand = new MoveLeftCommand(this);
-        GameCommand rightCommand = new MoveRightCommand(this);
-        GameCommand downCommand = new MoveDownCommand(this);
-        GameCommand rotateCommand = new RotateCommand(this);
-
-        registerCommand(leftCommand, true, KeyCode.LEFT, KeyCode.A);
-        registerCommand(rightCommand, true, KeyCode.RIGHT, KeyCode.D);
-        registerCommand(downCommand, true, KeyCode.DOWN, KeyCode.S);
-        registerCommand(rotateCommand, true, KeyCode.UP, KeyCode.W);
-    }
     public void registerCommand(GameCommand command, boolean requiresActiveGame, KeyCode... keyCodes) {
         Objects.requireNonNull(command, "command cannot be null");
         Objects.requireNonNull(keyCodes, "keyCodes cannot be null");

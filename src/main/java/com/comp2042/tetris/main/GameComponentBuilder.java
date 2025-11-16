@@ -2,6 +2,7 @@ package com.comp2042.tetris.main;
 
 import com.comp2042.tetris.controller.GameController;
 import com.comp2042.tetris.controller.IGameController;
+import com.comp2042.tetris.model.board.SimpleBoard;
 import com.comp2042.tetris.model.event.GameEventPublisher;
 import com.comp2042.tetris.model.event.SimpleGameEventBus;
 
@@ -13,7 +14,7 @@ import java.util.function.Consumer;
 
 public class GameComponentBuilder {
     private Supplier<GameEventPublisher> eventBusSupplier = SimpleGameEventBus::new;
-    private Function<GameEventPublisher, IGameController> controllerFactory = GameController::new;
+    private Function<GameEventPublisher, IGameController> controllerFactory = eventBus -> new GameController(() -> new SimpleBoard(25, 10), eventBus);
     public static GameComponentBuilder createDefault() {
         return new GameComponentBuilder();
     }
