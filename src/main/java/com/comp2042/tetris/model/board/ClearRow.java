@@ -4,7 +4,7 @@
 package com.comp2042.tetris.model.board;
 
 
-import com.comp2042.tetris.model.data.MatrixOperations;
+import com.comp2042.tetris.utils.MatrixOperations;
 
 /**converted into a record
 because the class consisted of constructors and getters only

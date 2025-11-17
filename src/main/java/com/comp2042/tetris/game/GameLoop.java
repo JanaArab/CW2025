@@ -1,4 +1,4 @@
-package com.comp2042.tetris.controller;
+package com.comp2042.tetris.game;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;

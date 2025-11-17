@@ -8,9 +8,8 @@ import com.comp2042.tetris.model.bricks.Brick;
 import com.comp2042.tetris.model.bricks.BrickGenerator;
 import com.comp2042.tetris.model.bricks.BrickRotator;
 import com.comp2042.tetris.model.bricks.RandomBrickGenerator;
-import com.comp2042.tetris.model.data.MatrixOperations;
+import com.comp2042.tetris.utils.MatrixOperations;
 import com.comp2042.tetris.model.data.ViewData;
-import com.comp2042.tetris.model.event.NextShapeInfo;
 import com.comp2042.tetris.model.score.Score;
 import java.awt.Point;
 
@@ -29,20 +28,22 @@ public class SimpleBoard implements Board {
 
 
     public SimpleBoard(int rows, int cols) {
+        this(rows, cols, new RandomBrickGenerator(), new BrickRotator(), new Score());
+    }
+    public SimpleBoard(int rows, int cols, BrickGenerator brickGenerator, BrickRotator brickRotator, Score score) {
         this.rows = rows;
         this.cols = cols;
+        this.brickGenerator = brickGenerator;
+        this.brickRotator = brickRotator;
+        this.score = score;
         currentGameMatrix = new int[rows][cols];
-        brickGenerator = new RandomBrickGenerator();
-        brickRotator = new BrickRotator();
-        score = new Score();
     }
 
     @Override
     public boolean moveBrickDown() {
-        int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
         Point p = new Point(currentOffset);
         p.translate(0, 1);
-        boolean conflict = MatrixOperations.intersect(currentMatrix, brickRotator.getCurrentShape(), (int) p.getX(), (int) p.getY());
+        boolean conflict = MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) p.getX(), (int) p.getY());
         if (conflict) {
             return false;
         } else {
@@ -54,10 +55,9 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean moveBrickLeft() {
-        int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
         Point p = new Point(currentOffset);
         p.translate(-1, 0);
-        boolean conflict = MatrixOperations.intersect(currentMatrix, brickRotator.getCurrentShape(), (int) p.getX(), (int) p.getY());
+        boolean conflict = MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) p.getX(), (int) p.getY());
         if (conflict) {
             return false;
         } else {
@@ -68,10 +68,9 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean moveBrickRight() {
-        int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
         Point p = new Point(currentOffset);
         p.translate(1, 0);
-        boolean conflict = MatrixOperations.intersect(currentMatrix, brickRotator.getCurrentShape(), (int) p.getX(), (int) p.getY());
+        boolean conflict = MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) p.getX(), (int) p.getY());
         if (conflict) {
             return false;
         } else {
@@ -82,31 +81,12 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean rotateLeftBrick() {
-        // fixed the rotation next to borders bug so player can rotate if possible
-        int[][] currentMatrix = MatrixOperations.copy(currentGameMatrix);
-        NextShapeInfo nextShape = brickRotator.peekNextRotation();
-        int[][] nextShapeMatrix = nextShape.getShape();
-
-        int currentX = (int) currentOffset.getX();
-        int currentY = (int) currentOffset.getY();
-
-
-        boolean conflict = MatrixOperations.intersect(currentMatrix, nextShapeMatrix, currentX, currentY);
-        if (!conflict) {
-            brickRotator.setCurrentShape(nextShape.getPosition());
+        Point adjustedOffset = brickRotator.tryRotateLeft(currentGameMatrix, currentOffset);
+        if (adjustedOffset != null) {
+            currentOffset = adjustedOffset;
             return true;
         }
 
-        int[] kicks ={-1,1,-2,2};
-        for(int dx:kicks){
-            if (!MatrixOperations.intersect(currentMatrix, nextShapeMatrix, currentX + dx, currentY)) {
-                // Update X offset since we applied a kick
-                currentOffset = new Point(currentX + dx, currentY);
-                brickRotator.setCurrentShape(nextShape.getPosition());
-                return true;
-            }
-
-        }
         return false;
     }
 

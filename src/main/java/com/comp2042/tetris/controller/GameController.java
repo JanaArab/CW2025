@@ -11,6 +11,7 @@ import com.comp2042.tetris.model.event.EventSource;
 import com.comp2042.tetris.model.event.GameStateSnapshot;
 import com.comp2042.tetris.model.event.GameEventPublisher;
 import com.comp2042.tetris.model.event.MoveEvent;
+import com.comp2042.tetris.model.score.ScoreManager;
 
 import java.util.Objects;
 import java.util.function.Supplier;

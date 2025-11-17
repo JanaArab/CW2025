@@ -1,32 +1,31 @@
 package com.comp2042.tetris.model.bricks;
 
-import com.comp2042.tetris.model.data.MatrixOperations;
 
-import java.util.ArrayList;
 import java.util.List;//to store rotations in a list
 
-final class IBrick implements Brick {
+final class IBrick extends  AbstractBrick {
 
-    private final List<int[][]> brickMatrix = new ArrayList<>();
-
-    public IBrick() {
-        brickMatrix.add(new int[][]{
+    private static final List<int[][]> SHAPES = List.of(
+            new int[][]{
                 {0, 0, 0, 0},
                 {1, 1, 1, 1},
                 {0, 0, 0, 0},
                 {0, 0, 0, 0}
-        });
-        brickMatrix.add(new int[][]{
+        },
+            new int[][]{
                 {0, 1, 0, 0},
                 {0, 1, 0, 0},
                 {0, 1, 0, 0},
                 {0, 1, 0, 0}
-        });
+        }
+    );
+    @Override
+    protected List<int[][]> getPrototypes() {
+        return SHAPES;
     }
 
     @Override
-    public List<int[][]> getShapeMatrix() {
-        return MatrixOperations.deepCopyList(brickMatrix);
+    public Brick cloneBrick() {
+            return new IBrick();
     }
-
 }

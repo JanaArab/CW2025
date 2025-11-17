@@ -1,10 +1,8 @@
 package com.comp2042.tetris.model.bricks;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class RandomBrickGenerator implements BrickGenerator {
 
@@ -12,29 +10,36 @@ public class RandomBrickGenerator implements BrickGenerator {
 
     private final Deque<Brick> nextBricks = new ArrayDeque<>();
 
+    private final BrickBagPolicy bagPolicy;
+
+    private final int previewSize;
+
     public RandomBrickGenerator() {
-        brickList = new ArrayList<>();
-        brickList.add(new IBrick());
-        brickList.add(new JBrick());
-        brickList.add(new LBrick());
-        brickList.add(new OBrick());
-        brickList.add(new SBrick());
-        brickList.add(new TBrick());
-        brickList.add(new ZBrick());
-        nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
-        nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
+        this(new ShuffleBagPolicy(), 2);
+    }
+
+    public RandomBrickGenerator(BrickBagPolicy bagPolicy, int previewSize) {
+        this.bagPolicy = bagPolicy;
+        this.previewSize = Math.max(1, previewSize);
+        this.brickList = BrickType.prototypes();
+        refillIfNeeded();
+
     }
 
     @Override
     public Brick getBrick() {
-        if (nextBricks.size() <= 1) {
-            nextBricks.add(brickList.get(ThreadLocalRandom.current().nextInt(brickList.size())));
-        }
+        refillIfNeeded();
         return nextBricks.poll();
     }
 
     @Override
     public Brick getNextBrick() {
+        refillIfNeeded();
         return nextBricks.peek();
+    }
+    private void refillIfNeeded() {
+        while (nextBricks.size() < previewSize) {
+            nextBricks.addAll(bagPolicy.createBag(brickList));
+        }
     }
 }

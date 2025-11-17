@@ -4,6 +4,8 @@
 
 package com.comp2042.tetris.model.data;
 
+import com.comp2042.tetris.utils.MatrixOperations;
+
 public final class ViewData {
 
     private final int[][] brickData;

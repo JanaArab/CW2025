@@ -1,9 +1,8 @@
-package com.comp2042.tetris.controller;
+package com.comp2042.tetris.model.score;
 
 import com.comp2042.tetris.model.board.ClearRow;
 import com.comp2042.tetris.model.event.GameEventPublisher;
 import com.comp2042.tetris.model.event.ScoreChangeEvent;
-import com.comp2042.tetris.model.score.Score;
 
 import java.util.Objects;
 

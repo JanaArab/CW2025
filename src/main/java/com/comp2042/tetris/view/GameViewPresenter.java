@@ -1,12 +1,9 @@
-package com.comp2042.tetris.controller;
+package com.comp2042.tetris.view;
 
 import com.comp2042.tetris.model.board.ClearRow;
 import com.comp2042.tetris.model.data.ViewData;
 import com.comp2042.tetris.model.event.GameStateSnapshot;
 import com.comp2042.tetris.model.event.ScoreChangeEvent;
-import com.comp2042.tetris.view.BoardRenderer;
-import com.comp2042.tetris.view.GameOverPanel;
-import com.comp2042.tetris.view.NotificationPanel;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.control.Label;

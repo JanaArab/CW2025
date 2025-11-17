@@ -5,7 +5,7 @@
 
 package com.comp2042.tetris.model.event;
 
-import com.comp2042.tetris.model.data.MatrixOperations;
+import com.comp2042.tetris.utils.MatrixOperations;
 
 public final class NextShapeInfo {
 

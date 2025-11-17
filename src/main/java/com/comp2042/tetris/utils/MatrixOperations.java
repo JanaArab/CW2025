@@ -3,7 +3,7 @@
  * like merging, collision checks, making sure blocks are in bound and cleaning rows
  */
 
-package com.comp2042.tetris.model.data;
+package com.comp2042.tetris.utils;
 
 import com.comp2042.tetris.model.board.ClearRow;
 

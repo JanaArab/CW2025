@@ -5,21 +5,28 @@ package com.comp2042.tetris.model.bricks;
  * */
 import com.comp2042.tetris.model.event.NextShapeInfo;
 
+import java.awt.Point;
+import java.util.List;
+
 public class BrickRotator {
 
+    private final RotationStrategy rotationStrategy;
     private Brick brick;
     private int currentShape = 0;
 
+    public BrickRotator() {
+        this(new StandardRotationStrategy());
+    }
+    public BrickRotator( RotationStrategy rotationStrategy) {
+        this.rotationStrategy = rotationStrategy;
+    }
 
-    public NextShapeInfo peekNextRotation () {
-        /*Changed method name so it would explain the purpose of method more clearly
-        * and will add an if condition to check existence of brick, if not it displays error message*/
+    public NextShapeInfo peekNextRotation() {
         if (brick == null) {
             throw new IllegalStateException("BrickRotator: no brick assigned yet.");
         }
-        int nextShape = currentShape;
-        nextShape = (++nextShape) % brick.getShapeMatrix().size();
-        return new NextShapeInfo(brick.getShapeMatrix().get(nextShape), nextShape);
+        int nextShape = (currentShape + 1) % getBrickShapes().size();
+        return new NextShapeInfo(getBrickShapes().get(nextShape), nextShape);
     }
 
     public int[][] getCurrentShape() {
@@ -28,7 +35,16 @@ public class BrickRotator {
         if (brick == null) {
             throw new IllegalStateException("BrickRotator: no brick assigned yet.");
         }
-        return brick.getShapeMatrix().get(currentShape);
+        return getBrickShapes().get(currentShape);
+    }
+    public Point tryRotateLeft(int[][] boardMatrix, Point offset) {
+        NextShapeInfo nextShapeInfo = peekNextRotation();
+        Point kickedOffset = rotationStrategy.findOffsetForRotation(boardMatrix, nextShapeInfo.getShape(), offset);
+        if (kickedOffset != null) {
+            currentShape = nextShapeInfo.getPosition();
+            return kickedOffset;
+        }
+        return null;
     }
 
     public void setCurrentShape(int currentShape) {
@@ -36,8 +52,11 @@ public class BrickRotator {
     }
 
     public void setBrick(Brick brick) {
-        this.brick = brick;
+        this.brick = brick.cloneBrick();
         currentShape = 0;
+    }
+    private List<int[][]> getBrickShapes() {
+        return brick.cloneShape();
     }
 
 

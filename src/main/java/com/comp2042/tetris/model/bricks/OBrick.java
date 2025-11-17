@@ -1,26 +1,25 @@
 package com.comp2042.tetris.model.bricks;
 
-import com.comp2042.tetris.model.data.MatrixOperations;
-
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
-final class OBrick implements Brick {
-
-    private final List<int[][]> brickMatrix = new ArrayList<>();
-
-    public OBrick() {
-        brickMatrix.add(new int[][]{
-                {0, 0, 0, 0},
-                {0, 4, 4, 0},
-                {0, 4, 4, 0},
-                {0, 0, 0, 0}
-        });
+final class OBrick extends AbstractBrick {
+    private static final List<int[][]> SHAPES = Collections.singletonList(
+            new int[][]{
+                    {0, 0, 0, 0},
+                    {0, 4, 4, 0},
+                    {0, 4, 4, 0},
+                    {0, 0, 0, 0}
+            }
+    );
+    @Override
+    protected List<int[][]> getPrototypes() {
+        return SHAPES;
     }
 
     @Override
-    public List<int[][]> getShapeMatrix() {
-        return MatrixOperations.deepCopyList(brickMatrix);
+    public Brick cloneBrick() {
+        return new OBrick();
     }
 
 }
