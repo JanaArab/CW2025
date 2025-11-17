@@ -6,8 +6,7 @@ package com.comp2042.tetris.controller;
 
 
 import com.comp2042.tetris.model.board.Board;
-import com.comp2042.tetris.model.board.ClearRow;
-import com.comp2042.tetris.model.event.EventSource;
+import com.comp2042.tetris.model.score.DefaultScorePolicy;
 import com.comp2042.tetris.model.event.GameStateSnapshot;
 import com.comp2042.tetris.model.event.GameEventPublisher;
 import com.comp2042.tetris.model.event.MoveEvent;
@@ -18,11 +17,11 @@ import java.util.function.Supplier;
 
 public class GameController implements IGameController {
 
-    private static final int DROP_SCORE = 1;
 
     private final Board board;
     private final GameEventPublisher eventPublisher;
     private final ScoreManager scoreManager;
+    private final GameFlowManager gameFlowManager;
 
     public GameController(Supplier<Board> boardSupplier, GameEventPublisher eventPublisher) {
         this(requireBoard(boardSupplier), eventPublisher);
@@ -31,7 +30,8 @@ public class GameController implements IGameController {
     public GameController(Board board, GameEventPublisher eventPublisher) {
         this.board = Objects.requireNonNull(board, "board");
         this.eventPublisher = Objects.requireNonNull(eventPublisher, "eventPublisher");
-        this.scoreManager = new ScoreManager(board.getScore(), eventPublisher, DROP_SCORE);
+        this.scoreManager = new ScoreManager(board.getScore(), eventPublisher, new DefaultScorePolicy());
+        this.gameFlowManager = new GameFlowManager(board, eventPublisher, scoreManager);
         board.createNewBrick();
         publishInitialState();
     }
@@ -49,29 +49,7 @@ public class GameController implements IGameController {
 
     @Override
     public void onDownEvent(MoveEvent event) {
-        boolean canMove = board.moveBrickDown();
-
-        if (!canMove) {
-            board.mergeBrickToBackground();
-            ClearRow clearRow = board.clearRows();
-            eventPublisher.publishBoardUpdated(board.getBoardMatrix());
-
-            scoreManager.handleLinesCleared(clearRow);
-
-            // If createNewBrick returns true -> game over
-            if (board.createNewBrick()) {
-                eventPublisher.publishGameOver();
-                return;
-            }
-
-            eventPublisher.publishBrickUpdated(board.getViewData());
-        } else {
-            // user-triggered automatic drop adds drop score
-            if (event.getEventSource() == EventSource.USER) {
-                scoreManager.handleUserDrop();
-            }
-            eventPublisher.publishBrickUpdated(board.getViewData());
-        }
+        gameFlowManager.handleDownEvent(event);
     }
 
     @Override

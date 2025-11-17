@@ -6,6 +6,7 @@
 package com.comp2042.tetris.utils;
 
 import com.comp2042.tetris.model.board.ClearRow;
+import com.comp2042.tetris.model.score.ScoreCalculator;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -13,7 +14,9 @@ import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MatrixOperations {
+
+@Pure
+public final class MatrixOperations {
 
 
     //We don't want to instantiate this utility class
@@ -21,12 +24,13 @@ public class MatrixOperations {
 
     }
 
+    @Pure
     public static boolean intersect(final int[][] matrix, final int[][] brick, int x, int y) {
-        for (int i = 0; i < brick.length; i++) {
-            for (int j = 0; j < brick[i].length; j++) {
-                int targetX = x + i;
-                int targetY = y + j;
-                if (brick[j][i] != 0 && (checkOutOfBound(matrix, targetX, targetY) || matrix[targetY][targetX] != 0)) {
+        for (int row = 0; row < brick.length; row++) {
+            for (int col = 0; col < brick[row].length; col++) {
+                int targetRow = y + row;
+                int targetCol = x + col;
+                if (brick[row][col] != 0 && (isOutOfBounds(matrix, targetRow, targetCol) || matrix[targetRow][targetCol] != 0)) {
                     return true;
                 }
             }
@@ -36,12 +40,16 @@ public class MatrixOperations {
 
     //the point of the if statement added is to fix the logic of OutOfBounds
     //now if player attempts to rotate on the edges it gets blocked
-    private static boolean checkOutOfBound(int[][] matrix, int targetX, int targetY) {
-        if (targetY<0||targetY>=matrix.length) return true;
-        return targetX < 0 || targetX >= matrix[targetY].length;
+    @Pure
+    private static boolean isOutOfBounds(int[][] matrix, int targetRow, int targetCol) {
+        if (targetRow < 0 || targetRow >= matrix.length) {
+            return true;
+        }
+        return targetCol < 0 || targetCol >= matrix[targetRow].length;
     }
 
 
+    @Pure
     public static int[][] copy(int[][] original) {
         int[][] myInt = new int[original.length][];
         for (int i = 0; i < original.length; i++) {
@@ -53,53 +61,57 @@ public class MatrixOperations {
         return myInt;
     }
 
-    public static int[][] merge(int[][] filledFields, int[][] brick, int x, int y) {
+   @Pure
+   public static int[][] merge(int[][] filledFields, int[][] brick, int x, int y) {
         int[][] copy = copy(filledFields);
-        for (int i = 0; i < brick.length; i++) {
-            for (int j = 0; j < brick[i].length; j++) {
-                int targetX = x + i;
-                int targetY = y + j;
-                if (brick[j][i] != 0) {
-                    copy[targetY][targetX] = brick[j][i];
+       for (int row = 0; row < brick.length; row++) {
+           for (int col = 0; col < brick[row].length; col++) {
+               int targetRow = y + row;
+               int targetCol = x + col;
+               if (brick[row][col] != 0) {
+                   copy[targetRow][targetCol] = brick[row][col];
                 }
             }
         }
         return copy;
     }
 
+    @Pure
     public static ClearRow checkRemoving(final int[][] matrix) {
         int[][] tmp = new int[matrix.length][matrix[0].length];
         Deque<int[]> newRows = new ArrayDeque<>();
         List<Integer> clearedRows = new ArrayList<>();
 
-        for (int i = 0; i < matrix.length; i++) {
-            int[] tmpRow = new int[matrix[i].length];
+        for (int rowIndex = 0; rowIndex < matrix.length; rowIndex++) {
+            int[] tmpRow = new int[matrix[rowIndex].length];
             boolean rowToClear = true;
-            for (int j = 0; j < matrix[0].length; j++) {
-                if (matrix[i][j] == 0) {
+            for (int colIndex = 0; colIndex < matrix[rowIndex].length; colIndex++) {
+                if (matrix[rowIndex][colIndex] == 0) {
                     rowToClear = false;
                 }
-                tmpRow[j] = matrix[i][j];
+                tmpRow[colIndex] = matrix[rowIndex][colIndex];
             }
             if (rowToClear) {
-                clearedRows.add(i);
+                clearedRows.add(rowIndex);
             } else {
                 newRows.add(tmpRow);
             }
         }
-        for (int i = matrix.length - 1; i >= 0; i--) {
+        for (int rowIndex = matrix.length - 1; rowIndex >= 0; rowIndex--) {
             int[] row = newRows.pollLast();
             if (row != null) {
-                tmp[i] = row;
+                tmp[rowIndex] = row;
             } else {
                 break;
             }
         }
-        int scoreBonus = 50 * clearedRows.size() * clearedRows.size();
-        return new ClearRow(clearedRows.size(), tmp, scoreBonus);
+        int linesRemoved = clearedRows.size();
+        int scoreBonus = ScoreCalculator.calculateRowClearBonus(linesRemoved);
+        return new ClearRow(linesRemoved, tmp, scoreBonus);
     }
 
-    public static List<int[][]> deepCopyList(List<int[][]> list){
+    @Pure
+    public static List<int[][]> deepCopyList(List<int[][]> list) {
         return list.stream().map(MatrixOperations::copy).collect(Collectors.toList());
     }
 
