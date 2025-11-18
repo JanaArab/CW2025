@@ -14,13 +14,16 @@ public class GameViewPresenter {
     private final BoardRenderer boardRenderer;
     private final Label scoreLabel;
     private final Group notificationGroup;
-    private final GameOverPanel gameOverPanel;
+    private final OverlayPanel gameOverPanel;
+    private final NotificationAnimator notificationAnimator;
 
-    public GameViewPresenter(BoardRenderer boardRenderer, Label scoreLabel, Group notificationGroup, GameOverPanel gameOverPanel) {
+    public GameViewPresenter(BoardRenderer boardRenderer, Label scoreLabel, Group notificationGroup,
+                             OverlayPanel gameOverPanel, NotificationAnimator notificationAnimator) {
         this.boardRenderer = Objects.requireNonNull(boardRenderer, "boardRenderer");
         this.scoreLabel = scoreLabel;
         this.notificationGroup = notificationGroup;
         this.gameOverPanel = gameOverPanel;
+        this.notificationAnimator = Objects.requireNonNull(notificationAnimator, "notificationAnimator");
     }
 
     public void initializeGame(GameStateSnapshot snapshot) {
@@ -46,7 +49,7 @@ public class GameViewPresenter {
         if (clearRow.linesRemoved() > 0 && notificationGroup != null) {
             NotificationPanel notificationPanel = new NotificationPanel("+" + clearRow.scoreBonus());
             notificationGroup.getChildren().add(notificationPanel);
-            notificationPanel.showScore(notificationGroup.getChildren());
+            notificationAnimator.playShowScore(notificationPanel, notificationGroup.getChildren());
         }
     }
 

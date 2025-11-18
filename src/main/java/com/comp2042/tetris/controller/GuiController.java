@@ -13,8 +13,8 @@ import com.comp2042.tetris.model.event.GameEventListener;
 import com.comp2042.tetris.model.event.GameStateSnapshot;
 import com.comp2042.tetris.model.event.ScoreChangeEvent;
 import com.comp2042.tetris.view.BoardRenderer;
-import com.comp2042.tetris.view.GameOverPanel;
 import com.comp2042.tetris.view.GameViewPresenter;
+import com.comp2042.tetris.view.OverlayPanel;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -51,7 +51,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     private GridPane brickPanel;
 
     @FXML
-    private GameOverPanel gameOverPanel;
+    private OverlayPanel gameOverPanel;
 
     private IGameController gameController;
 
@@ -257,7 +257,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         return groupNotification;
     }
 
-    GameOverPanel getGameOverPanel() {
+    OverlayPanel getGameOverPanel() {
         return gameOverPanel;
     }
 }

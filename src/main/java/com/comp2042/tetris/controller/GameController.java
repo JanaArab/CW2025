@@ -11,13 +11,15 @@ import com.comp2042.tetris.model.event.GameStateSnapshot;
 import com.comp2042.tetris.model.event.GameEventPublisher;
 import com.comp2042.tetris.model.event.MoveEvent;
 import com.comp2042.tetris.model.score.ScoreManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.function.Supplier;
 
 public class GameController implements IGameController {
 
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(GameController.class);
     private final Board board;
     private final GameEventPublisher eventPublisher;
     private final ScoreManager scoreManager;
@@ -34,6 +36,7 @@ public class GameController implements IGameController {
         this.gameFlowManager = new GameFlowManager(board, eventPublisher, scoreManager);
         board.createNewBrick();
         publishInitialState();
+        LOGGER.info("GameController initialized and initial game state published.");
     }
 
     private static Board requireBoard(Supplier<Board> boardSupplier) {
@@ -76,5 +79,6 @@ public class GameController implements IGameController {
         eventPublisher.publishBoardUpdated(board.getBoardMatrix());
         eventPublisher.publishBrickUpdated(board.getViewData());
         scoreManager.publishCurrentScore();
+        LOGGER.info("New game started.");
     }
 }

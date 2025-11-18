@@ -8,12 +8,16 @@ import com.comp2042.tetris.model.event.EventType;
 import com.comp2042.tetris.model.event.MoveEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.util.EnumMap;
 import java.util.Objects;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 public class InputHandler implements GameActionInvoker, InputCommandRegistrar {
+    private static final Logger LOGGER = LoggerFactory.getLogger(InputHandler.class);
     private final Map<KeyCode, GameCommand> gameplayCommands = new EnumMap<>(KeyCode.class);
     private final Map<KeyCode, GameCommand> globalCommands = new EnumMap<>(KeyCode.class);
     private final BooleanSupplier isPauseSupplier;
@@ -40,6 +44,7 @@ public class InputHandler implements GameActionInvoker, InputCommandRegistrar {
 
     public boolean handle(KeyEvent keyEvent) {
         if (keyEvent == null)  {
+            LOGGER.warn("Key event was null; ignoring input.");
             return false;
         }
 
@@ -47,20 +52,24 @@ public class InputHandler implements GameActionInvoker, InputCommandRegistrar {
         if (command != null) {
             command.execute();
             keyEvent.consume();
+            LOGGER.debug("Executed global command for key {}", keyEvent.getCode());
             return true;
         }
 
         if (isInteractionDisabled()) {
+            LOGGER.debug("Interaction disabled; ignoring input for key {}", keyEvent.getCode());
             return false;
         }
 
         command = gameplayCommands.get(keyEvent.getCode());
         if (command == null) {
+            LOGGER.debug("No command registered for key {}", keyEvent.getCode());
             return false;
         }
 
         command.execute();
         keyEvent.consume();
+        LOGGER.debug("Executed gameplay command for key {}", keyEvent.getCode());
         return true;
     }
 

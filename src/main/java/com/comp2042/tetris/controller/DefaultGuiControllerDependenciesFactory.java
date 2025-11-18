@@ -7,8 +7,9 @@ import com.comp2042.tetris.controller.command.InputCommandFactory;
 import com.comp2042.tetris.game.AnimationHandler;
 import com.comp2042.tetris.game.GameStateManager;
 import com.comp2042.tetris.view.BoardRenderer;
-import com.comp2042.tetris.view.GameOverPanel;
 import com.comp2042.tetris.view.GameViewPresenter;
+import com.comp2042.tetris.view.NotificationAnimator;
+import com.comp2042.tetris.view.OverlayPanel;
 import com.comp2042.tetris.view.UIConstants;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
@@ -23,7 +24,7 @@ public class DefaultGuiControllerDependenciesFactory {
         GridPane brickPanel = controller.getBrickPanel();
         Label scoreLabel = controller.getScoreLabel();
         Group groupNotification = controller.getGroupNotification();
-        GameOverPanel gameOverPanel = controller.getGameOverPanel();
+        OverlayPanel gameOverPanel = controller.getGameOverPanel();
 
         GameStateManager gameStateManager = new GameStateManager();
         AnimationHandler animationHandler = new AnimationHandler(
@@ -41,7 +42,13 @@ public class DefaultGuiControllerDependenciesFactory {
                 inputCommandFactory);
 
         BoardRenderer boardRenderer = new BoardRenderer(gamePanel, brickPanel, UIConstants.BRICK_SIZE, UIConstants.BOARD_TOP_OFFSET);
-        GameViewPresenter gameViewPresenter = new GameViewPresenter(boardRenderer, scoreLabel, groupNotification, gameOverPanel);
+        NotificationAnimator notificationAnimator = new NotificationAnimator();
+        GameViewPresenter gameViewPresenter = new GameViewPresenter(
+                boardRenderer,
+                scoreLabel,
+                groupNotification,
+                gameOverPanel,
+                notificationAnimator);
 
         return new GuiControllerDependencies(animationHandler, inputHandler, commandRegistry, boardRenderer, gameViewPresenter);
     }
