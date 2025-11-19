@@ -51,6 +51,9 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     private GridPane brickPanel;
 
     @FXML
+    private GridPane nextBrickPanel;
+
+    @FXML
     private OverlayPanel gameOverPanel;
 
     private IGameController gameController;
@@ -243,6 +246,10 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     GridPane getGamePanel() {
         return gamePanel;
+    }
+
+    GridPane getNextBrickPanel() {
+        return nextBrickPanel;
     }
 
     GridPane getBrickPanel() {

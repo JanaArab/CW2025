@@ -11,36 +11,37 @@ public class BoardRenderer {
 
     private final GridPane gamePanel;
     private final GridPane brickPanel;
+    private final GridPane nextBrickPanel;
     private final int brickSize;
     private final int boardTopOffset;
 
     private Rectangle[][] displayMatrix;
-    private Rectangle[][] previewMatrix;
+    private Rectangle[][] activeBrickMatrix;
+    private Rectangle[][] nextBrickMatrix;
 
-    public BoardRenderer(GridPane gamePanel, GridPane brickPanel, int brickSize, int boardTopOffset) {
+    public BoardRenderer(GridPane gamePanel, GridPane brickPanel, GridPane nextBrickPanel, int brickSize, int boardTopOffset) {
         this.gamePanel = gamePanel;
         this.brickPanel = brickPanel;
+        this.nextBrickPanel = nextBrickPanel;
         this.brickSize = brickSize;
         this.boardTopOffset = boardTopOffset;
     }
 
     public void initialize(int[][] boardMatrix, ViewData brick) {
         initializeBoard(boardMatrix);
-        initializePreview(brick);
+        initializeActiveBrick(brick.getBrickData());
+        initializeNextBrickPreview(brick.getNextBrickData());
         updateBrickPosition(brick);
     }
 
     public void refreshBrick(ViewData brick, boolean isPaused) {
-        if (isPaused || previewMatrix == null) {
+        if (isPaused || activeBrickMatrix == null) {
             return;
         }
 
         updateBrickPosition(brick);
-        for (int i = 0; i < brick.getBrickData().length; i++) {
-            for (int j = 0; j < brick.getBrickData()[i].length; j++) {
-                setRectangleData(brick.getBrickData()[i][j], previewMatrix[i][j]);
-            }
-        }
+        refreshActiveBrick(brick.getBrickData());
+        refreshNextBrick(brick.getNextBrickData());
     }
 
     public void refreshGameBackground(int[][] board) {
@@ -66,17 +67,64 @@ public class BoardRenderer {
         }
     }
 
-    private void initializePreview(ViewData brick) {
+    private void initializeActiveBrick(int[][] brickData) {
         brickPanel.getChildren().clear();
-        previewMatrix = new Rectangle[brick.getBrickData().length][brick.getBrickData()[0].length];
-        for (int i = 0; i < brick.getBrickData().length; i++) {
-            for (int j = 0; j < brick.getBrickData()[i].length; j++) {
-                Rectangle rectangle = createTile(getFillColor(brick.getBrickData()[i][j]));
-                previewMatrix[i][j] = rectangle;
+        activeBrickMatrix = new Rectangle[brickData.length][brickData[0].length];
+        for (int i = 0; i < brickData.length; i++) {
+            for (int j = 0; j < brickData[i].length; j++) {
+                Rectangle rectangle = createTile(getFillColor(brickData[i][j]));
+                activeBrickMatrix[i][j] = rectangle;
                 brickPanel.add(rectangle, j, i);
             }
         }
     }
+
+    private void initializeNextBrickPreview(int[][] nextBrickData) {
+        if (nextBrickPanel == null) {
+            return;
+        }
+
+        nextBrickPanel.getChildren().clear();
+        nextBrickMatrix = new Rectangle[nextBrickData.length][nextBrickData[0].length];
+        for (int i = 0; i < nextBrickData.length; i++) {
+            for (int j = 0; j < nextBrickData[i].length; j++) {
+                Rectangle rectangle = createTile(getFillColor(nextBrickData[i][j]));
+                nextBrickMatrix[i][j] = rectangle;
+                nextBrickPanel.add(rectangle, j, i);
+            }
+        }
+    }
+
+    private void refreshActiveBrick(int[][] brickData) {
+        if (!dimensionsMatch(activeBrickMatrix, brickData)) {
+            initializeActiveBrick(brickData);
+            return;
+        }
+
+        for (int i = 0; i < brickData.length; i++) {
+            for (int j = 0; j < brickData[i].length; j++) {
+                setRectangleData(brickData[i][j], activeBrickMatrix[i][j]);
+            }
+        }
+    }
+
+    private void refreshNextBrick(int[][] nextBrickData) {
+        if (nextBrickPanel == null) {
+            return;
+        }
+
+        if (!dimensionsMatch(nextBrickMatrix, nextBrickData)) {
+            initializeNextBrickPreview(nextBrickData);
+            return;
+        }
+
+        for (int i = 0; i < nextBrickData.length; i++) {
+            for (int j = 0; j < nextBrickData[i].length; j++) {
+                setRectangleData(nextBrickData[i][j], nextBrickMatrix[i][j]);
+            }
+        }
+    }
+
 
     private void updateBrickPosition(ViewData brick) {
         brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getXPosition() * brickPanel.getVgap() + brick.getXPosition() * brickSize);
@@ -97,16 +145,20 @@ public class BoardRenderer {
         }
     }
 
+    private boolean dimensionsMatch(Rectangle[][] matrix, int[][] data) {
+        return matrix != null && matrix.length == data.length && matrix[0].length == data[0].length;
+    }
+
     private Color getFillColor(int value) {
         return switch (value) {
             case 0 -> Color.TRANSPARENT;
-            case 1 -> Color.AQUA;
-            case 2 -> Color.BLUEVIOLET;
-            case 3 -> Color.DARKGREEN;
+            case 1 -> Color.CYAN;
+            case 2 -> Color.DODGERBLUE;
+            case 3 -> Color.ORANGE;
             case 4 -> Color.YELLOW;
             case 5 -> Color.RED;
-            case 6 -> Color.BEIGE;
-            case 7 -> Color.BURLYWOOD;
+            case 6 -> Color.LIMEGREEN;
+            case 7 -> Color.MAGENTA;
             default -> Color.WHITE;
         };
     }
