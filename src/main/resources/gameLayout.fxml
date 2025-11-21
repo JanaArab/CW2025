@@ -1,4 +1,4 @@
-<?import com.comp2042.GameOverPanel?>
+<?import com.comp2042.tetris.view.OverlayPanel?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ToggleButton?>
@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <?import java.net.URL?>
-<Pane fx:controller="com.comp2042.GuiController"
+<Pane fx:controller="com.comp2042.tetris.controller.GuiController"
       xmlns:fx="http://javafx.com/fxml">
     <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
     <BorderPane styleClass="gameBoard" fx:id="gameBoard">
@@ -15,11 +15,28 @@
         </center>
     </BorderPane>
 
+    <GridPane fx:id="nextBrickPanel" vgap="1" hgap="1" layoutX="340" layoutY="40"/>
+
     <Group fx:id="groupNotification" layoutX="14" layoutY="203">
         <VBox alignment="CENTER">
-            <GameOverPanel fx:id="gameOverPanel"/>
+            <OverlayPanel fx:id="gameOverPanel" message="GAME OVER"/>
         </VBox>
     </Group>
+
+    <Label fx:id="pauseLabel"
+           text="Paused"
+           visible="false"
+           layoutX="240" layoutY="20"
+           style="-fx-font-size: 18; -fx-text-fill: white;"/>
+    <Label fx:id="scoreLabel"
+           text="Score: 0"
+           layoutX="20" layoutY="20"
+           style="-fx-font-size: 18; -fx-text-fill: white;"/>
+    <Button fx:id="pauseButton"
+            text="Pause"
+            layoutX="230" layoutY="460"
+            onAction="#pauseGame"
+            style="-fx-font-size: 16; -fx-text-fill: white; -fx-background-color: #333333; -fx-border-color: white;"/>
     <stylesheets>
         <URL value="@window_style.css"/>
     </stylesheets>
