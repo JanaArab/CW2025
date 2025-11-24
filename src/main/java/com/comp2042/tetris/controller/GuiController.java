@@ -25,12 +25,19 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.event.ActionEvent;
-
+import com.comp2042.tetris.view.BackgroundAnimator;
+import javafx.scene.layout.Pane;
 import java.util.Objects;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class GuiController implements Initializable, IGuiController, GameEventListener {
+
+    @FXML
+    private Pane background1;
+
+    @FXML
+    private Pane background2;
 
     @FXML//add button for pausing
     private Button pauseButton;
@@ -73,8 +80,8 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     public void initialize(URL location, ResourceBundle resources) {
         setupFont();
         gameOverPanel.setVisible(false);
-
         setupGamePanelKeyListener();
+        new BackgroundAnimator().animate(background1, background2);
     }
     public void setDependencies(GuiControllerDependencies dependencies) {
         this.dependencies = Objects.requireNonNull(dependencies, "dependencies");

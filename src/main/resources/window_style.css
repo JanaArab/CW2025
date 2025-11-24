@@ -1,5 +1,15 @@
 .root {
-    -fx-background-image: url("controller.png");
+    -fx-background-color: black;
+}
+
+.starBackground {
+    -fx-background-image: url("game_background.png");
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+.frontFrame {
+    -fx-background-image: url("controller_Blue.png");
     -fx-background-size: cover;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
@@ -7,10 +17,22 @@
 
 .gameBoard {
     -fx-border-color: linear-gradient(#2A5058, #61a2b1);
-    -fx-border-width: 12px;
+    -fx-border-width: 4px;
     -fx-border-radius: 12px;
     -fx-max-width: 224;
     -fx-max-height: 384;
+}
+.nextBoard {
+    /* Exact same border style as your main game board */
+    -fx-border-color: linear-gradient(#2A5058, #61a2b1);
+    -fx-border-width: 4px;
+    -fx-border-radius: 12px;
+
+    /* Smaller size for the Next Piece view */
+    -fx-max-width: 120;
+    -fx-max-height: 120;
+    -fx-min-width: 120;
+    -fx-min-height: 120;
 }
 
 .nextBrickLabel {
