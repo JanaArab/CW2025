@@ -42,7 +42,7 @@ public class DefaultGuiControllerDependenciesFactory {
                 commandRegistry,
                 inputCommandFactory);
 
-        BoardRenderer boardRenderer = new BoardRenderer(gamePanel, brickPanel, nextBrickPanel, UIConstants.BRICK_SIZE, UIConstants.BOARD_TOP_OFFSET);
+        BoardRenderer boardRenderer = new BoardRenderer(gamePanel, brickPanel, nextBrickPanel, UIConstants.BRICK_SIZE);
         NotificationAnimator notificationAnimator = new NotificationAnimator();
         GameViewPresenter gameViewPresenter = new GameViewPresenter(
                 boardRenderer,

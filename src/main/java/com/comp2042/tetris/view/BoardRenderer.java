@@ -2,6 +2,8 @@ package com.comp2042.tetris.view;
 
 
 import com.comp2042.tetris.model.data.ViewData;
+import javafx.application.Platform;
+import javafx.geometry.Bounds;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -9,22 +11,26 @@ import javafx.scene.shape.Rectangle;
 
 public class BoardRenderer {
 
+    private static final int HIDDEN_TOP_ROWS = 2;
+
     private final GridPane gamePanel;
     private final GridPane brickPanel;
     private final GridPane nextBrickPanel;
     private final int brickSize;
-    private final int boardTopOffset;
 
     private Rectangle[][] displayMatrix;
     private Rectangle[][] activeBrickMatrix;
     private Rectangle[][] nextBrickMatrix;
 
-    public BoardRenderer(GridPane gamePanel, GridPane brickPanel, GridPane nextBrickPanel, int brickSize, int boardTopOffset) {
+    // Cache the origin offset to prevent jitter from fluctuating scene bounds
+    private Double cachedOriginX = null;
+    private Double cachedOriginY = null;
+
+    public BoardRenderer(GridPane gamePanel, GridPane brickPanel, GridPane nextBrickPanel, int brickSize) {
         this.gamePanel = gamePanel;
         this.brickPanel = brickPanel;
         this.nextBrickPanel = nextBrickPanel;
         this.brickSize = brickSize;
-        this.boardTopOffset = boardTopOffset;
     }
 
     public void initialize(int[][] boardMatrix, ViewData brick) {
@@ -61,6 +67,9 @@ public class BoardRenderer {
         for (int i = 2; i < boardMatrix.length; i++) {
             for (int j = 0; j < boardMatrix[i].length; j++) {
                 Rectangle rectangle = createTile(Color.TRANSPARENT);
+                // Grid lines removed - no stroke on tiles
+                rectangle.setStroke(null);
+                rectangle.setStrokeWidth(0);
                 displayMatrix[i][j] = rectangle;
                 gamePanel.add(rectangle, j, i - 2);
             }
@@ -127,8 +136,53 @@ public class BoardRenderer {
 
 
     private void updateBrickPosition(ViewData brick) {
-        brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getXPosition() * brickPanel.getVgap() + brick.getXPosition() * brickSize);
-        brickPanel.setLayoutY(boardTopOffset + gamePanel.getLayoutY() + brick.getYPosition() * brickPanel.getHgap() + brick.getYPosition() * brickSize);
+        if (!isLayerReady()) {
+            Platform.runLater(() -> updateBrickPosition(brick));
+            return;
+        }
+
+        // Calculate and cache the origin offset on first update
+        // This prevents jitter from fluctuating scene bounds on subsequent updates
+        if (cachedOriginX == null || cachedOriginY == null) {
+            Bounds boardBounds = gamePanel.localToScene(gamePanel.getBoundsInLocal());
+            Bounds layerBounds = brickPanel.getParent().localToScene(brickPanel.getParent().getBoundsInLocal());
+            cachedOriginX = boardBounds.getMinX() - layerBounds.getMinX();
+            cachedOriginY = boardBounds.getMinY() - layerBounds.getMinY();
+        }
+
+        // Calculate position using cached origin and logical brick coordinates
+        // Since brick position is always an integer and step size is constant,
+        // this produces stable, whole-pixel positions
+        double xOffset = cachedOriginX + brick.getXPosition() * horizontalStep();
+        double yOffset = cachedOriginY + hiddenRowsOffset() + brick.getYPosition() * verticalStep();
+
+        // Round to whole pixels for pixel-perfect alignment
+        long targetX = Math.round(xOffset);
+        long targetY = Math.round(yOffset);
+
+        // Only update if position actually changed to reduce layout thrashing
+        if (brickPanel.getLayoutX() != targetX || brickPanel.getLayoutY() != targetY) {
+            brickPanel.setLayoutX(targetX);
+            brickPanel.setLayoutY(targetY);
+        }
+    }
+
+    private boolean isLayerReady() {
+        return gamePanel.getScene() != null
+                && brickPanel.getParent() != null
+                && brickPanel.getParent().getScene() != null;
+    }
+
+    private double horizontalStep() {
+        return brickSize + brickPanel.getHgap();
+    }
+
+    private double verticalStep() {
+        return brickSize + brickPanel.getVgap();
+    }
+
+    private double hiddenRowsOffset() {
+        return -HIDDEN_TOP_ROWS * verticalStep();
     }
 
     private Rectangle createTile(Color color) {
@@ -136,6 +190,8 @@ public class BoardRenderer {
         rectangle.setArcHeight(9);
         rectangle.setArcWidth(9);
         rectangle.setFill(color);
+        // Enable snap-to-pixel for crisp rendering
+        rectangle.setSmooth(false);
         return rectangle;
     }
 
@@ -163,5 +219,4 @@ public class BoardRenderer {
         };
     }
 }
-
 

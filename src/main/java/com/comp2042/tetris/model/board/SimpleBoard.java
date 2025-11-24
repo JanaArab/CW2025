@@ -57,6 +57,8 @@ public class SimpleBoard implements Board {
     public boolean moveBrickLeft() {
         Point p = new Point(currentOffset);
         p.translate(-1, 0);
+
+        // MatrixOperations.intersect handles all boundary checking including walls
         boolean conflict = MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) p.getX(), (int) p.getY());
         if (conflict) {
             return false;
@@ -70,6 +72,8 @@ public class SimpleBoard implements Board {
     public boolean moveBrickRight() {
         Point p = new Point(currentOffset);
         p.translate(1, 0);
+
+        // MatrixOperations.intersect handles all boundary checking including walls
         boolean conflict = MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) p.getX(), (int) p.getY());
         if (conflict) {
             return false;
@@ -100,8 +104,13 @@ public class SimpleBoard implements Board {
 
         int spawnX = (cols - shapeWidth) / 2;
         // Clamp to valid range
-        if (spawnX < 0) spawnX = 0;
-        if (spawnX > cols - shapeWidth) spawnX = Math.max(0, cols - shapeWidth);
+        if (spawnX < 0) {
+            spawnX = 0;
+        }
+        int maxSpawn = Math.max(0, cols - shapeWidth);
+        if (spawnX > maxSpawn) {
+            spawnX = maxSpawn;
+        }
 
 
        currentOffset = new Point(spawnX, 1);
