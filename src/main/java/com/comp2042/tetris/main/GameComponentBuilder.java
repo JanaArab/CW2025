@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 
 public class GameComponentBuilder {
     private Supplier<GameEventPublisher> eventBusSupplier = SimpleGameEventBus::new;
-    private Function<GameEventPublisher, IGameController> controllerFactory = eventBus -> new GameController(() -> new SimpleBoard(21, 10), eventBus);
+    private Function<GameEventPublisher, IGameController> controllerFactory = eventBus -> new GameController(() -> new SimpleBoard(23, 13), eventBus);
     public static GameComponentBuilder createDefault() {
         return new GameComponentBuilder();
     }
@@ -42,5 +42,6 @@ public class GameComponentBuilder {
     public record GameComponents(GameEventPublisher eventBus, IGameController gameController) {
     }
 }
+
 
 

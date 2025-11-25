@@ -4,6 +4,7 @@ import java.awt.Point;
 
 public class StandardRotationStrategy implements RotationStrategy {
     private static final int[] KICKS = {-1, 1, -2, 2};
+    private static final int HIDDEN_TOP_ROWS = 2;
 
     @Override
     public Point findOffsetForRotation(int[][] boardMatrix, int[][] rotatedShape, Point currentOffset) {
@@ -12,14 +13,17 @@ public class StandardRotationStrategy implements RotationStrategy {
 
         // Try current position first
         if (!MatrixOperations.intersect(boardMatrix, rotatedShape, currentX, currentY)) {
-            // Current position works, but try to optimize by shifting toward walls if possible
+            if (isAboveVisibleArea(rotatedShape, currentY)) {
+                return null;
+            }
             return optimizePosition(boardMatrix, rotatedShape, currentX, currentY);
         }
 
         // Current position doesn't work, try wall kicks
         for (int dx : KICKS) {
             int newX = currentX + dx;
-            if (!MatrixOperations.intersect(boardMatrix, rotatedShape, newX, currentY)) {
+            if (!MatrixOperations.intersect(boardMatrix, rotatedShape, newX, currentY)
+                    && !isAboveVisibleArea(rotatedShape, currentY)) {
                 // Found a valid kick position, optimize it before returning
                 return optimizePosition(boardMatrix, rotatedShape, newX, currentY);
             }
@@ -90,6 +94,21 @@ public class StandardRotationStrategy implements RotationStrategy {
         }
 
         return new Point(bestX, y);
+    }
+
+    private boolean isAboveVisibleArea(int[][] rotatedShape, int y) {
+        return y + getBrickTopOffset(rotatedShape) < HIDDEN_TOP_ROWS;
+    }
+
+    private int getBrickTopOffset(int[][] shape) {
+        for (int row = 0; row < shape.length; row++) {
+            for (int col = 0; col < shape[row].length; col++) {
+                if (shape[row][col] != 0) {
+                    return row;
+                }
+            }
+        }
+        return 0;
     }
 
     /**

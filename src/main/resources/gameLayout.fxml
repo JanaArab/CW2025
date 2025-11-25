@@ -17,28 +17,29 @@
         </Pane>
         <HBox alignment="CENTER" spacing="50">
             <VBox alignment="TOP_CENTER" spacing="20" styleClass="side-panel">
-                <Label text="HOLD" styleClass="panel-title"/>
-                <Pane prefHeight="120" prefWidth="120" styleClass="info-panel hold-panel"/>
+                <Label text="SCORE" styleClass="panel-title"/>
+                <StackPane styleClass="nextBoard"> <Label fx:id="scoreLabel" text="0" styleClass="scoreClass"/>
+                </StackPane>
             </VBox>
-            <StackPane alignment="CENTER" style="-fx-translate-y: -11;">
-                <BorderPane fx:id="gameBoard" styleClass="gameBoard" maxWidth="224" maxHeight="384">
+
+            <StackPane alignment="CENTER" style="-fx-translate-y: -6;">
+                <BorderPane fx:id="gameBoard" styleClass="gameBoard" maxWidth="264" maxHeight="424">
                     <center>
                         <GridPane fx:id="gamePanel" hgap="0" vgap="0"/>
                     </center>
                 </BorderPane>
-                <Pane fx:id="activeBrickLayer" mouseTransparent="true" pickOnBounds="false" maxWidth="200" maxHeight="360">
+                <Pane fx:id="activeBrickLayer" mouseTransparent="true" pickOnBounds="false" maxWidth="240" maxHeight="380">
                     <GridPane fx:id="brickPanel" hgap="0" vgap="0"/>
                 </Pane>
             </StackPane>
+
             <VBox alignment="TOP_CENTER" spacing="20" styleClass="side-panel">
                 <Label text="NEXT" styleClass="panel-title"/>
-
                 <BorderPane styleClass="nextBoard">
                     <center>
                         <GridPane fx:id="nextBrickPanel" hgap="0" vgap="0" alignment="CENTER"/>
                     </center>
                 </BorderPane>
-
             </VBox>
         </HBox>
         <Pane styleClass="frontFrame" mouseTransparent="true"/>
@@ -49,11 +50,6 @@
             </VBox>
         </Group>
 
-        <Label fx:id="scoreLabel"
-               text="Score: 0"
-               styleClass="scoreClass"
-               StackPane.alignment="TOP_LEFT"
-               style="-fx-padding: 30 0 0 50;"/>
 
         <Label fx:id="pauseLabel"
                text="Paused"

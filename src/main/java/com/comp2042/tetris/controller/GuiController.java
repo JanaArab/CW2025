@@ -95,7 +95,14 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     }
 
     private void setupFont() {
-        Font.loadFont(getClass().getClassLoader().getResource("digital.ttf").toExternalForm(), 38);
+        try {
+            // Note the path: /fonts/PressStart2P.ttf
+            Font.loadFont(getClass().getResourceAsStream("/fonts/PressStart2P.ttf"), 20);
+            Font.loadFont(getClass().getClassLoader().getResource("fonts/digital.ttf").toExternalForm(), 38);
+        } catch (Exception e) {
+            System.out.println("Failed to load font: " + e.getMessage());
+        }
+
     }
 
     private void setupGamePanelKeyListener() {

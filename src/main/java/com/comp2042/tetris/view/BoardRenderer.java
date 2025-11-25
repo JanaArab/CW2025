@@ -4,8 +4,13 @@ package com.comp2042.tetris.view;
 import com.comp2042.tetris.model.data.ViewData;
 import javafx.application.Platform;
 import javafx.geometry.Bounds;
+import javafx.scene.effect.Light;
+import javafx.scene.effect.Lighting;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 
 
@@ -185,7 +190,7 @@ public class BoardRenderer {
         return -HIDDEN_TOP_ROWS * verticalStep();
     }
 
-    private Rectangle createTile(Color color) {
+   /* private Rectangle createTile(Color color) {
         Rectangle rectangle = new Rectangle(brickSize, brickSize);
         rectangle.setArcHeight(9);
         rectangle.setArcWidth(9);
@@ -193,30 +198,97 @@ public class BoardRenderer {
         // Enable snap-to-pixel for crisp rendering
         rectangle.setSmooth(false);
         return rectangle;
+    }*/
+
+    private Rectangle createTile(Color color) {
+        Rectangle rectangle = new Rectangle(brickSize, brickSize);
+
+        // Slightly smaller rounding for a cleaner, modern look
+        rectangle.setArcHeight(8);
+        rectangle.setArcWidth(8);
+        rectangle.setSmooth(true);
+        applyBrickStyling(rectangle, color);
+        return rectangle;
     }
 
     private void setRectangleData(int color, Rectangle rectangle) {
         if (rectangle != null) {
-            rectangle.setFill(getFillColor(color));
+            applyBrickStyling(rectangle, getFillColor(color));
         }
     }
 
+    private void applyBrickStyling(Rectangle rectangle, Color baseColor) {
+        if (baseColor == null || baseColor == Color.TRANSPARENT) {
+            rectangle.setFill(Color.TRANSPARENT);
+            rectangle.setEffect(null);
+            rectangle.setStroke(null);
+            return;
+        }
+
+        rectangle.setFill(createBrickGradient(baseColor));
+        rectangle.setStroke(Color.rgb(255, 255, 255, 0.2));
+        rectangle.setStrokeWidth(0.8);
+        rectangle.setStrokeType(javafx.scene.shape.StrokeType.INSIDE);
+
+        Light.Distant light = new Light.Distant();
+        light.setAzimuth(45);
+        light.setElevation(60);
+
+        Lighting lighting = new Lighting();
+        lighting.setLight(light);
+        lighting.setSurfaceScale(5);
+
+        rectangle.setEffect(lighting);
+    }
+
+    private LinearGradient createBrickGradient(Color baseColor) {
+        Color highlight = baseColor.deriveColor(0, 1.05, 1.25, 1);
+        Color midTone = baseColor;
+        Color shadow = baseColor.deriveColor(0, 1, 0.65, 1);
+
+        return new LinearGradient(
+                0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                new Stop(0.0, highlight),
+                new Stop(0.4, midTone),
+                new Stop(0.95, shadow));
+    }
+
     private boolean dimensionsMatch(Rectangle[][] matrix, int[][] data) {
-        return matrix != null && matrix.length == data.length && matrix[0].length == data[0].length;
+        return matrix != null
+                && data != null
+                && matrix.length == data.length
+                && matrix[0].length == data[0].length;
     }
 
     private Color getFillColor(int value) {
         return switch (value) {
             case 0 -> Color.TRANSPARENT;
-            case 1 -> Color.CYAN;
-            case 2 -> Color.DODGERBLUE;
-            case 3 -> Color.ORANGE;
-            case 4 -> Color.YELLOW;
-            case 5 -> Color.RED;
-            case 6 -> Color.LIMEGREEN;
-            case 7 -> Color.MAGENTA;
-            default -> Color.WHITE;
+            case 1 -> Color.web("#A5D8FF"); // pale blue
+            case 2 -> Color.web("#74C0FC"); // sky blue
+            case 3 -> Color.web("#4DABF7"); // electric blue
+            case 4 -> Color.web("#9775FA"); // lavender
+            case 5 -> Color.web("#845EF7"); // deep purple
+            case 6 -> Color.web("#F783AC"); // pastel pink
+            case 7 -> Color.web("#FF6BCB"); // vibrant pink
+            default -> Color.web("#DEE2FF"); // soft fallback tint
         };
     }
-}
 
+    private int[][] extractBoardState() {
+        int rows = displayMatrix.length;
+        int cols = displayMatrix[0].length;
+        int[][] board = new int[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                Rectangle cell = displayMatrix[i][j];
+                if (cell == null) {
+                    board[i][j] = 0;
+                    continue;
+                }
+                Color fill = (Color) cell.getFill();
+                board[i][j] = (fill == null || fill.getOpacity() == 0) ? 0 : 1;
+            }
+        }
+        return board;
+    }
+}

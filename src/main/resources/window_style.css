@@ -3,7 +3,7 @@
 }
 
 .starBackground {
-    -fx-background-image: url("game_background.png");
+    -fx-background-image: url("game_background1.jpeg");
     -fx-background-size: cover;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
@@ -16,23 +16,25 @@
 }
 
 .gameBoard {
-    -fx-border-color: linear-gradient(#2A5058, #61a2b1);
-    -fx-border-width: 4px;
-    -fx-border-radius: 12px;
-    -fx-max-width: 224;
-    -fx-max-height: 384;
+    -fx-border-color: #00d2d3;
+        -fx-border-width: 3px;
+        -fx-border-radius: 4px;
+        /* Semi-transparent black background to separate game from wallpaper */
+        -fx-background-color: rgba(0, 0, 0, 0.7);
+        /* Outer glow effect */
+        -fx-effect: dropshadow(three-pass-box, rgba(0, 210, 211, 0.6), 15, 0, 0, 0);
+        -fx-max-width: 264;
+        -fx-max-height: 424;
 }
 .nextBoard {
-    /* Exact same border style as your main game board */
-    -fx-border-color: linear-gradient(#2A5058, #61a2b1);
-    -fx-border-width: 4px;
-    -fx-border-radius: 12px;
-
-    /* Smaller size for the Next Piece view */
-    -fx-max-width: 120;
-    -fx-max-height: 120;
-    -fx-min-width: 120;
-    -fx-min-height: 120;
+    -fx-border-color: #00d2d3;
+        -fx-border-width: 3px;
+        -fx-border-radius: 4px;
+        -fx-background-color: rgba(0, 0, 0, 0.7);
+        -fx-max-width: 120;
+        -fx-max-height: 120;
+        -fx-min-width: 120;
+        -fx-min-height: 120;
 }
 
 .nextBrickLabel {
@@ -80,9 +82,12 @@
 }
 
 .gameOverStyle {
-    -fx-font-family: "Let's go Digital";
-    -fx-font-size: 48;
-    -fx-background-color: red;
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 52px;
+    -fx-text-fill: linear-gradient(#aef6ff 0%, #4cc8ff 45%, #0f6eff 100%);
+    -fx-background-color: transparent;
+    -fx-effect: dropshadow(gaussian, #0d58ff, 20, 0.7, 0, 0),
+                dropshadow(gaussian, black, 30, 0.95, 0, 0);
 }
 
 .scoreClass{
@@ -107,17 +112,23 @@
     -fx-border-width: 2;
     -fx-background-color: rgba(255, 255, 255, 0.1);
 }
-
+.pause-button:hover {
+    -fx-background-color: #8c7ae6; /* Lighter purple on hover */
+}
 .pause-button {
-    -fx-font-size: 18;
-    -fx-text-fill: white;
-    -fx-background-color: rgba(0, 0, 0, 0.6);
-    -fx-border-color: white;
-    -fx-border-width: 2;
-    -fx-padding: 8 32;
+   -fx-font-family: "Let's go Digital";
+       -fx-font-size: 20px;
+       -fx-text-fill: white;
+       /* Pastel purple button to match console */
+       -fx-background-color: #5f27cd;
+       -fx-background-radius: 15;
+       -fx-border-color: rgba(255,255,255,0.3);
+       -fx-border-radius: 15;
+       -fx-cursor: hand;
+       -fx-padding: 8 32;
 }
 
 #activeBrickLayer {
-    -fx-max-width: 200;
-    -fx-max-height: 360;
+    -fx-max-width: 240;
+    -fx-max-height: 380;
 }
