@@ -263,13 +263,13 @@ public class BoardRenderer {
     private Color getFillColor(int value) {
         return switch (value) {
             case 0 -> Color.TRANSPARENT;
-            case 1 -> Color.web("#A5D8FF"); // pale blue
-            case 2 -> Color.web("#74C0FC"); // sky blue
-            case 3 -> Color.web("#4DABF7"); // electric blue
-            case 4 -> Color.web("#9775FA"); // lavender
-            case 5 -> Color.web("#845EF7"); // deep purple
-            case 6 -> Color.web("#F783AC"); // pastel pink
-            case 7 -> Color.web("#FF6BCB"); // vibrant pink
+            case 1 -> Color.web("#00FEFF"); // I-brick, Neon Cyan
+            case 2 -> Color.web("#589BFF"); // J-brick, Lighter Neon Blue
+            case 3 -> Color.web("#FF7F00"); // L-brick, Neon Orange
+            case 4 -> Color.web("#FAFA5A"); // O-brick, Lighter Neon Yellow
+            case 5 -> Color.web("#7CFF7C"); // S-brick, Lighter Neon Green
+            case 6 -> Color.web("#FF00FF"); // T-brick, Neon Magenta
+            case 7 -> Color.web("#FF69B4"); // Z-brick, Lighter Neon Pink
             default -> Color.web("#DEE2FF"); // soft fallback tint
         };
     }

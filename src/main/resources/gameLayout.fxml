@@ -15,7 +15,7 @@
 
             <Pane fx:id="background2" styleClass="starBackground" prefWidth="900" prefHeight="720" layoutY="-720" />
         </Pane>
-        <HBox alignment="CENTER" spacing="50">
+        <HBox fx:id="mainContent" alignment="CENTER" spacing="50" visible="false" managed="false">
             <VBox alignment="TOP_CENTER" spacing="20" styleClass="side-panel">
                 <Label text="SCORE" styleClass="panel-title"/>
                 <StackPane styleClass="nextBoard"> <Label fx:id="scoreLabel" text="0" styleClass="scoreClass"/>
@@ -42,6 +42,70 @@
                 </BorderPane>
             </VBox>
         </HBox>
+        <StackPane fx:id="mainMenuOverlay" styleClass="main-menu-overlay" visible="true" managed="true" StackPane.alignment="CENTER">
+            <VBox fx:id="mainMenuCard" spacing="28" alignment="CENTER" styleClass="menu-card">
+                <VBox alignment="CENTER" spacing="6" styleClass="menu-title">
+                    <Label text="GAlAXY" styleClass="title-galaxy"/>
+                    <HBox alignment="CENTER" spacing="4" styleClass="title-tetris">
+                        <Label text="T" styleClass="title-tetris-letter, letter-red"/>
+                        <Label text="E" styleClass="title-tetris-letter, letter-orange"/>
+                        <Label text="T" styleClass="title-tetris-letter, letter-yellow"/>
+                        <Label text="R" styleClass="title-tetris-letter, letter-green"/>
+                        <Label text="I" styleClass="title-tetris-letter, letter-cyan"/>
+                        <Label text="S" styleClass="title-tetris-letter, letter-purple"/>
+                    </HBox>
+                </VBox>
+                <VBox alignment="CENTER" spacing="10">
+                    <Button onAction="#handleStartGame" styleClass="menu-button">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="6">
+                                <Label text="◀" styleClass="menu-button-arrow"/>
+                                <Label text="Start Game" styleClass="menu-button-label"/>
+                                <Label text="▶" styleClass="menu-button-arrow"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                    <Button onAction="#openSettings" styleClass="menu-button, secondary">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="6">
+                                <Label text="◀" styleClass="menu-button-arrow"/>
+                                <Label text="View Settings" styleClass="menu-button-label"/>
+                                <Label text="▶" styleClass="menu-button-arrow"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                    <Button onAction="#exitGame" styleClass="menu-button, danger">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="6">
+                                <Label text="◀" styleClass="menu-button-arrow"/>
+                                <Label text="Exit Game" styleClass="menu-button-label"/>
+                                <Label text="▶" styleClass="menu-button-arrow"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                </VBox>
+            </VBox>
+
+            <VBox fx:id="settingsPanel" spacing="12" alignment="CENTER" fillWidth="false" styleClass="menu-card settings-card" visible="false" managed="false">
+                <Label text="CONTROLS" styleClass="settings-title"/>
+                <VBox spacing="8" alignment="CENTER" styleClass="settings-list">
+                    <Label text="Move Left: ← or A" styleClass="setting-item"/>
+                    <Label text="Move Right: → or D" styleClass="setting-item"/>
+                    <Label text="Soft Drop: ↓ or S" styleClass="setting-item"/>
+                    <Label text="Rotate: ↑ or W" styleClass="setting-item"/>
+                    <Label text="Pause / Resume: P" styleClass="setting-item"/>
+                    <Label text="Start New Game: N" styleClass="setting-item"/>
+                </VBox>
+                <Button onAction="#closeSettings" styleClass="menu-button, secondary">
+                    <graphic>
+                        <HBox alignment="CENTER" spacing="8">
+                            <Label text="←" styleClass="menu-button-label"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+            </VBox>
+        </StackPane>
+
         <Pane styleClass="frontFrame" mouseTransparent="true"/>
 
         <Group fx:id="groupNotification" StackPane.alignment="BOTTOM_LEFT" style="-fx-padding: 0 0 120 100;">
@@ -60,9 +124,11 @@
         <Button fx:id="pauseButton"
                 text="Pause"
                 onAction="#pauseGame"
-                styleClass="pause-button"
-                StackPane.alignment="BOTTOM_CENTER"
-                style="-fx-margin: 0 0 30 0;"/>
+                styleClass="menu-button secondary"
+                StackPane.alignment="TOP_LEFT"
+                style="-fx-translate-x: 20; -fx-translate-y: 20;"
+                visible="false"
+                managed="false"/>
     </children>
     <stylesheets>
         <URL value="@window_style.css"/>

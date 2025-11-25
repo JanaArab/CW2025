@@ -112,23 +112,327 @@
     -fx-border-width: 2;
     -fx-background-color: rgba(255, 255, 255, 0.1);
 }
-.pause-button:hover {
-    -fx-background-color: #8c7ae6; /* Lighter purple on hover */
-}
-.pause-button {
-   -fx-font-family: "Let's go Digital";
-       -fx-font-size: 20px;
-       -fx-text-fill: white;
-       /* Pastel purple button to match console */
-       -fx-background-color: #5f27cd;
-       -fx-background-radius: 15;
-       -fx-border-color: rgba(255,255,255,0.3);
-       -fx-border-radius: 15;
-       -fx-cursor: hand;
-       -fx-padding: 8 32;
-}
+
 
 #activeBrickLayer {
     -fx-max-width: 240;
     -fx-max-height: 380;
 }
+
+
+.main-menu-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.3);
+}
+
+.game-title {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 24px;
+    -fx-text-fill: #7ed6ff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.75), 10, 0.4, 0, 0);
+}
+
+.menu-card {
+    -fx-padding: 28 40;
+    -fx-spacing: 18;
+    -fx-alignment: center;
+    -fx-background-color: linear-gradient(rgba(35, 40, 70, 0.95) 0%, rgba(50, 55, 85, 0.92) 60%, rgba(45, 60, 90, 0.90) 100%);
+    -fx-border-color: rgba(0, 210, 211, 0.7);
+    -fx-border-width: 2;
+    -fx-border-radius: 18;
+    -fx-background-radius: 18;
+    -fx-effect: dropshadow(gaussian, rgba(0, 210, 211, 0.35), 26, 0.28, 0, 0);
+}
+
+
+
+.settings-card {
+    -fx-padding: 20 30 20 30;
+    -fx-spacing: 12;
+}
+
+.settings-title {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 32px;
+    -fx-text-fill: #18dcff;
+    -fx-effect: dropshadow(gaussian, rgba(24, 220, 255, 0.6), 15, 0.5, 0, 0),
+                dropshadow(gaussian, rgba(0, 0, 0, 0.8), 10, 0.4, 0, 2);
+    -fx-padding: 8 0 8 0;
+}
+
+.settings-list {
+    -fx-spacing: 8;
+    -fx-padding: 30 60;
+    -fx-background-color: rgba(0, 0, 0, 0.5);
+    -fx-border-color: rgba(24, 220, 255, 0.3);
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.setting-item {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 13px;
+    -fx-text-fill: #ffffff;
+}
+
+.menu-title {
+    -fx-spacing: 8;
+}
+
+.title-galaxy {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 18px;
+    -fx-text-fill: #7ed6ff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.75), 10, 0.4, 0, 0);
+}
+
+.title-tetris {
+    -fx-padding: 4 0 0 0;
+}
+
+.title-tetris-letter {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 80px;
+    -fx-text-alignment: center;
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.7), 10, 0.5, 0, 1);
+    -fx-scale-x: 1.0;
+    -fx-scale-y: 1.0;
+    -fx-cursor: hand;
+}
+
+.title-tetris-letter:hover {
+    -fx-scale-x: 1.15;
+    -fx-scale-y: 1.15;
+    -fx-border-color: rgba(255, 255, 255, 1.0);
+    -fx-effect:
+            dropshadow(gaussian, rgba(0, 0, 0, 0.8), 22, 0.5, 0, 3),
+            innershadow(gaussian, rgba(0,0,0,0.25), 10, 0.25, 0, 1),
+            dropshadow(three-pass-box, rgba(255,255,255,0.6), 8, 0.4, 0, 0);
+}
+
+.title-tetris-letter.letter-red {
+    -fx-text-fill: #ff4d6d;
+}
+
+.title-tetris-letter.letter-orange {
+    -fx-text-fill: #ff9f1a;
+}
+
+.title-tetris-letter.letter-yellow {
+    -fx-text-fill: #ffd32a;
+}
+
+.title-tetris-letter.letter-green {
+    -fx-text-fill: #2ed573;
+}
+
+.title-tetris-letter.letter-cyan {
+    -fx-text-fill: #18dcff;
+}
+
+.title-tetris-letter.letter-purple {
+    -fx-text-fill: #a55eea;
+}
+
+.menu-button-label {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 12px;
+    -fx-text-fill: #222;
+}
+
+.menu-button-arrow {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 14px;
+    -fx-text-fill: #1e272e;
+}
+
+
+/* --- Base Button Style (Blue Theme) --- */
+.menu-button {
+    -fx-font-family: "Press Start 2P"; /* Or "Kenney Pixel Square" if you installed it */
+    -fx-font-size: 12px;
+    -fx-text-fill: #0a3d5c; /* Dark blue text for contrast */
+
+    /* Pixel Art Shape */
+    -fx-background-radius: 4; /* Small radius for slightly rounded pixel corners */
+    -fx-border-radius: 4;
+    -fx-border-width: 3px;
+    -fx-border-color: #0a3d5c; /* Dark border color */
+
+    /* The "Bevel" Effect (Highlight top, Shadow bottom) */
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #5ce4ff 0%,    /* Top Highlight */
+            #5ce4ff 10%,   /* Hard stop */
+            #18dcff 10%,   /* Main Body Color - Tetris cyan */
+            #18dcff 85%,   /* Hard stop */
+            #0a8fb3 85%,   /* Bottom Shadow */
+            #0a8fb3 100%
+        );
+
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 0, 0, 3, 3); /* Hard pixel drop shadow */
+    -fx-scale-x: 1.0;
+    -fx-scale-y: 1.0;
+}
+
+
+/* HOVER */
+.menu-button:hover {
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #8cefff 0%,
+            #8cefff 20%,
+            #5ce4ff 20%,
+            #5ce4ff 85%,
+            #18dcff 85%,
+            #18dcff 100%
+        );
+
+
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+/* PRESSED */
+.menu-button:pressed {
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #0a8fb3 0%,
+            #0a8fb3 20%,
+            #18dcff 20%,
+            #18dcff 85%,
+            #5ce4ff 85%,
+            #5ce4ff 100%
+        );
+    -fx-translate-y: 3;
+    -fx-effect: none;
+}
+
+Your class: .menu-button.secondary
+
+css
+Copy code
+.menu-button.secondary {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 14px;
+    -fx-text-fill: #1c4a1c;
+
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-width: 4px;
+    -fx-border-color: #0f3a0f;
+
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #9ef59b 0%,
+            #9ef59b 20%,
+            #4caf50 20%,
+            #4caf50 85%,
+            #2e7d32 85%,
+            #2e7d32 100%
+        );
+
+    -fx-padding: 10 22;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.45), 6, 0, 4, 4);
+}
+
+/* HOVER */
+.menu-button.secondary:hover {
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #bfffc0 0%,
+            #bfffc0 20%,
+            #66bb6a 20%,
+            #66bb6a 85%,
+            #388e3c 85%,
+            #388e3c 100%
+        );
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+/* --- Secondary Button (Green - "Settings/Store" vibe) --- */
+.menu-button.secondary {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 12px;
+    -fx-text-fill: #1c4a1c;
+
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-width: 3px;
+    -fx-border-color: #0f3a0f;
+
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #7ae9a7 0%,
+            #7ae9a7 20%,
+            #2ed573 20%,
+            #2ed573 85%,
+            #1a7d44 85%,
+            #1a7d44 100%
+        );
+
+    -fx-padding: 9 18;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.45), 5, 0, 3, 3);
+}
+
+/* HOVER */
+.menu-button.secondary:hover {
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #a4f4be 0%,
+            #a4f4be 20%,
+            #7ae9a7 20%,
+            #7ae9a7 85%,
+            #2ed573 85%,
+            #2ed573 100%
+        );
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+/* --- Danger/Exit Button (Red) --- */
+.menu-button.danger {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 12px;
+    -fx-text-fill: #4d0d0d;
+
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-width: 3px;
+    -fx-border-color: #5a0c0c;
+
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #ffa0b1 0%,
+            #ffa0b1 20%,
+            #ff4d6d 20%,
+            #ff4d6d 85%,
+            #b33349 85%,
+            #b33349 100%
+        );
+
+    -fx-padding: 9 18;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.45), 5, 0, 3, 3);
+}
+
+.menu-button.danger:hover {
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #ffc4d0 0%,
+            #ffc4d0 20%,
+            #ffa0b1 20%,
+            #ffa0b1 85%,
+            #ff4d6d 85%,
+            #ff4d6d 100%
+        );
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+

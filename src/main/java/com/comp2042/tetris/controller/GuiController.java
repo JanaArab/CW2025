@@ -20,16 +20,21 @@ import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Font;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.event.ActionEvent;
+import javafx.application.Platform;
 import com.comp2042.tetris.view.BackgroundAnimator;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import java.util.Objects;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.scene.layout.HBox;
 
 public class GuiController implements Initializable, IGuiController, GameEventListener {
 
@@ -38,6 +43,9 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     @FXML
     private Pane background2;
+
+    @FXML
+    private HBox mainContent;
 
     @FXML//add button for pausing
     private Button pauseButton;
@@ -63,6 +71,15 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     @FXML
     private OverlayPanel gameOverPanel;
 
+    @FXML
+    private StackPane mainMenuOverlay;
+
+    @FXML
+    private VBox mainMenuCard;
+
+    @FXML
+    private VBox settingsPanel;
+
     private IGameController gameController;
 
     private AnimationHandler animationHandler;
@@ -75,6 +92,8 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     private GuiControllerDependencies dependencies;
 
+    private boolean gameActive = false;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -82,6 +101,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         gameOverPanel.setVisible(false);
         setupGamePanelKeyListener();
         new BackgroundAnimator().animate(background1, background2);
+        showMainMenu();
     }
     public void setDependencies(GuiControllerDependencies dependencies) {
         this.dependencies = Objects.requireNonNull(dependencies, "dependencies");
@@ -119,6 +139,9 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     }
 
     void handleTick() {
+        if (!gameActive) {
+            return;
+        }
         if (inputHandler != null) {
             inputHandler.moveDown(EventSource.THREAD);
         }
@@ -172,6 +195,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     @Override
     public void gameOver() {
         ensureConfigured();
+        gameActive = false;
         if (animationHandler != null) {
             animationHandler.onGameOver();
         }
@@ -179,12 +203,40 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
             gameViewPresenter.showGameOver();
         }
         updatePauseUi(false);
+        // Hide pause button when game is over
+        if (pauseButton != null) {
+            pauseButton.setVisible(false);
+            pauseButton.setManaged(false);
+        }
     }
     public void newGame(ActionEvent actionEvent) {
         startNewGame();
     }
     public void pauseGame(ActionEvent actionEvent) {
         togglePauseState();
+    }
+
+    @FXML
+    private void handleStartGame(ActionEvent actionEvent) {
+        hideMainMenu();
+        startNewGame();
+    }
+
+    @FXML
+    private void openSettings(ActionEvent actionEvent) {
+        setNodeVisibility(mainMenuCard, false);
+        setNodeVisibility(settingsPanel, true);
+    }
+
+    @FXML
+    private void closeSettings(ActionEvent actionEvent) {
+        setNodeVisibility(settingsPanel, false);
+        setNodeVisibility(mainMenuCard, true);
+    }
+
+    @FXML
+    private void exitGame(ActionEvent actionEvent) {
+        Platform.exit();
     }
 
     private void startNewGame() {
@@ -197,12 +249,62 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         }
         updatePauseUi(false);
 
+        // Show pause button when game starts
+        if (pauseButton != null) {
+            pauseButton.setVisible(true);
+            pauseButton.setManaged(true);
+        }
+
+        gameActive = true;
         animationHandler.ensureInitialized();
         if (gameController != null) {
             gameController.createNewGame();
         }
         animationHandler.start();
         gamePanel.requestFocus();
+    }
+
+    private void showMainMenu() {
+        gameActive = false;
+        // Pause the game if it's running (not already paused and not game over)
+        if (animationHandler != null && !animationHandler.isGameOver() && !animationHandler.isPaused()) {
+            animationHandler.togglePause();
+        }
+        setNodeVisibility(mainMenuOverlay, true);
+        setNodeVisibility(mainMenuCard, true);
+        setNodeVisibility(settingsPanel, false);
+        setMainContentVisible(false);
+        if (pauseButton != null) {
+            pauseButton.setVisible(false);
+            pauseButton.setManaged(false);
+        }
+    }
+
+    private void hideMainMenu() {
+        setNodeVisibility(mainMenuOverlay, false);
+        setNodeVisibility(settingsPanel, false);
+        setNodeVisibility(mainMenuCard, true);
+        setMainContentVisible(true);
+    }
+
+    private void setMainContentVisible(boolean visible) {
+        if (mainContent == null) {
+            return;
+        }
+
+        // Keep layout space so the controller frame never shifts, but hide visuals and input when menu is up
+        mainContent.setManaged(true);
+        mainContent.setVisible(true);
+        mainContent.setMouseTransparent(!visible);
+        mainContent.setOpacity(visible ? 1.0 : 0.0);
+        mainContent.requestLayout();
+    }
+
+    private void setNodeVisibility(Node node, boolean visible) {
+        if (node != null) {
+            node.setVisible(visible);
+            node.setManaged(visible);
+        }
     }
 
     private void togglePauseState() {
