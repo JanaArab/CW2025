@@ -27,6 +27,9 @@ import javafx.scene.input.KeyCode;
 import javafx.event.ActionEvent;
 import javafx.application.Platform;
 import com.comp2042.tetris.view.BackgroundAnimator;
+import com.comp2042.tetris.view.ShootingStarAnimator;
+import com.comp2042.tetris.view.PixelStarAnimator;
+import com.comp2042.tetris.view.NebulaCloudAnimator;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -43,6 +46,9 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     @FXML
     private Pane background2;
+
+    @FXML
+    private Pane pixelStarLayer;
 
     @FXML
     private HBox mainContent;
@@ -94,14 +100,51 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     private boolean gameActive = false;
 
+    private ShootingStarAnimator shootingStarAnimator;
+    private PixelStarAnimator pixelStarAnimator;
+    private NebulaCloudAnimator nebulaCloudAnimator;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupFont();
         gameOverPanel.setVisible(false);
         setupGamePanelKeyListener();
-        new BackgroundAnimator().animate(background1, background2);
+        // Background scrolling animation removed - static background now
+        setupNebulaClouds();
+        setupPixelStars();
+        setupShootingStars();
         showMainMenu();
+    }
+
+    private void setupNebulaClouds() {
+        nebulaCloudAnimator = new NebulaCloudAnimator();
+        // Add 5 colorful nebula clouds to the background
+        nebulaCloudAnimator.fillWithClouds(pixelStarLayer, 5);
+    }
+
+    private void setupPixelStars() {
+        pixelStarAnimator = new PixelStarAnimator();
+        // Fill the static star layer with 150 twinkling pixel stars
+        pixelStarAnimator.fillScreenWithStars(pixelStarLayer, 150);
+    }
+
+    private void setupShootingStars() {
+        shootingStarAnimator = new ShootingStarAnimator();
+        // Create periodic shooting stars on the static star layer
+        javafx.animation.Timeline starTimeline = new javafx.animation.Timeline(
+            new javafx.animation.KeyFrame(
+                javafx.util.Duration.seconds(1),
+                e -> {
+                    // 80% chance each second to create a shooting star (even more frequent!)
+                    if (Math.random() < 0.8) {
+                        shootingStarAnimator.createAndAnimateStar(pixelStarLayer);
+                    }
+                }
+            )
+        );
+        starTimeline.setCycleCount(javafx.animation.Timeline.INDEFINITE);
+        starTimeline.play();
     }
     public void setDependencies(GuiControllerDependencies dependencies) {
         this.dependencies = Objects.requireNonNull(dependencies, "dependencies");

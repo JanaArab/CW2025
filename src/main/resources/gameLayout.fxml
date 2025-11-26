@@ -15,11 +15,11 @@
 
             <Pane fx:id="background2" styleClass="starBackground" prefWidth="900" prefHeight="720" layoutY="-720" />
         </Pane>
+        <Pane fx:id="pixelStarLayer" mouseTransparent="true" pickOnBounds="false" prefWidth="900" prefHeight="720" />
         <HBox fx:id="mainContent" alignment="CENTER" spacing="50" visible="false" managed="false">
             <VBox alignment="TOP_CENTER" spacing="20" styleClass="side-panel">
                 <Label text="SCORE" styleClass="panel-title"/>
-                <StackPane styleClass="nextBoard"> <Label fx:id="scoreLabel" text="0" styleClass="scoreClass"/>
-                </StackPane>
+                <Label fx:id="scoreLabel" text="0" styleClass="scoreClass"/>
             </VBox>
 
             <StackPane alignment="CENTER" style="-fx-translate-y: -6;">

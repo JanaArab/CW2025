@@ -3,7 +3,7 @@
 }
 
 .starBackground {
-    -fx-background-image: url("game_background1.jpeg");
+    /*-fx-background-image: url("game_background1.jpeg");*/
     -fx-background-size: cover;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
@@ -92,9 +92,16 @@
 
 .scoreClass{
     -fx-font-family: "Let's go Digital";
-    -fx-font-size: 38;
-    -fx-fill: yellow;
-    -fx-text-fill: yellow;
+    -fx-font-size: 52;
+    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #ffffff 0%, #e0f7ff 20%, #7ed6ff 50%, #00d2d3 80%, #18dcff 100%);
+    -fx-text-fill: linear-gradient(from 0% 0% to 100% 100%, #ffffff 0%, #e0f7ff 20%, #7ed6ff 50%, #00d2d3 80%, #18dcff 100%);
+    -fx-effect: dropshadow(gaussian, rgba(0, 210, 211, 0.8), 25, 0.7, 0, 0),
+                dropshadow(gaussian, rgba(126, 214, 255, 0.6), 40, 0.5, 0, 0),
+                innershadow(gaussian, rgba(255, 255, 255, 0.4), 2, 0.3, 0, -1);
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
 }
 
 
@@ -131,7 +138,7 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.75), 10, 0.4, 0, 0);
 }
 
-.menu-card {
+/*.menu-card {
     -fx-padding: 28 40;
     -fx-spacing: 18;
     -fx-alignment: center;
@@ -141,7 +148,7 @@
     -fx-border-radius: 18;
     -fx-background-radius: 18;
     -fx-effect: dropshadow(gaussian, rgba(0, 210, 211, 0.35), 26, 0.28, 0, 0);
-}
+}*/
 
 
 
