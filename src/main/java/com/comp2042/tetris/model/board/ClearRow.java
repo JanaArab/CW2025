@@ -5,15 +5,17 @@ package com.comp2042.tetris.model.board;
 
 
 import com.comp2042.tetris.utils.MatrixOperations;
-
+import java.util.List;
+import java.util.stream.Collectors;
 /**converted into a record
 because the class consisted of constructors and getters only
  with no logic or behavior, hence we switched to record as it
  serves the same purpose with fewer lines of code */
-public record ClearRow(int linesRemoved, int[][] newMatrix, int scoreBonus) {
+public record ClearRow(int linesRemoved, int[][] newMatrix, int scoreBonus, List<Integer> clearedRows) {
     @Override
     public int[][] newMatrix() {
         return MatrixOperations.copy(newMatrix);
     }
+
 }
 

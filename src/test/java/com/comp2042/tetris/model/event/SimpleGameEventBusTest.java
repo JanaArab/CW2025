@@ -72,7 +72,7 @@ class SimpleGameEventBusTest {
 
     @Test
     void publishLinesClearedNotifiesListeners() {
-        ClearRow clearRow = new ClearRow(1, new int[][]{{0}}, 50);
+        ClearRow clearRow = new ClearRow(1, new int[][]{{0}}, 50, java.util.List.of(5));
 
         bus.publishLinesCleared(clearRow);
 

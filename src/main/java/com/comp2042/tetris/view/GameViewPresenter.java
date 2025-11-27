@@ -16,6 +16,7 @@ public class GameViewPresenter {
     private final Group notificationGroup;
     private final OverlayPanel gameOverPanel;
     private final NotificationAnimator notificationAnimator;
+    private final RowClearAnimator rowClearAnimator;
 
     public GameViewPresenter(BoardRenderer boardRenderer, Label scoreLabel, Group notificationGroup,
                              OverlayPanel gameOverPanel, NotificationAnimator notificationAnimator) {
@@ -24,6 +25,7 @@ public class GameViewPresenter {
         this.notificationGroup = notificationGroup;
         this.gameOverPanel = gameOverPanel;
         this.notificationAnimator = Objects.requireNonNull(notificationAnimator, "notificationAnimator");
+        this.rowClearAnimator = new RowClearAnimator();
     }
 
     public void initializeGame(GameStateSnapshot snapshot) {
@@ -46,10 +48,21 @@ public class GameViewPresenter {
     }
 
     public void handleLinesCleared(ClearRow clearRow) {
-        if (clearRow.linesRemoved() > 0 && notificationGroup != null) {
-            NotificationPanel notificationPanel = new NotificationPanel("+" + clearRow.scoreBonus());
-            notificationGroup.getChildren().add(notificationPanel);
-            notificationAnimator.playShowScore(notificationPanel, notificationGroup.getChildren());
+
+        if (clearRow.linesRemoved() > 0) {
+            // Animate row clearing first
+            rowClearAnimator.animateClearRowsWithFlash(
+                boardRenderer.getGamePanel(),
+                clearRow.clearedRows(),
+                () -> {
+                    // After animation completes, show notification
+                    if (notificationGroup != null) {
+                        NotificationPanel notificationPanel = new NotificationPanel("+" + clearRow.scoreBonus());
+                        notificationGroup.getChildren().add(notificationPanel);
+                        notificationAnimator.playShowScore(notificationPanel, notificationGroup.getChildren());
+                    }
+                }
+            );
         }
     }
 

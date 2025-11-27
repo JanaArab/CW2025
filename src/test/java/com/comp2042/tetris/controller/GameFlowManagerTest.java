@@ -59,7 +59,7 @@ class GameFlowManagerTest {
     @Test
     void handleDownEventMergesClearsAndSpawnsNewBrickWhenMoveFailsAndNewBrickFits() {
         board.moveDownResult = false;
-        board.clearRowResult = new ClearRow(1, new int[][]{{1}}, 100);
+        board.clearRowResult = new ClearRow(1, new int[][]{{1}}, 100, java.util.List.of(5));
         board.createNewBrickResult = false;
 
         manager.handleDownEvent(new MoveEvent(EventType.DOWN, EventSource.USER));
@@ -77,7 +77,7 @@ class GameFlowManagerTest {
     @Test
     void handleDownEventPublishesGameOverWhenNewBrickCannotSpawn() {
         board.moveDownResult = false;
-        board.clearRowResult = new ClearRow(0, new int[][]{{0}}, 0);
+        board.clearRowResult = new ClearRow(0, new int[][]{{0}}, 0, java.util.Collections.emptyList());
         board.createNewBrickResult = true;
 
         manager.handleDownEvent(new MoveEvent(EventType.DOWN, EventSource.USER));
@@ -92,7 +92,7 @@ class GameFlowManagerTest {
 
     private static final class StubBoard implements Board {
         private boolean moveDownResult;
-        private ClearRow clearRowResult = new ClearRow(0, new int[][]{{0}}, 0);
+        private ClearRow clearRowResult = new ClearRow(0, new int[][]{{0}}, 0, java.util.Collections.emptyList());
         private boolean createNewBrickResult;
         private boolean mergeCalled;
 

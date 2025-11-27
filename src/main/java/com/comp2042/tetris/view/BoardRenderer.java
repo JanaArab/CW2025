@@ -1,6 +1,10 @@
 package com.comp2042.tetris.view;
 
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import javafx.animation.FillTransition;
+import javafx.animation.ParallelTransition;
 import com.comp2042.tetris.model.data.ViewData;
 import javafx.application.Platform;
 import javafx.geometry.Bounds;
@@ -12,6 +16,7 @@ import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 
 public class BoardRenderer {
@@ -369,6 +374,8 @@ public class BoardRenderer {
         };
     }
 
+
+
     private int[][] extractBoardState() {
         int rows = displayMatrix.length;
         int cols = displayMatrix[0].length;
@@ -385,5 +392,13 @@ public class BoardRenderer {
             }
         }
         return board;
+    }
+
+    /**
+     * Returns the game panel GridPane for animation purposes.
+     * @return the game panel
+     */
+    public GridPane getGamePanel() {
+        return gamePanel;
     }
 }

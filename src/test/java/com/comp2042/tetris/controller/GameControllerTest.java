@@ -139,7 +139,7 @@ class GameControllerTest {
         }
 
         @Override
-        public ClearRow clearRows() { return new ClearRow(0, new int[][]{{0}}, 0); }
+        public ClearRow clearRows() { return new ClearRow(0, new int[][]{{0}}, 0, java.util.Collections.emptyList()); }
 
         @Override
         public com.comp2042.tetris.model.score.Score getScore() { return score; }

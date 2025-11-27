@@ -101,12 +101,7 @@ public class SimpleBoard implements Board {
         // Compute horizontal spawn so the piece is centered for any board width.
         int[][] shape = brickRotator.getCurrentShape();
         int shapeWidth = (shape != null && shape.length > 0) ? shape[0].length : 0;
-
         int spawnX = (cols - shapeWidth) / 2;
-        // Clamp to valid range
-        if (spawnX < 0) {
-            spawnX = 0;
-        }
         int maxSpawn = Math.max(0, cols - shapeWidth);
         if (spawnX > maxSpawn) {
             spawnX = maxSpawn;

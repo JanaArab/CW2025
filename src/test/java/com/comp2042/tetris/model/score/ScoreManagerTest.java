@@ -65,7 +65,7 @@ class ScoreManagerTest {
 
     @Test
     void handleLinesClearedAddsScorePublishesAndBroadcastsClearRow() {
-        ClearRow clearRow = new ClearRow(2, new int[][]{{0}}, 300);
+        ClearRow clearRow = new ClearRow(2, new int[][]{{0}}, 300, java.util.List.of(5, 10));
 
         manager.handleLinesCleared(clearRow);
 
@@ -76,7 +76,7 @@ class ScoreManagerTest {
 
     @Test
     void handleLinesClearedSkipsWhenNoLinesRemoved() {
-        ClearRow clearRow = new ClearRow(0, new int[][]{{0}}, 0);
+        ClearRow clearRow = new ClearRow(0, new int[][]{{0}}, 0, java.util.Collections.emptyList());
 
         manager.handleLinesCleared(clearRow);
 
