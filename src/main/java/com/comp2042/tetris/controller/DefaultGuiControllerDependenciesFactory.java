@@ -22,6 +22,7 @@ public class DefaultGuiControllerDependenciesFactory {
         Objects.requireNonNull(controller, "controller");
         GridPane gamePanel = controller.getGamePanel();
         GridPane brickPanel = controller.getBrickPanel();
+        GridPane ghostBrickPanel = controller.getGhostBrickPanel();
         GridPane nextBrickPanel = controller.getNextBrickPanel();
         Label scoreLabel = controller.getScoreLabel();
         Group groupNotification = controller.getGroupNotification();
@@ -42,7 +43,7 @@ public class DefaultGuiControllerDependenciesFactory {
                 commandRegistry,
                 inputCommandFactory);
 
-        BoardRenderer boardRenderer = new BoardRenderer(gamePanel, brickPanel, nextBrickPanel, UIConstants.BRICK_SIZE);
+        BoardRenderer boardRenderer = new BoardRenderer(gamePanel, brickPanel, ghostBrickPanel, nextBrickPanel, UIConstants.BRICK_SIZE);
         NotificationAnimator notificationAnimator = new NotificationAnimator();
         GameViewPresenter gameViewPresenter = new GameViewPresenter(
                 boardRenderer,

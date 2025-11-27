@@ -1,5 +1,9 @@
 .root {
     -fx-background-color: black;
+    -fx-max-width: 900px;
+    -fx-max-height: 720px;
+    -fx-pref-width: 900px;
+    -fx-pref-height: 720px;
 }
 
 .starBackground {
@@ -35,6 +39,30 @@
         -fx-max-height: 120;
         -fx-min-width: 120;
         -fx-min-height: 120;
+}
+
+.scoreBoard {
+    -fx-border-color: transparent;
+        -fx-border-width: 0px;
+        -fx-border-radius: 0px;
+        -fx-background-color: transparent;
+        -fx-max-width: 120;
+        -fx-max-height: 40;
+        -fx-min-width: 120;
+        -fx-min-height: 40;
+        -fx-padding: 0;
+}
+
+.timerBoard {
+    -fx-border-color: transparent;
+        -fx-border-width: 0px;
+        -fx-border-radius: 0px;
+        -fx-background-color: transparent;
+        -fx-max-width: 120;
+        -fx-max-height: 40;
+        -fx-min-width: 120;
+        -fx-min-height: 40;
+        -fx-padding: 0;
 }
 
 .nextBrickLabel {
@@ -89,24 +117,35 @@
     -fx-effect: dropshadow(gaussian, #0d58ff, 20, 0.7, 0, 0),
                 dropshadow(gaussian, black, 30, 0.95, 0, 0);
 }
-
-.scoreClass{
-    -fx-font-family: "Let's go Digital";
-    -fx-font-size: 52;
-    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #ffffff 0%, #e0f7ff 20%, #7ed6ff 50%, #00d2d3 80%, #18dcff 100%);
-    -fx-text-fill: linear-gradient(from 0% 0% to 100% 100%, #ffffff 0%, #e0f7ff 20%, #7ed6ff 50%, #00d2d3 80%, #18dcff 100%);
-    -fx-effect: dropshadow(gaussian, rgba(0, 210, 211, 0.8), 25, 0.7, 0, 0),
-                dropshadow(gaussian, rgba(126, 214, 255, 0.6), 40, 0.5, 0, 0),
-                innershadow(gaussian, rgba(255, 255, 255, 0.4), 2, 0.3, 0, -1);
-    -fx-background-color: transparent;
+.score-title {
+    -fx-font-family: "SubSpace";
+    -fx-text-fill: white;
+    -fx-font-size: 30;
     -fx-padding: 0;
-    -fx-border-width: 0;
-    -fx-border-color: transparent;
 }
 
+.scoreClass{
+    -fx-font-family: "Subspace";
+    -fx-font-size: 30;
+    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #ffffff 0%, #e0f7ff 20%, #7ed6ff 50%, #00d2d3 80%, #18dcff 100%);
+    -fx-text-fill: white;
 
+}
 
+.timer-title {
+    -fx-font-family: "SubSpace";
+    -fx-text-fill: white;
+    -fx-font-size: 30;
+    -fx-padding: 0;
+}
 
+.timerClass{
+    -fx-font-family: "Subspace";
+    -fx-font-size: 28;
+    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #ffffff 0%, #e0f7ff 20%, #7ed6ff 50%, #00d2d3 80%, #18dcff 100%);
+    -fx-text-fill: #ffd32a;
+
+}
 
 .panel-title {
     -fx-font-family: "Let's go Digital";
@@ -126,6 +165,16 @@
     -fx-max-height: 380;
 }
 
+#ghostBrickLayer {
+    -fx-max-width: 240;
+    -fx-max-height: 380;
+}
+
+.ghostBrick {
+    -fx-opacity: 0.25;
+    -fx-effect: null;
+}
+
 
 .main-menu-overlay {
     -fx-background-color: rgba(0, 0, 0, 0.3);
@@ -137,19 +186,6 @@
     -fx-text-fill: #7ed6ff;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.75), 10, 0.4, 0, 0);
 }
-
-/*.menu-card {
-    -fx-padding: 28 40;
-    -fx-spacing: 18;
-    -fx-alignment: center;
-    -fx-background-color: linear-gradient(rgba(35, 40, 70, 0.95) 0%, rgba(50, 55, 85, 0.92) 60%, rgba(45, 60, 90, 0.90) 100%);
-    -fx-border-color: rgba(0, 210, 211, 0.7);
-    -fx-border-width: 2;
-    -fx-border-radius: 18;
-    -fx-background-radius: 18;
-    -fx-effect: dropshadow(gaussian, rgba(0, 210, 211, 0.35), 26, 0.28, 0, 0);
-}*/
-
 
 
 .settings-card {
@@ -441,5 +477,127 @@ Copy code
         );
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
+}
+
+/* Curtain Animation */
+.curtain {
+    -fx-background-color: black;
+    -fx-max-width: 900px;
+    -fx-max-height: 720px;
+    -fx-min-width: 900px;
+    -fx-min-height: 720px;
+}
+
+/* Pause Menu Styles */
+.pause-menu-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.35);
+}
+
+.pause-menu-card {
+    -fx-padding: 25 40 25 40;
+    -fx-background-color: rgba(0, 20, 40, 0.75);
+    -fx-border-color: rgba(0, 210, 211, 0.7);
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 210, 211, 0.4), 15, 0.4, 0, 0);
+    -fx-max-width: 350;
+}
+
+.pause-menu-title {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 28px;
+    -fx-text-fill: #18dcff;
+    -fx-effect: dropshadow(gaussian, rgba(24, 220, 255, 0.7), 12, 0.5, 0, 0),
+                dropshadow(gaussian, rgba(0, 0, 0, 0.8), 8, 0.4, 0, 2);
+    -fx-padding: 0 0 6 0;
+}
+
+/* Pause Button (| |) */
+.pause-button {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 18px;
+    -fx-text-fill: #0a3d5c;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-border-width: 3px;
+    -fx-border-color: #0a3d5c;
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #5ce4ff 0%,
+            #5ce4ff 10%,
+            #18dcff 10%,
+            #18dcff 85%,
+            #0a8fb3 85%,
+            #0a8fb3 100%
+        );
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 0, 0, 3, 3);
+}
+
+.pause-button:hover {
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #8cefff 0%,
+            #8cefff 20%,
+            #5ce4ff 20%,
+            #5ce4ff 85%,
+            #18dcff 85%,
+            #18dcff 100%
+        );
+    -fx-scale-x: 1.08;
+    -fx-scale-y: 1.08;
+}
+
+.pause-button:pressed {
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #0a8fb3 0%,
+            #0a8fb3 20%,
+            #18dcff 20%,
+            #18dcff 85%,
+            #5ce4ff 85%,
+            #5ce4ff 100%
+        );
+    -fx-translate-y: 3;
+    -fx-effect: none;
+}
+
+/* Confirmation Dialog */
+.confirmation-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.35);
+}
+
+.confirmation-card {
+    -fx-padding: 25 40 25 40;
+    -fx-background-color: rgba(20, 0, 0, 0.80);
+    -fx-border-color: rgba(255, 77, 109, 0.7);
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 77, 109, 0.4), 15, 0.4, 0, 0);
+}
+
+.confirmation-title {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 18px;
+    -fx-text-fill: #ff4d6d;
+    -fx-effect: dropshadow(gaussian, rgba(255, 77, 109, 0.7), 12, 0.5, 0, 0);
+}
+
+/* Music Control Panel */
+.music-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.35);
+}
+
+.music-card {
+    -fx-padding: 25 40 25 40;
+    -fx-background-color: rgba(20, 20, 0, 0.80);
+    -fx-border-color: rgba(46, 213, 115, 0.7);
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(three-pass-box, rgba(46, 213, 115, 0.4), 15, 0.4, 0, 0);
 }
 

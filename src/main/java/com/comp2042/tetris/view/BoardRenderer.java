@@ -20,20 +20,23 @@ public class BoardRenderer {
 
     private final GridPane gamePanel;
     private final GridPane brickPanel;
+    private final GridPane ghostBrickPanel;
     private final GridPane nextBrickPanel;
     private final int brickSize;
 
     private Rectangle[][] displayMatrix;
     private Rectangle[][] activeBrickMatrix;
+    private Rectangle[][] ghostBrickMatrix;
     private Rectangle[][] nextBrickMatrix;
 
     // Cache the origin offset to prevent jitter from fluctuating scene bounds
     private Double cachedOriginX = null;
     private Double cachedOriginY = null;
 
-    public BoardRenderer(GridPane gamePanel, GridPane brickPanel, GridPane nextBrickPanel, int brickSize) {
+    public BoardRenderer(GridPane gamePanel, GridPane brickPanel, GridPane ghostBrickPanel, GridPane nextBrickPanel, int brickSize) {
         this.gamePanel = gamePanel;
         this.brickPanel = brickPanel;
+        this.ghostBrickPanel = ghostBrickPanel;
         this.nextBrickPanel = nextBrickPanel;
         this.brickSize = brickSize;
     }
@@ -41,8 +44,10 @@ public class BoardRenderer {
     public void initialize(int[][] boardMatrix, ViewData brick) {
         initializeBoard(boardMatrix);
         initializeActiveBrick(brick.getBrickData());
+        initializeGhostBrick(brick.getBrickData());
         initializeNextBrickPreview(brick.getNextBrickData());
         updateBrickPosition(brick);
+        updateGhostBrickPosition(brick);
     }
 
     public void refreshBrick(ViewData brick, boolean isPaused) {
@@ -51,7 +56,9 @@ public class BoardRenderer {
         }
 
         updateBrickPosition(brick);
+        updateGhostBrickPosition(brick);
         refreshActiveBrick(brick.getBrickData());
+        refreshGhostBrick(brick.getBrickData());
         refreshNextBrick(brick.getNextBrickData());
     }
 
@@ -93,6 +100,22 @@ public class BoardRenderer {
         }
     }
 
+    private void initializeGhostBrick(int[][] brickData) {
+        if (ghostBrickPanel == null) {
+            return;
+        }
+        ghostBrickPanel.getChildren().clear();
+        ghostBrickMatrix = new Rectangle[brickData.length][brickData[0].length];
+        for (int i = 0; i < brickData.length; i++) {
+            for (int j = 0; j < brickData[i].length; j++) {
+                Rectangle rectangle = createTile(getFillColor(brickData[i][j]));
+                rectangle.getStyleClass().add("ghostBrick");
+                ghostBrickMatrix[i][j] = rectangle;
+                ghostBrickPanel.add(rectangle, j, i);
+            }
+        }
+    }
+
     private void initializeNextBrickPreview(int[][] nextBrickData) {
         if (nextBrickPanel == null) {
             return;
@@ -118,6 +141,23 @@ public class BoardRenderer {
         for (int i = 0; i < brickData.length; i++) {
             for (int j = 0; j < brickData[i].length; j++) {
                 setRectangleData(brickData[i][j], activeBrickMatrix[i][j]);
+            }
+        }
+    }
+
+    private void refreshGhostBrick(int[][] brickData) {
+        if (ghostBrickPanel == null) {
+            return;
+        }
+
+        if (!dimensionsMatch(ghostBrickMatrix, brickData)) {
+            initializeGhostBrick(brickData);
+            return;
+        }
+
+        for (int i = 0; i < brickData.length; i++) {
+            for (int j = 0; j < brickData[i].length; j++) {
+                setGhostRectangleData(brickData[i][j], ghostBrickMatrix[i][j]);
             }
         }
     }
@@ -172,6 +212,39 @@ public class BoardRenderer {
         }
     }
 
+    private void updateGhostBrickPosition(ViewData brick) {
+        if (ghostBrickPanel == null) {
+            return;
+        }
+
+        if (!isLayerReady()) {
+            Platform.runLater(() -> updateGhostBrickPosition(brick));
+            return;
+        }
+
+        // Calculate and cache the origin offset on first update
+        if (cachedOriginX == null || cachedOriginY == null) {
+            Bounds boardBounds = gamePanel.localToScene(gamePanel.getBoundsInLocal());
+            Bounds layerBounds = ghostBrickPanel.getParent().localToScene(ghostBrickPanel.getParent().getBoundsInLocal());
+            cachedOriginX = boardBounds.getMinX() - layerBounds.getMinX();
+            cachedOriginY = boardBounds.getMinY() - layerBounds.getMinY();
+        }
+
+        // Use the ghost Y position instead of the actual brick Y position
+        double xOffset = cachedOriginX + brick.getXPosition() * horizontalStep();
+        double yOffset = cachedOriginY + hiddenRowsOffset() + brick.getGhostYPosition() * verticalStep();
+
+        // Round to whole pixels for pixel-perfect alignment
+        long targetX = Math.round(xOffset);
+        long targetY = Math.round(yOffset);
+
+        // Only update if position actually changed to reduce layout thrashing
+        if (ghostBrickPanel.getLayoutX() != targetX || ghostBrickPanel.getLayoutY() != targetY) {
+            ghostBrickPanel.setLayoutX(targetX);
+            ghostBrickPanel.setLayoutY(targetY);
+        }
+    }
+
     private boolean isLayerReady() {
         return gamePanel.getScene() != null
                 && brickPanel.getParent() != null
@@ -217,6 +290,12 @@ public class BoardRenderer {
         }
     }
 
+    private void setGhostRectangleData(int color, Rectangle rectangle) {
+        if (rectangle != null) {
+            applyGhostBrickStyling(rectangle, getFillColor(color));
+        }
+    }
+
     private void applyBrickStyling(Rectangle rectangle, Color baseColor) {
         if (baseColor == null || baseColor == Color.TRANSPARENT) {
             rectangle.setFill(Color.TRANSPARENT);
@@ -239,6 +318,22 @@ public class BoardRenderer {
         lighting.setSurfaceScale(5);
 
         rectangle.setEffect(lighting);
+    }
+
+    private void applyGhostBrickStyling(Rectangle rectangle, Color baseColor) {
+        if (baseColor == null || baseColor == Color.TRANSPARENT) {
+            rectangle.setFill(Color.TRANSPARENT);
+            rectangle.setEffect(null);
+            rectangle.setStroke(null);
+            return;
+        }
+
+        // Ghost bricks have no gradient or lighting effects, just a simple fill with lower opacity
+        rectangle.setFill(baseColor);
+        rectangle.setStroke(Color.rgb(255, 255, 255, 0.15));
+        rectangle.setStrokeWidth(1.0);
+        rectangle.setStrokeType(javafx.scene.shape.StrokeType.INSIDE);
+        rectangle.setEffect(null);
     }
 
     private LinearGradient createBrickGradient(Color baseColor) {

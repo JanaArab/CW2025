@@ -7,6 +7,7 @@
 <?import java.net.URL?>
 <StackPane fx:controller="com.comp2042.tetris.controller.GuiController"
            prefHeight="720" prefWidth="900"
+           maxHeight="720" maxWidth="900"
            xmlns:fx="http://javafx.com/fxml"
            styleClass="root">
     <children>
@@ -17,9 +18,19 @@
         </Pane>
         <Pane fx:id="pixelStarLayer" mouseTransparent="true" pickOnBounds="false" prefWidth="900" prefHeight="720" />
         <HBox fx:id="mainContent" alignment="CENTER" spacing="50" visible="false" managed="false">
-            <VBox alignment="TOP_CENTER" spacing="20" styleClass="side-panel">
-                <Label text="SCORE" styleClass="panel-title"/>
-                <Label fx:id="scoreLabel" text="0" styleClass="scoreClass"/>
+            <VBox alignment="CENTER_LEFT" spacing="15" styleClass="side-panel" >
+                <VBox spacing="0">
+                    <Label text="SCORE :" styleClass="score-title"/>
+                    <StackPane styleClass="scoreBoard" alignment="CENTER_LEFT">
+                        <Label fx:id="scoreLabel" text="0" styleClass="scoreClass"/>
+                    </StackPane>
+                </VBox>
+                <VBox spacing="0">
+                    <Label text="TIME :" styleClass="timer-title"/>
+                    <StackPane styleClass="timerBoard" alignment="CENTER_LEFT">
+                        <Label fx:id="timerLabel" text="00:00" styleClass="timerClass"/>
+                    </StackPane>
+                </VBox>
             </VBox>
 
             <StackPane alignment="CENTER" style="-fx-translate-y: -6;">
@@ -28,6 +39,9 @@
                         <GridPane fx:id="gamePanel" hgap="0" vgap="0"/>
                     </center>
                 </BorderPane>
+                <Pane fx:id="ghostBrickLayer" mouseTransparent="true" pickOnBounds="false" maxWidth="240" maxHeight="380">
+                    <GridPane fx:id="ghostBrickPanel" hgap="0" vgap="0"/>
+                </Pane>
                 <Pane fx:id="activeBrickLayer" mouseTransparent="true" pickOnBounds="false" maxWidth="240" maxHeight="380">
                     <GridPane fx:id="brickPanel" hgap="0" vgap="0"/>
                 </Pane>
@@ -106,6 +120,14 @@
             </VBox>
         </StackPane>
 
+        <!-- Curtain Animation - Covers entire window (900x720) -->
+        <Pane fx:id="curtainLeft" styleClass="curtain" visible="false" managed="false"
+              prefWidth="900" prefHeight="720" maxWidth="900" maxHeight="720" minWidth="900" minHeight="720"
+              StackPane.alignment="CENTER"/>
+        <Pane fx:id="curtainRight" styleClass="curtain" visible="false" managed="false"
+              prefWidth="900" prefHeight="720" maxWidth="900" maxHeight="720" minWidth="900" minHeight="720"
+              StackPane.alignment="CENTER"/>
+
         <Pane styleClass="frontFrame" mouseTransparent="true"/>
 
         <Group fx:id="groupNotification" StackPane.alignment="BOTTOM_LEFT" style="-fx-padding: 0 0 120 100;">
@@ -115,16 +137,104 @@
         </Group>
 
 
-        <Label fx:id="pauseLabel"
-               text="Paused"
-               visible="false"
-               StackPane.alignment="TOP_CENTER"
-               style="-fx-padding: 30 0 0 0; -fx-font-size: 18; -fx-text-fill: white;"/>
+        <!-- Pause Menu Overlay -->
+        <StackPane fx:id="pauseMenuOverlay" styleClass="pause-menu-overlay" visible="false" managed="false" StackPane.alignment="CENTER">
+            <VBox fx:id="pauseMenuCard" spacing="15" alignment="CENTER" styleClass="pause-menu-card">
+                <Label text="PAUSED" styleClass="pause-menu-title"/>
+                <VBox alignment="CENTER" spacing="8">
+                    <Button onAction="#resumeGame" styleClass="menu-button">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="6">
+                                <Label text="▶" styleClass="menu-button-arrow"/>
+                                <Label text="Resume Game" styleClass="menu-button-label"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                    <Button onAction="#openMusicControl" styleClass="menu-button, secondary">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="6">
+                                <Label text="♪" styleClass="menu-button-arrow"/>
+                                <Label text="Music Control" styleClass="menu-button-label"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                    <Button onAction="#openSettingsFromPause" styleClass="menu-button, secondary">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="6">
+                                <Label text="⚙" styleClass="menu-button-arrow"/>
+                                <Label text="View Settings" styleClass="menu-button-label"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                    <Button onAction="#startNewGameFromPause" styleClass="menu-button, secondary">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="6">
+                                <Label text="↻" styleClass="menu-button-arrow"/>
+                                <Label text="New Game" styleClass="menu-button-label"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                    <Button onAction="#goToMainMenuFromPause" styleClass="menu-button, secondary">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="6">
+                                <Label text="◄" styleClass="menu-button-arrow"/>
+                                <Label text="Main Menu" styleClass="menu-button-label"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                    <Button onAction="#endGameFromPause" styleClass="menu-button, danger">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="6">
+                                <Label text="✕" styleClass="menu-button-arrow"/>
+                                <Label text="End Game" styleClass="menu-button-label"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                </VBox>
+            </VBox>
+        </StackPane>
+
+        <!-- Confirmation Dialog -->
+        <StackPane fx:id="confirmationOverlay" styleClass="confirmation-overlay" visible="false" managed="false" StackPane.alignment="CENTER">
+            <VBox spacing="20" alignment="CENTER" styleClass="confirmation-card">
+                <Label fx:id="confirmationMessage" text="Are you sure?" styleClass="confirmation-title"/>
+                <HBox spacing="15" alignment="CENTER">
+                    <Button onAction="#confirmAction" styleClass="menu-button, danger">
+                        <graphic>
+                            <Label text="Yes" styleClass="menu-button-label"/>
+                        </graphic>
+                    </Button>
+                    <Button onAction="#cancelAction" styleClass="menu-button, secondary">
+                        <graphic>
+                            <Label text="No" styleClass="menu-button-label"/>
+                        </graphic>
+                    </Button>
+                </HBox>
+            </VBox>
+        </StackPane>
+
+        <!-- Music Control Panel -->
+        <StackPane fx:id="musicControlOverlay" styleClass="music-overlay" visible="false" managed="false" StackPane.alignment="CENTER">
+            <VBox spacing="20" alignment="CENTER" styleClass="music-card">
+                <Label text="MUSIC CONTROL" styleClass="settings-title"/>
+                <VBox spacing="12" alignment="CENTER">
+                    <Label text="Music: Coming Soon" styleClass="setting-item"/>
+                    <Label text="Sound Effects: Coming Soon" styleClass="setting-item"/>
+                </VBox>
+                <Button onAction="#closeMusicControl" styleClass="menu-button, secondary">
+                    <graphic>
+                        <HBox alignment="CENTER" spacing="8">
+                            <Label text="←" styleClass="menu-button-label"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+            </VBox>
+        </StackPane>
 
         <Button fx:id="pauseButton"
-                text="Pause"
+                text="| |"
                 onAction="#pauseGame"
-                styleClass="menu-button secondary"
+                styleClass="pause-button"
                 StackPane.alignment="TOP_LEFT"
                 style="-fx-translate-x: 20; -fx-translate-y: 20;"
                 visible="false"
