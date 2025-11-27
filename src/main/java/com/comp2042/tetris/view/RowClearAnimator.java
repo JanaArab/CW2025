@@ -1,7 +1,9 @@
 package com.comp2042.tetris.view;
 
 import javafx.animation.*;
+import javafx.geometry.Bounds;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import java.util.ArrayList;
@@ -15,6 +17,14 @@ public class RowClearAnimator {
 
     private static final Duration ANIMATION_DURATION = Duration.millis(400);
     private static final int HIDDEN_TOP_ROWS = 2;
+    private final PixelStarExplosion pixelStarExplosion;
+
+    /**
+     * Creates a new RowClearAnimator with pixel star explosion effects.
+     */
+    public RowClearAnimator() {
+        this.pixelStarExplosion = new PixelStarExplosion();
+    }
 
     /**
      * Animates the clearing of rows on the game board.
@@ -131,6 +141,9 @@ public class RowClearAnimator {
             return;
         }
 
+        // Trigger star explosions immediately
+        triggerRowExplosions(gamePanel, clearedRowIndices);
+
         SequentialTransition sequentialTransition = new SequentialTransition();
 
         // Phase 1: Flash (quick brightness increase)
@@ -177,6 +190,49 @@ public class RowClearAnimator {
         });
 
         sequentialTransition.play();
+    }
+
+    /**
+     * Triggers pixel star explosion effects along the cleared rows.
+     *
+     * @param gamePanel The GridPane containing the game board
+     * @param clearedRowIndices List of row indices that were cleared
+     */
+    private void triggerRowExplosions(GridPane gamePanel, List<Integer> clearedRowIndices) {
+        // Get the parent pane to add explosion effects
+        Pane parentPane = (Pane) gamePanel.getParent();
+        if (parentPane == null) {
+            return;
+        }
+
+        // Get the bounds of the game panel in scene coordinates
+        Bounds gamePanelBounds = gamePanel.localToScene(gamePanel.getBoundsInLocal());
+        Bounds parentBounds = parentPane.localToScene(parentPane.getBoundsInLocal());
+
+        // Calculate the offset to convert from scene to parent coordinates
+        double offsetX = gamePanelBounds.getMinX() - parentBounds.getMinX();
+        double offsetY = gamePanelBounds.getMinY() - parentBounds.getMinY();
+
+        // Get dimensions of a single cell
+        double cellHeight = gamePanel.getRowConstraints().isEmpty() ?
+                           UIConstants.BRICK_SIZE : UIConstants.BRICK_SIZE;
+        double boardWidth = gamePanelBounds.getWidth();
+
+        // Create explosions for each cleared row
+        for (Integer rowIndex : clearedRowIndices) {
+            int displayRow = rowIndex - HIDDEN_TOP_ROWS;
+            if (displayRow < 0) {
+                continue;
+            }
+
+            // Calculate the Y position for this row in parent coordinates
+            double rowY = offsetY + (displayRow * cellHeight) + (cellHeight / 2);
+            double startX = offsetX;
+            double endX = offsetX + boardWidth;
+
+            // Create 8 explosions along the row with 15 stars each
+            pixelStarExplosion.createRowExplosions(parentPane, startX, endX, rowY, 8, 15, null);
+        }
     }
 }
 

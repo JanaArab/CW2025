@@ -38,7 +38,7 @@ class ShootingStarAnimatorTest {
         // This test will fail if the shooting_star.png resource is not present
         // Remove the assertThrows if the resource is available
         assertThrows(RuntimeException.class, () -> {
-            ImageView star = animator.createShootingStar();
+            javafx.scene.Group star = animator.createShootingStar();
         }, "Should throw RuntimeException when shooting_star.png is not found");
     }
 
@@ -46,7 +46,7 @@ class ShootingStarAnimatorTest {
     void testCreateShootingStarWithCustomSize() {
         // This test will fail if the shooting_star.png resource is not present
         assertThrows(RuntimeException.class, () -> {
-            ImageView star = animator.createShootingStar(150, 75);
+            javafx.scene.Group star = animator.createShootingStar(150, 75);
         }, "Should throw RuntimeException when shooting_star.png is not found");
     }
 

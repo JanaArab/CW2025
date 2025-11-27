@@ -279,10 +279,9 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
             gameTimer.stop();
         }
 
-        // Hide pause button when game is over
+        // Keep pause button visible but disable it when game is over
         if (pauseButton != null) {
-            pauseButton.setVisible(false);
-            pauseButton.setManaged(false);
+            pauseButton.setDisable(true);
         }
     }
     public void newGame(ActionEvent actionEvent) {
@@ -353,6 +352,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         if (pauseButton != null) {
             pauseButton.setVisible(true);
             pauseButton.setManaged(true);
+            pauseButton.setDisable(false);
         }
 
         gameActive = true;
@@ -386,11 +386,6 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         }
         updatePauseUi(false);
 
-        // Show pause button when game starts
-        if (pauseButton != null) {
-            pauseButton.setVisible(true);
-            pauseButton.setManaged(true);
-        }
 
         gameActive = true;
         animationHandler.ensureInitialized();
@@ -424,6 +419,13 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         if (gameTimer != null) {
             gameTimer.reset();
             gameTimer.start();
+        }
+
+        // Show pause button after curtain opens
+        if (pauseButton != null) {
+            pauseButton.setVisible(true);
+            pauseButton.setManaged(true);
+            pauseButton.setDisable(false);
         }
 
         gamePanel.requestFocus();
@@ -517,6 +519,13 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
                 curtainLeft.setManaged(false);
                 curtainRight.setVisible(false);
                 curtainRight.setManaged(false);
+
+                // Show pause button after curtain opens
+                if (pauseButton != null) {
+                    pauseButton.setVisible(true);
+                    pauseButton.setManaged(true);
+                    pauseButton.setDisable(false);
+                }
 
                 // mainContent is already visible with opacity 0 (set in refreshGameBehindCurtains)
                 // Fresh game board is already rendered behind the curtains

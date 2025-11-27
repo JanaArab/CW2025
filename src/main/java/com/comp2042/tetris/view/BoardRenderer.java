@@ -32,7 +32,7 @@ public class BoardRenderer {
     private Rectangle[][] displayMatrix;
     private Rectangle[][] activeBrickMatrix;
     private Rectangle[][] ghostBrickMatrix;
-    private Rectangle[][] nextBrickMatrix;
+    private List<Rectangle[][]> nextBrickMatrices;
 
     // Cache the origin offset to prevent jitter from fluctuating scene bounds
     private Double cachedOriginX = null;
@@ -50,7 +50,7 @@ public class BoardRenderer {
         initializeBoard(boardMatrix);
         initializeActiveBrick(brick.getBrickData());
         initializeGhostBrick(brick.getBrickData());
-        initializeNextBrickPreview(brick.getNextBrickData());
+        initializeNextBrickPreview(brick.getNextBricksData());
         updateBrickPosition(brick);
         updateGhostBrickPosition(brick);
     }
@@ -64,7 +64,7 @@ public class BoardRenderer {
         updateGhostBrickPosition(brick);
         refreshActiveBrick(brick.getBrickData());
         refreshGhostBrick(brick.getBrickData());
-        refreshNextBrick(brick.getNextBrickData());
+        refreshNextBrick(brick.getNextBricksData());
     }
 
     public void refreshGameBackground(int[][] board) {
@@ -121,20 +121,43 @@ public class BoardRenderer {
         }
     }
 
-    private void initializeNextBrickPreview(int[][] nextBrickData) {
+    private void initializeNextBrickPreview(List<int[][]> nextBricksData) {
         if (nextBrickPanel == null) {
             return;
         }
 
         nextBrickPanel.getChildren().clear();
-        nextBrickMatrix = new Rectangle[nextBrickData.length][nextBrickData[0].length];
-        for (int i = 0; i < nextBrickData.length; i++) {
-            for (int j = 0; j < nextBrickData[i].length; j++) {
-                Rectangle rectangle = createTile(getFillColor(nextBrickData[i][j]));
-                nextBrickMatrix[i][j] = rectangle;
-                nextBrickPanel.add(rectangle, j, i);
+        nextBrickMatrices = new ArrayList<>();
+
+        // Use smaller tile size for preview (80% of normal size)
+        int previewTileSize = 20;
+
+        int verticalOffset = 0;
+        for (int brickIndex = 0; brickIndex < nextBricksData.size(); brickIndex++) {
+            int[][] brickData = nextBricksData.get(brickIndex);
+            Rectangle[][] brickMatrix = new Rectangle[brickData.length][brickData[0].length];
+
+            for (int i = 0; i < brickData.length; i++) {
+                for (int j = 0; j < brickData[i].length; j++) {
+                    Rectangle rectangle = createPreviewTile(getFillColor(brickData[i][j]), previewTileSize);
+                    brickMatrix[i][j] = rectangle;
+                    nextBrickPanel.add(rectangle, j, verticalOffset + i);
+                }
             }
+
+            nextBrickMatrices.add(brickMatrix);
+            // Add spacing between bricks (brick height + 1 row gap)
+            verticalOffset += brickData.length + 1;
         }
+    }
+
+    private Rectangle createPreviewTile(Color color, int size) {
+        Rectangle rectangle = new Rectangle(size, size);
+        rectangle.setArcHeight(7);
+        rectangle.setArcWidth(7);
+        rectangle.setSmooth(true);
+        applyBrickStyling(rectangle, color);
+        return rectangle;
     }
 
     private void refreshActiveBrick(int[][] brickData) {
@@ -167,19 +190,34 @@ public class BoardRenderer {
         }
     }
 
-    private void refreshNextBrick(int[][] nextBrickData) {
+    private void refreshNextBrick(List<int[][]> nextBricksData) {
         if (nextBrickPanel == null) {
             return;
         }
 
-        if (!dimensionsMatch(nextBrickMatrix, nextBrickData)) {
-            initializeNextBrickPreview(nextBrickData);
+        // Check if we need to reinitialize (different number of bricks or dimension changes)
+        if (nextBrickMatrices == null || nextBrickMatrices.size() != nextBricksData.size()) {
+            initializeNextBrickPreview(nextBricksData);
             return;
         }
 
-        for (int i = 0; i < nextBrickData.length; i++) {
-            for (int j = 0; j < nextBrickData[i].length; j++) {
-                setRectangleData(nextBrickData[i][j], nextBrickMatrix[i][j]);
+        // Check if any brick dimensions changed
+        for (int brickIndex = 0; brickIndex < nextBricksData.size(); brickIndex++) {
+            if (!dimensionsMatch(nextBrickMatrices.get(brickIndex), nextBricksData.get(brickIndex))) {
+                initializeNextBrickPreview(nextBricksData);
+                return;
+            }
+        }
+
+        // Update each brick's colors
+        for (int brickIndex = 0; brickIndex < nextBricksData.size(); brickIndex++) {
+            int[][] brickData = nextBricksData.get(brickIndex);
+            Rectangle[][] brickMatrix = nextBrickMatrices.get(brickIndex);
+
+            for (int i = 0; i < brickData.length; i++) {
+                for (int j = 0; j < brickData[i].length; j++) {
+                    setRectangleData(brickData[i][j], brickMatrix[i][j]);
+                }
             }
         }
     }

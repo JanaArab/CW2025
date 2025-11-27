@@ -58,6 +58,13 @@ public class GameViewPresenter {
                     // After animation completes, show notification
                     if (notificationGroup != null) {
                         NotificationPanel notificationPanel = new NotificationPanel("+" + clearRow.scoreBonus());
+
+                        // Center the notification panel in the screen
+                        // NotificationPanel has minWidth=220 and minHeight=200
+                        // Center it by offsetting by half its dimensions
+                        notificationPanel.setLayoutX(-110); // Half of minWidth (220/2)
+                        notificationPanel.setLayoutY(-100); // Half of minHeight (200/2)
+
                         notificationGroup.getChildren().add(notificationPanel);
                         notificationAnimator.playShowScore(notificationPanel, notificationGroup.getChildren());
                     }

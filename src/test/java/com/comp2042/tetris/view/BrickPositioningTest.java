@@ -14,7 +14,8 @@ class BrickPositioningTest {
     void testHorizontalStepCalculation() {
         GridPane gamePanel = new GridPane();
         GridPane brickPanel = new GridPane();
-        GridPane nextPanel = new GridPane();
+        GridPane ghostBrickPanel = new GridPane();
+        GridPane nextBrickPanel = new GridPane();
 
         // Set hgap and vgap to 0 as in the actual game
         gamePanel.setHgap(0);
@@ -23,7 +24,7 @@ class BrickPositioningTest {
         brickPanel.setVgap(0);
 
         int brickSize = 20;
-        BoardRenderer renderer = new BoardRenderer(gamePanel, brickPanel, nextPanel, brickSize);
+        BoardRenderer renderer = new BoardRenderer(gamePanel, brickPanel, ghostBrickPanel, nextBrickPanel, brickSize);
 
         // The step should be exactly brickSize when gap is 0
         // This is a private method, but we can verify behavior indirectly

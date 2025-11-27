@@ -6,12 +6,17 @@ package com.comp2042.tetris.model.data;
 
 import com.comp2042.tetris.utils.MatrixOperations;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public final class ViewData {
 
     private final int[][] brickData;
     private final int xPosition;
     private final int yPosition;
     private final int[][] nextBrickData;
+    private final List<int[][]> nextBricksData;
     private final int ghostYPosition;
 
     public ViewData(int[][] brickData, int xPosition, int yPosition, int[][] nextBrickData) {
@@ -23,6 +28,16 @@ public final class ViewData {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
         this.nextBrickData = nextBrickData;
+        this.nextBricksData = Collections.singletonList(nextBrickData);
+        this.ghostYPosition = ghostYPosition;
+    }
+
+    public ViewData(int[][] brickData, int xPosition, int yPosition, List<int[][]> nextBricksData, int ghostYPosition) {
+        this.brickData = brickData;
+        this.xPosition = xPosition;
+        this.yPosition = yPosition;
+        this.nextBrickData = nextBricksData.isEmpty() ? new int[0][0] : nextBricksData.get(0);
+        this.nextBricksData = new ArrayList<>(nextBricksData);
         this.ghostYPosition = ghostYPosition;
     }
 
@@ -45,5 +60,13 @@ public final class ViewData {
     public int[][] getNextBrickData() {
         return MatrixOperations.copy(nextBrickData);
         //this method will be used later on to show next brick
+    }
+
+    public List<int[][]> getNextBricksData() {
+        List<int[][]> copies = new ArrayList<>();
+        for (int[][] brickData : nextBricksData) {
+            copies.add(MatrixOperations.copy(brickData));
+        }
+        return copies;
     }
 }

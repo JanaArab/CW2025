@@ -200,6 +200,20 @@ class SimpleBoardTest {
             Brick next = bricks.peekFirst();
             return next != null ? next : lastReturned;
         }
+
+        @Override
+        public java.util.List<Brick> getNextBricks(int count) {
+            java.util.List<Brick> result = new java.util.ArrayList<>();
+            java.util.Iterator<Brick> iterator = bricks.iterator();
+            for (int i = 0; i < count; i++) {
+                if (iterator.hasNext()) {
+                    result.add(iterator.next());
+                } else {
+                    result.add(lastReturned);
+                }
+            }
+            return result;
+        }
     }
 
     private static final class RejectingRotationStrategy implements RotationStrategy {

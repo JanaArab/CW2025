@@ -12,6 +12,8 @@ import com.comp2042.tetris.utils.MatrixOperations;
 import com.comp2042.tetris.model.data.ViewData;
 import com.comp2042.tetris.model.score.Score;
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
 
 
 
@@ -123,7 +125,11 @@ public class SimpleBoard implements Board {
     @Override
     public ViewData getViewData() {
         int ghostY = calculateGhostPosition();
-        return new ViewData(brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY(), brickGenerator.getNextBrick().getShapeMatrix().get(0), ghostY);
+        List<int[][]> nextBricksShapes = new java.util.ArrayList<>();
+        for (Brick brick : brickGenerator.getNextBricks(3)) {
+            nextBricksShapes.add(brick.getShapeMatrix().get(0));
+        }
+        return new ViewData(brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY(), nextBricksShapes, ghostY);
     }
 
     /**

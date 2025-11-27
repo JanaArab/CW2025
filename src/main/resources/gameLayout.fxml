@@ -18,7 +18,7 @@
         </Pane>
         <Pane fx:id="pixelStarLayer" mouseTransparent="true" pickOnBounds="false" prefWidth="900" prefHeight="720" />
         <HBox fx:id="mainContent" alignment="CENTER" spacing="50" visible="false" managed="false">
-            <VBox alignment="CENTER_LEFT" spacing="15" styleClass="side-panel" >
+            <VBox alignment="TOP_LEFT" spacing="15" styleClass="side-panel" style="-fx-padding: 60 0 0 0;">
                 <VBox spacing="0">
                     <Label text="SCORE :" styleClass="score-title"/>
                     <StackPane styleClass="scoreBoard" alignment="CENTER_LEFT">
@@ -47,11 +47,11 @@
                 </Pane>
             </StackPane>
 
-            <VBox alignment="TOP_CENTER" spacing="20" styleClass="side-panel">
-                <Label text="NEXT" styleClass="panel-title"/>
+            <VBox alignment="CENTER" spacing="20" styleClass="side-panel">
+                <Label text="NEXT :" styleClass="panel-title"/>
                 <BorderPane styleClass="nextBoard">
                     <center>
-                        <GridPane fx:id="nextBrickPanel" hgap="0" vgap="0" alignment="CENTER"/>
+                        <GridPane fx:id="nextBrickPanel" hgap="0" vgap="0" alignment="CENTER" maxWidth="100" maxHeight="290"/>
                     </center>
                 </BorderPane>
             </VBox>
@@ -130,12 +130,13 @@
 
         <Pane styleClass="frontFrame" mouseTransparent="true"/>
 
-        <Group fx:id="groupNotification" StackPane.alignment="BOTTOM_LEFT" style="-fx-padding: 0 0 120 100;">
-            <VBox alignment="CENTER">
-                <OverlayPanel fx:id="gameOverPanel" message="GAME OVER"/>
-            </VBox>
-        </Group>
+        <!-- Score notification popups group -->
+        <Group fx:id="groupNotification" StackPane.alignment="CENTER" mouseTransparent="true" pickOnBounds="false"/>
 
+        <!-- Game Over Panel (separate from notifications) -->
+        <StackPane StackPane.alignment="CENTER" mouseTransparent="true" pickOnBounds="false">
+            <OverlayPanel fx:id="gameOverPanel" message="GAME OVER"/>
+        </StackPane>
 
         <!-- Pause Menu Overlay -->
         <StackPane fx:id="pauseMenuOverlay" styleClass="pause-menu-overlay" visible="false" managed="false" StackPane.alignment="CENTER">
@@ -232,13 +233,16 @@
         </StackPane>
 
         <Button fx:id="pauseButton"
-                text="| |"
                 onAction="#pauseGame"
                 styleClass="pause-button"
-                StackPane.alignment="TOP_LEFT"
-                style="-fx-translate-x: 20; -fx-translate-y: 20;"
+                StackPane.alignment="BOTTOM_LEFT"
+                style="-fx-translate-x: 158; -fx-translate-y: -90;"
                 visible="false"
-                managed="false"/>
+                managed="false">
+            <graphic>
+                <Label text="⏯" style="-fx-text-fill: #ffffff; -fx-font-family: 'Press Start 2P'; -fx-font-size: 22px; -fx-translate-y: -3;"/>
+            </graphic>
+        </Button>
     </children>
     <stylesheets>
         <URL value="@window_style.css"/>
