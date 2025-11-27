@@ -13,7 +13,7 @@
     -fx-background-position: center;
 }
 .frontFrame {
-    -fx-background-image: url("controller_Navy1.png");
+    -fx-background-image: url("controller_Navy2.png");
     -fx-background-size: cover;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
@@ -106,8 +106,11 @@
 }
 
 .bonusStyle {
+    -fx-font-family: "SubSpace";
     -fx-font-size: 40px;
     -fx-font-weight: bold;
+    -fx-text-fill: linear-gradient(from 0% 0% to 100% 100%, #e9d5ff 0%, #c4b5fd 50%, #8b5cf6 100%);
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.8), 10, 0.5, 0, 0);
 }
 
 .gameOverStyle {
@@ -196,11 +199,11 @@
 
 .settings-title {
     -fx-font-family: "Press Start 2P";
-    -fx-font-size: 32px;
-    -fx-text-fill: #18dcff;
-    -fx-effect: dropshadow(gaussian, rgba(24, 220, 255, 0.6), 15, 0.5, 0, 0),
-                dropshadow(gaussian, rgba(0, 0, 0, 0.8), 10, 0.4, 0, 2);
-    -fx-padding: 8 0 8 0;
+    -fx-font-size: 16px;
+    -fx-text-fill: #c4b5fd;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.8), 12, 0.6, 0, 0),
+                dropshadow(gaussian, rgba(0, 0, 0, 0.9), 8, 0.5, 0, 2);
+    -fx-padding: 0 0 8 0;
 }
 
 .settings-list {
@@ -215,8 +218,8 @@
 
 .setting-item {
     -fx-font-family: "Press Start 2P";
-    -fx-font-size: 13px;
-    -fx-text-fill: #ffffff;
+    -fx-font-size: 10px;
+    -fx-text-fill: #e9d5ff;
 }
 
 .menu-title {
@@ -487,27 +490,96 @@
 
 /* Pause Menu Styles */
 .pause-menu-overlay {
-    -fx-background-color: rgba(0, 0, 0, 0.35);
+    -fx-background-color: rgba(0, 0, 0, 0.8);
 }
 
 .pause-menu-card {
-    -fx-padding: 25 40 25 40;
-    -fx-background-color: rgba(0, 20, 40, 0.75);
-    -fx-border-color: rgba(0, 210, 211, 0.7);
-    -fx-border-width: 2px;
-    -fx-border-radius: 8px;
-    -fx-background-radius: 8px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 210, 211, 0.4), 15, 0.4, 0, 0);
-    -fx-max-width: 350;
+    -fx-padding: 15 25 15 25;
+    -fx-background-color: linear-gradient(to bottom, rgba(20, 10, 40, 0.95), rgba(10, 5, 25, 0.98));
+    -fx-border-color: #8b5cf6;
+    -fx-border-width: 3px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-effect: dropshadow(three-pass-box, rgba(139, 92, 246, 0.5), 20, 0.5, 0, 0),
+                innershadow(gaussian, rgba(139, 92, 246, 0.15), 8, 0.3, 0, 0);
+    /* Make width flexible so the card hugs its contents */
+   -fx-min-width: 300;
+          -fx-pref-width: 150;
+
+          /* 2. Force the height to be taller (250px gives it that 'window' feel) */
+          -fx-min-height: 250;
+          -fx-pref-height: 90;
+
+          /* 3. Remove any max-width limits so it can actually get big */
+          -fx-max-width: 400;
+          -fx-max-height: 200;
+
+          /* 4. Ensure contents stay centered inside this big box */
+          -fx-alignment: center;
 }
 
 .pause-menu-title {
     -fx-font-family: "Press Start 2P";
-    -fx-font-size: 28px;
-    -fx-text-fill: #18dcff;
-    -fx-effect: dropshadow(gaussian, rgba(24, 220, 255, 0.7), 12, 0.5, 0, 0),
-                dropshadow(gaussian, rgba(0, 0, 0, 0.8), 8, 0.4, 0, 2);
-    -fx-padding: 0 0 6 0;
+    -fx-font-size: 22px;
+    -fx-text-fill: #c4b5fd;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.8), 12, 0.6, 0, 0),
+                dropshadow(gaussian, rgba(0, 0, 0, 0.9), 8, 0.5, 0, 2);
+    -fx-padding: 0 0 8 0;
+}
+
+/* Compact Pause Menu Buttons */
+.pause-btn {
+    -fx-font-family: "Press Start 2P";
+    -fx-background-radius: 3;
+    -fx-border-radius: 3;
+    -fx-border-width: 2px;
+    -fx-border-color: #6d28d9;
+    -fx-background-color: linear-gradient(to bottom, #7c3aed 0%, #5b21b6 100%);
+    /* Reduce horizontal padding and remove fixed width so button sizes to text */
+    -fx-padding: 4 8; /* top right bottom left */
+    -fx-min-width: 0; /* allow shrinking to text */
+    -fx-pref-width: USE_COMPUTED_SIZE;
+    -fx-max-width: 400; /* reasonable cap */
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 3, 0, 2, 2);
+}
+
+.pause-btn-label {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 10px;
+    -fx-text-fill: #e9d5ff;
+}
+
+/* Primary button (Resume) */
+.pause-btn-primary {
+    -fx-background-color: linear-gradient(to bottom, #10b981 0%, #059669 100%);
+    -fx-border-color: #047857;
+}
+
+.pause-btn-primary:hover {
+    -fx-background-color: linear-gradient(to bottom, #34d399 0%, #10b981 100%);
+    -fx-border-color: #6ee7b7;
+    -fx-effect: dropshadow(three-pass-box, rgba(16, 185, 129, 0.6), 6, 0.5, 0, 0);
+}
+
+.pause-btn-primary:pressed {
+    -fx-background-color: linear-gradient(to bottom, #059669 0%, #047857 100%);
+}
+
+/* Danger button (Exit) */
+.pause-btn-danger {
+    -fx-background-color: linear-gradient(to bottom, #dc2626 0%, #991b1b 100%);
+    -fx-border-color: #7f1d1d;
+}
+
+.pause-btn-danger:hover {
+    -fx-background-color: linear-gradient(to bottom, #ef4444 0%, #dc2626 100%);
+    -fx-border-color: #f87171;
+    -fx-effect: dropshadow(three-pass-box, rgba(220, 38, 38, 0.6), 6, 0.5, 0, 0);
+}
+
+.pause-btn-danger:pressed {
+    -fx-background-color: linear-gradient(to bottom, #991b1b 0%, #7f1d1d 100%);
 }
 
 /* Pause Button (||) */
@@ -566,26 +638,42 @@
     -fx-effect: none;
 }
 
-/* Confirmation Dialog */
+
 .confirmation-overlay {
     -fx-background-color: rgba(0, 0, 0, 0.35);
 }
 
 .confirmation-card {
-    -fx-padding: 25 40 25 40;
-    -fx-background-color: rgba(20, 0, 0, 0.80);
-    -fx-border-color: rgba(255, 77, 109, 0.7);
-    -fx-border-width: 2px;
-    -fx-border-radius: 8px;
-    -fx-background-radius: 8px;
-    -fx-effect: dropshadow(three-pass-box, rgba(255, 77, 109, 0.4), 15, 0.4, 0, 0);
+    -fx-padding:20 20 20 20;
+    -fx-background-color: linear-gradient(to bottom, rgba(20, 10, 40, 0.95), rgba(10, 5, 25, 0.98));
+    -fx-border-color: #8b5cf6;
+    -fx-border-width: 3px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-effect: dropshadow(three-pass-box, rgba(139, 92, 246, 0.5), 20, 0.5, 0, 0),
+                innershadow(gaussian, rgba(139, 92, 246, 0.15), 8, 0.3, 0, 0);
+       -fx-min-width: 300;
+       -fx-pref-width: 150;
+
+       /* 2. Force the height to be taller (250px gives it that 'window' feel) */
+       -fx-min-height: 100;
+       -fx-pref-height: 80;
+
+       /* 3. Remove any max-width limits so it can actually get big */
+       -fx-max-width: 400;
+       -fx-max-height: 150;
+
+       /* 4. Ensure contents stay centered inside this big box */
+       -fx-alignment: center;
 }
 
 .confirmation-title {
     -fx-font-family: "Press Start 2P";
-    -fx-font-size: 18px;
-    -fx-text-fill: #ff4d6d;
-    -fx-effect: dropshadow(gaussian, rgba(255, 77, 109, 0.7), 12, 0.5, 0, 0);
+    -fx-font-size: 16px;
+    -fx-text-fill: #c4b5fd;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.8), 12, 0.6, 0, 0),
+                dropshadow(gaussian, rgba(0, 0, 0, 0.9), 8, 0.5, 0, 2);
+    -fx-padding: 0 0 8 0;
 }
 
 /* Music Control Panel */
@@ -594,11 +682,34 @@
 }
 
 .music-card {
-    -fx-padding: 25 40 25 40;
-    -fx-background-color: rgba(20, 20, 0, 0.80);
-    -fx-border-color: rgba(46, 213, 115, 0.7);
-    -fx-border-width: 2px;
-    -fx-border-radius: 8px;
-    -fx-background-radius: 8px;
-    -fx-effect: dropshadow(three-pass-box, rgba(46, 213, 115, 0.4), 15, 0.4, 0, 0);
+    -fx-padding: 20 20 20 20;
+    -fx-background-color: linear-gradient(to bottom, rgba(20, 10, 40, 0.95), rgba(10, 5, 25, 0.98));
+    -fx-border-color: #8b5cf6;
+    -fx-border-width: 3px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-effect: dropshadow(three-pass-box, rgba(139, 92, 246, 0.5), 20, 0.5, 0, 0),
+                innershadow(gaussian, rgba(139, 92, 246, 0.15), 8, 0.3, 0, 0);
+   -fx-min-width: 300;
+       -fx-max-width: USE_COMPUTED_SIZE;
+       -fx-pref-width: USE_COMPUTED_SIZE;
+}
+
+/* Game Over Screen Styles */
+.game-label {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 48px;
+    -fx-fill: transparent;
+    -fx-stroke: cyan;
+    -fx-stroke-width: 2;
+    -fx-effect: dropshadow(gaussian, cyan, 10, 0.8, 0, 0);
+}
+
+.over-label {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 48px;
+    -fx-fill: transparent;
+    -fx-stroke: red;
+    -fx-stroke-width: 2;
+    -fx-effect: dropshadow(gaussian, red, 10, 0.8, 0, 0);
 }

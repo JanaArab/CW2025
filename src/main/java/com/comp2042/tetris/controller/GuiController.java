@@ -16,6 +16,7 @@ import com.comp2042.tetris.view.BoardRenderer;
 import com.comp2042.tetris.view.GameViewPresenter;
 import com.comp2042.tetris.view.OverlayPanel;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.input.KeyEvent;
@@ -31,6 +32,7 @@ import com.comp2042.tetris.view.ShootingStarAnimator;
 import com.comp2042.tetris.view.PixelStarAnimator;
 import com.comp2042.tetris.view.NebulaCloudAnimator;
 import com.comp2042.tetris.game.GameTimer;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -39,6 +41,7 @@ import java.util.Objects;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.scene.layout.HBox;
+import javafx.scene.Parent;
 
 public class GuiController implements Initializable, IGuiController, GameEventListener {
 
@@ -79,13 +82,25 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     private StackPane musicControlOverlay;
 
     @FXML
+    private StackPane gameOverOverlay;
+
+    @FXML
+    private BorderPane gameBoard;
+
+    @FXML
     private GridPane gamePanel;
 
     @FXML
     private Group groupNotification;
 
     @FXML
+    private Pane activeBrickLayer;
+
+    @FXML
     private GridPane brickPanel;
+
+    @FXML
+    private Pane ghostBrickLayer;
 
     @FXML
     private GridPane ghostBrickPanel;
@@ -102,8 +117,6 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     @FXML
     private VBox mainMenuCard;
 
-    @FXML
-    private VBox settingsPanel;
 
     @FXML
     private Pane curtainLeft;
@@ -127,6 +140,8 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     private Runnable pendingConfirmationAction;
 
+    private Runnable pendingCancelAction;
+
     private ShootingStarAnimator shootingStarAnimator;
     private PixelStarAnimator pixelStarAnimator;
     private NebulaCloudAnimator nebulaCloudAnimator;
@@ -144,6 +159,15 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         setupShootingStars();
         gameTimer = new GameTimer(timerLabel);
         showMainMenu();
+
+        // Load the game over screen
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gameOverScreen.fxml"));
+            Parent gameOverRoot = loader.load();
+            gameOverOverlay.getChildren().add(gameOverRoot);
+        } catch (Exception e) {
+            System.out.println("Failed to load game over screen: " + e.getMessage());
+        }
     }
 
     private void setupNebulaClouds() {
@@ -269,9 +293,6 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         if (animationHandler != null) {
             animationHandler.onGameOver();
         }
-        if (gameViewPresenter != null) {
-            gameViewPresenter.showGameOver();
-        }
         updatePauseUi(false);
 
         // Stop the timer when game is over
@@ -283,6 +304,63 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         if (pauseButton != null) {
             pauseButton.setDisable(true);
         }
+
+        // Show the new game over screen
+        if (gameOverOverlay != null) {
+            gameOverOverlay.setVisible(true);
+            gameOverOverlay.setManaged(true);
+        }
+
+        // Wait 3 seconds, then close curtains and show play again prompt
+        javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(3));
+        pause.setOnFinished(e -> {
+            // Hide game over overlay
+            if (gameOverOverlay != null) {
+                gameOverOverlay.setVisible(false);
+                gameOverOverlay.setManaged(false);
+            }
+            // Reset curtains to open position for animation
+            if (curtainLeft != null) {
+                curtainLeft.setTranslateX(-900);
+            }
+            if (curtainRight != null) {
+                curtainRight.setTranslateX(900);
+            }
+            // Close curtains
+            closeCurtains(() -> {
+                // Show play again confirmation
+                if (confirmationMessage != null) {
+                    confirmationMessage.setText("Play again?");
+                }
+                pendingConfirmationAction = () -> {
+                    setNodeVisibility(confirmationOverlay, false);
+                    // Hide curtains
+                    if (curtainLeft != null) {
+                        curtainLeft.setVisible(false);
+                        curtainLeft.setManaged(false);
+                    }
+                    if (curtainRight != null) {
+                        curtainRight.setVisible(false);
+                        curtainRight.setManaged(false);
+                    }
+                    // Show mainContent
+                    if (mainContent != null) {
+                        mainContent.setVisible(true);
+                        mainContent.setManaged(true);
+                        mainContent.setOpacity(1.0);
+                        mainContent.setMouseTransparent(false);
+                    }
+                    // Start new game directly
+                    startNewGameDirect();
+                };
+                pendingCancelAction = () -> {
+                    setNodeVisibility(confirmationOverlay, false);
+                    showMainMenu();
+                };
+                setNodeVisibility(confirmationOverlay, true);
+            });
+        });
+        pause.play();
     }
     public void newGame(ActionEvent actionEvent) {
         startNewGame();
@@ -319,7 +397,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         Platform.runLater(() -> {
             // Now it's safe to hide menu overlay - curtains are rendered and covering screen
             setNodeVisibility(mainMenuOverlay, false);
-            setNodeVisibility(settingsPanel, false);
+           // setNodeVisibility(settingsPanel, false);
             setNodeVisibility(mainMenuCard, true);
 
             // Play the curtain opening animation
@@ -327,11 +405,6 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         });
     }
 
-    @FXML
-    private void openSettings(ActionEvent actionEvent) {
-        setNodeVisibility(mainMenuCard, false);
-        setNodeVisibility(settingsPanel, true);
-    }
 
     @FXML
     private void exitGame(ActionEvent actionEvent) {
@@ -347,6 +420,12 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
             gameViewPresenter.hideGameOver();
         }
         updatePauseUi(false);
+
+        // Hide the game over screen
+        if (gameOverOverlay != null) {
+            gameOverOverlay.setVisible(false);
+            gameOverOverlay.setManaged(false);
+        }
 
         // Show pause button when game starts
         if (pauseButton != null) {
@@ -386,6 +465,11 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         }
         updatePauseUi(false);
 
+        // Hide the game over screen
+        if (gameOverOverlay != null) {
+            gameOverOverlay.setVisible(false);
+            gameOverOverlay.setManaged(false);
+        }
 
         gameActive = true;
         animationHandler.ensureInitialized();
@@ -437,9 +521,18 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         if (animationHandler != null && !animationHandler.isGameOver() && !animationHandler.isPaused()) {
             animationHandler.togglePause();
         }
+        // Hide curtains
+        if (curtainLeft != null) {
+            curtainLeft.setVisible(false);
+            curtainLeft.setManaged(false);
+        }
+        if (curtainRight != null) {
+            curtainRight.setVisible(false);
+            curtainRight.setManaged(false);
+        }
         setNodeVisibility(mainMenuOverlay, true);
         setNodeVisibility(mainMenuCard, true);
-        setNodeVisibility(settingsPanel, false);
+       // setNodeVisibility(settingsPanel, false);
         setMainContentVisible(false);
         if (pauseButton != null) {
             pauseButton.setVisible(false);
@@ -449,7 +542,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     private void hideMainMenu() {
         setNodeVisibility(mainMenuOverlay, false);
-        setNodeVisibility(settingsPanel, false);
+       // setNodeVisibility(settingsPanel, false);
         setNodeVisibility(mainMenuCard, true);
         setMainContentVisible(true);
     }
@@ -662,6 +755,9 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         // Hide pause menu, show music control
         setNodeVisibility(pauseMenuOverlay, false);
         setNodeVisibility(musicControlOverlay, true);
+        if (pauseButton != null) {
+            pauseButton.setDisable(true);
+        }
     }
 
     @FXML
@@ -669,28 +765,11 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         // Hide music control, show pause menu
         setNodeVisibility(musicControlOverlay, false);
         setNodeVisibility(pauseMenuOverlay, true);
-    }
-
-    @FXML
-    private void openSettingsFromPause(ActionEvent actionEvent) {
-        // Hide pause menu, show settings
-        setNodeVisibility(pauseMenuOverlay, false);
-        setNodeVisibility(settingsPanel, true);
-    }
-
-    @FXML
-    private void closeSettings(ActionEvent actionEvent) {
-        // Check if we're coming from pause menu
-        if (animationHandler != null && animationHandler.isPaused()) {
-            // Return to pause menu
-            setNodeVisibility(settingsPanel, false);
-            setNodeVisibility(pauseMenuOverlay, true);
-        } else {
-            // Return to main menu
-            setNodeVisibility(settingsPanel, false);
-            setNodeVisibility(mainMenuCard, true);
+        if (pauseButton != null) {
+            pauseButton.setDisable(false);
         }
     }
+
 
     @FXML
     private void startNewGameFromPause(ActionEvent actionEvent) {
@@ -709,6 +788,9 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         };
         setNodeVisibility(pauseMenuOverlay, false);
         setNodeVisibility(confirmationOverlay, true);
+        if (pauseButton != null) {
+            pauseButton.setDisable(true);
+        }
     }
 
     @FXML
@@ -735,6 +817,9 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         };
         setNodeVisibility(pauseMenuOverlay, false);
         setNodeVisibility(confirmationOverlay, true);
+        if (pauseButton != null) {
+            pauseButton.setDisable(true);
+        }
     }
 
     @FXML
@@ -748,6 +833,9 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         };
         setNodeVisibility(pauseMenuOverlay, false);
         setNodeVisibility(confirmationOverlay, true);
+        if (pauseButton != null) {
+            pauseButton.setDisable(true);
+        }
     }
 
     @FXML
@@ -758,13 +846,93 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
             pendingConfirmationAction.run();
             pendingConfirmationAction = null;
         }
+        pendingCancelAction = null;
+        if (pauseButton != null) {
+            pauseButton.setDisable(false);
+        }
     }
 
     @FXML
     private void cancelAction(ActionEvent actionEvent) {
-        // Cancel and return to pause menu
+        // Execute cancel action
         setNodeVisibility(confirmationOverlay, false);
-        setNodeVisibility(pauseMenuOverlay, true);
+        if (pendingCancelAction != null) {
+            pendingCancelAction.run();
+            pendingCancelAction = null;
+        }
         pendingConfirmationAction = null;
+        if (pauseButton != null) {
+            pauseButton.setDisable(false);
+        }
+    }
+
+    private void closeCurtains(Runnable onFinished) {
+        if (curtainLeft == null || curtainRight == null) {
+            onFinished.run();
+            return;
+        }
+
+        // Set visible
+        curtainLeft.setVisible(true);
+        curtainLeft.setManaged(true);
+        curtainRight.setVisible(true);
+        curtainRight.setManaged(true);
+
+        // Animate from current position to 0,0
+        javafx.animation.TranslateTransition leftTransition = new javafx.animation.TranslateTransition(
+            javafx.util.Duration.millis(1200), curtainLeft);
+        leftTransition.setFromX(curtainLeft.getTranslateX());
+        leftTransition.setToX(0);
+
+        javafx.animation.TranslateTransition rightTransition = new javafx.animation.TranslateTransition(
+            javafx.util.Duration.millis(1200), curtainRight);
+        rightTransition.setFromX(curtainRight.getTranslateX());
+        rightTransition.setToX(0);
+
+        leftTransition.setInterpolator(javafx.animation.Interpolator.EASE_OUT);
+        rightTransition.setInterpolator(javafx.animation.Interpolator.EASE_OUT);
+
+        javafx.animation.ParallelTransition parallel = new javafx.animation.ParallelTransition(leftTransition, rightTransition);
+        parallel.setOnFinished(e -> onFinished.run());
+        parallel.play();
+    }
+
+    private void startNewGameDirect() {
+        ensureConfigured();
+        if (animationHandler == null) {
+            return;
+        }
+        if (gameViewPresenter != null) {
+            gameViewPresenter.hideGameOver();
+        }
+        updatePauseUi(false);
+
+        // Hide the game over screen
+        if (gameOverOverlay != null) {
+            gameOverOverlay.setVisible(false);
+            gameOverOverlay.setManaged(false);
+        }
+
+        // Show pause button when game starts
+        if (pauseButton != null) {
+            pauseButton.setVisible(true);
+            pauseButton.setManaged(true);
+            pauseButton.setDisable(false);
+        }
+
+        gameActive = true;
+        animationHandler.ensureInitialized();
+        if (gameController != null) {
+            gameController.createNewGame();
+        }
+        animationHandler.start();
+
+        // Reset and start the timer when game starts
+        if (gameTimer != null) {
+            gameTimer.reset();
+            gameTimer.start();
+        }
+
+        gamePanel.requestFocus();
     }
 }

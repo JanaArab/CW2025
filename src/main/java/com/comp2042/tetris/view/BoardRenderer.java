@@ -373,8 +373,9 @@ public class BoardRenderer {
 
         // Ghost bricks have no gradient or lighting effects, just a simple fill with lower opacity
         rectangle.setFill(baseColor);
-        rectangle.setStroke(Color.rgb(255, 255, 255, 0.15));
-        rectangle.setStrokeWidth(1.0);
+        // Set stroke to white for highlighted edges around the whole shape
+        rectangle.setStroke(Color.rgb(255, 255, 255, 0.8));
+        rectangle.setStrokeWidth(2.0);
         rectangle.setStrokeType(javafx.scene.shape.StrokeType.INSIDE);
         rectangle.setEffect(null);
     }
