@@ -2,6 +2,7 @@
 <?import javafx.scene.Group?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <?import java.net.URL?>
@@ -124,6 +125,8 @@
                 </VBox>
             </VBox>
         </StackPane>
+
+        <ImageView fx:id="staticScreen" fitWidth="900" fitHeight="720" visible="true" managed="true" mouseTransparent="true" preserveRatio="false" />
 
         <!-- Curtain Animation - Covers entire window (900x720) -->
         <Pane fx:id="curtainLeft" styleClass="curtain" visible="false" managed="false"

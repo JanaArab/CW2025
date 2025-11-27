@@ -4,10 +4,12 @@ import com.comp2042.tetris.model.board.ClearRow;
 import com.comp2042.tetris.model.data.ViewData;
 import com.comp2042.tetris.model.event.GameStateSnapshot;
 import com.comp2042.tetris.model.event.ScoreChangeEvent;
+import com.comp2042.tetris.utils.ScoreThresholdDetector;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 
+import java.util.List;
 import java.util.Objects;
 
 public class GameViewPresenter {
@@ -17,6 +19,10 @@ public class GameViewPresenter {
     private final OverlayPanel gameOverPanel;
     private final NotificationAnimator notificationAnimator;
     private final RowClearAnimator rowClearAnimator;
+
+    // new fields to support fireworks/popups on score thresholds
+    private int lastScore = 0;
+    private final FireworkAnimator fireworkAnimator = new FireworkAnimator();
 
     public GameViewPresenter(BoardRenderer boardRenderer, Label scoreLabel, Group notificationGroup,
                              OverlayPanel gameOverPanel, NotificationAnimator notificationAnimator) {
@@ -36,7 +42,32 @@ public class GameViewPresenter {
         if (scoreLabel == null) {
             throw new IllegalStateException("scoreLabel is null.");
         }
-        Platform.runLater(() -> scoreLabel.setText(String.valueOf(event.newScore())));
+        // Update the label and, if we've crossed 500-point thresholds, show popups and fireworks
+        Platform.runLater(() -> {
+            int newScore = event.newScore();
+            scoreLabel.setText(String.valueOf(newScore));
+
+            // detect crossed thresholds (500, 1000, 1500, ...)
+            List<Integer> crossed = ScoreThresholdDetector.determineCrossedThresholds(lastScore, newScore, 500);
+            if (notificationGroup != null && !crossed.isEmpty()) {
+                for (Integer threshold : crossed) {
+                    // Show a simple +500 popup using existing NotificationPanel and animator
+                    NotificationPanel notificationPanel = new NotificationPanel("+500");
+
+                    // Center the notification panel in the screen (same offsets used elsewhere)
+                    notificationPanel.setLayoutX(-110);
+                    notificationPanel.setLayoutY(-100);
+
+                    notificationGroup.getChildren().add(notificationPanel);
+                    notificationAnimator.playShowScore(notificationPanel, notificationGroup.getChildren());
+
+                    // Play a small firework burst
+                    fireworkAnimator.playFirework(notificationGroup);
+                }
+            }
+
+            lastScore = newScore;
+        });
     }
 
     public void refreshBrick(ViewData viewData, boolean paused) {

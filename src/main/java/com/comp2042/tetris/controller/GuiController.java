@@ -12,9 +12,7 @@ import com.comp2042.tetris.model.data.ViewData;
 import com.comp2042.tetris.model.event.GameEventListener;
 import com.comp2042.tetris.model.event.GameStateSnapshot;
 import com.comp2042.tetris.model.event.ScoreChangeEvent;
-import com.comp2042.tetris.view.BoardRenderer;
-import com.comp2042.tetris.view.GameViewPresenter;
-import com.comp2042.tetris.view.OverlayPanel;
+import com.comp2042.tetris.view.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -27,11 +25,8 @@ import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.event.ActionEvent;
 import javafx.application.Platform;
-import com.comp2042.tetris.view.BackgroundAnimator;
-import com.comp2042.tetris.view.ShootingStarAnimator;
-import com.comp2042.tetris.view.PixelStarAnimator;
-import com.comp2042.tetris.view.NebulaCloudAnimator;
 import com.comp2042.tetris.game.GameTimer;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -43,7 +38,12 @@ import java.util.ResourceBundle;
 import javafx.scene.layout.HBox;
 import javafx.scene.Parent;
 
+
 public class GuiController implements Initializable, IGuiController, GameEventListener {
+
+
+    @FXML
+    private ImageView staticScreen;
 
     @FXML
     private Pane background1;
@@ -148,6 +148,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     private GameTimer gameTimer;
 
 
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupFont();
@@ -168,6 +169,25 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         } catch (Exception e) {
             System.out.println("Failed to load game over screen: " + e.getMessage());
         }
+        playIntroSequence();
+    }
+
+    private void playIntroSequence() {
+        if (staticScreen != null) {
+            StaticScreenAnimator staticAnimator = new StaticScreenAnimator();
+            DistortionAnimator distortionAnimator = new DistortionAnimator();
+
+            // The main menu is inside mainMenuOverlay
+            // We want to distort this pane as the static fades out
+
+            staticAnimator.play(staticScreen, () -> {
+                // This runs when static starts fading (opacity < 1.0)
+                // Apply distortion to the menu overlay for 3.5 seconds (matching fade duration)
+                if (mainMenuOverlay != null) {
+                    distortionAnimator.applyGlitchTransition(mainMenuOverlay, 3.5);
+                }
+            });
+        }
     }
 
     private void setupNebulaClouds() {
@@ -181,6 +201,9 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         // Fill the static star layer with 150 twinkling pixel stars
         pixelStarAnimator.fillScreenWithStars(pixelStarLayer, 150);
     }
+
+
+
 
     private void setupShootingStars() {
         shootingStarAnimator = new ShootingStarAnimator();
@@ -199,6 +222,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         starTimeline.setCycleCount(javafx.animation.Timeline.INDEFINITE);
         starTimeline.play();
     }
+
     public void setDependencies(GuiControllerDependencies dependencies) {
         this.dependencies = Objects.requireNonNull(dependencies, "dependencies");
         this.animationHandler = dependencies.animationHandler();
