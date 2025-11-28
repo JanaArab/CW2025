@@ -425,6 +425,32 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.45), 5, 0, 3, 3);
 }
 
+.level-menu-card {
+    -fx-padding: 15 25 15 25;
+    -fx-background-color: linear-gradient(to bottom, rgba(20, 10, 40, 0.95), rgba(10, 5, 25, 0.98));
+    -fx-border-color: #8b5cf6;
+    -fx-border-width: 3px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-effect: dropshadow(three-pass-box, rgba(139, 92, 246, 0.5), 20, 0.5, 0, 0),
+                innershadow(gaussian, rgba(139, 92, 246, 0.15), 8, 0.3, 0, 0);
+    /* Make width flexible so the card hugs its contents */
+   -fx-min-width: 300;
+          -fx-pref-width: 2000;
+
+          /* 2. Force the height to be taller (250px gives it that 'window' feel) */
+          -fx-min-height: 250;
+          -fx-pref-height: 90;
+
+          /* 3. Remove any max-width limits so it can actually get big */
+          -fx-max-width: 450;
+          -fx-max-height: 200;
+
+          /* 4. Ensure contents stay centered inside this big box */
+          -fx-alignment: center;
+}
+
+
 /* HOVER */
 .menu-button.secondary:hover {
     -fx-background-color:
@@ -582,58 +608,47 @@
     -fx-background-color: linear-gradient(to bottom, #991b1b 0%, #7f1d1d 100%);
 }
 
-/* Pause Button (||) */
-.pause-button {
-    -fx-font-family: "Press Start 2P";
-    -fx-font-size: 22px;
-    -fx-text-fill: #ffffff;
-    -fx-background-radius: 4;
-    -fx-border-radius: 4;
-    -fx-border-width: 3px;
-    -fx-border-color: #0d1b2a;
-    -fx-background-color:
-        linear-gradient(to bottom,
-            #6b9bd1 0%,
-            #6b9bd1 10%,
-            #415a77 10%,
-            #415a77 85%,
-            #1b263b 85%,
-            #1b263b 100%
-        );
-    -fx-padding: 6 6;
-    -fx-min-width: 38;
-    -fx-max-width: 38;
-    -fx-min-height: 38;
-    -fx-max-height: 38;
+/* Add hover effect for compact pause buttons (applies to L1/L2 etc.) */
+.pause-btn:hover {
+    -fx-background-color: linear-gradient(to bottom, #8b5cf6 0%, #6d28d9 100%);
+    -fx-border-color: #9b5eea;
+    -fx-effect: dropshadow(three-pass-box, rgba(139,92,246,0.6), 6, 0.5, 0, 0);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.pause-btn:pressed {
+    -fx-translate-y: 3;
+    -fx-effect: none;
+}
+
+/* Blue variant for pause buttons (L1) */
+.pause-btn-blue {
+    -fx-background-color: linear-gradient(to bottom, #3b82f6 0%, #1e40af 100%);
+    -fx-border-color: #1e3a8a;
+
+    /* Match shape/size of .pause-btn */
+    -fx-background-radius: 3;
+    -fx-border-radius: 3;
+    -fx-border-width: 2px;
+    -fx-padding: 4 8; /* same padding as .pause-btn */
+    -fx-min-width: 0;
+    -fx-pref-width: USE_COMPUTED_SIZE;
+    -fx-max-width: 400;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 0, 0, 3, 3);
-    -fx-font-weight: bold;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 3, 0, 2, 2);
 }
 
-.pause-button:hover {
-    -fx-background-color:
-        linear-gradient(to bottom,
-            #8eb8e5 0%,
-            #8eb8e5 20%,
-            #6b9bd1 20%,
-            #6b9bd1 85%,
-            #415a77 85%,
-            #415a77 100%
-        );
-    -fx-scale-x: 1.08;
-    -fx-scale-y: 1.08;
+.pause-btn-blue:hover {
+    -fx-background-color: linear-gradient(to bottom, #60a5fa 0%, #2563eb 100%);
+    -fx-border-color: #60a5fa;
+    -fx-effect: dropshadow(three-pass-box, rgba(59,130,246,0.6), 6, 0.5, 0, 0);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
 }
 
-.pause-button:pressed {
-    -fx-background-color:
-        linear-gradient(to bottom,
-            #1b263b 0%,
-            #1b263b 20%,
-            #415a77 20%,
-            #415a77 85%,
-            #6b9bd1 85%,
-            #6b9bd1 100%
-        );
+.pause-btn-blue:pressed {
+    -fx-background-color: linear-gradient(to bottom, #1e3a8a 0%, #172554 100%);
     -fx-translate-y: 3;
     -fx-effect: none;
 }

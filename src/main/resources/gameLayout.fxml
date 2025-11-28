@@ -126,6 +126,35 @@
             </VBox>
         </StackPane>
 
+        <!-- Level Selection Overlay: appears after pressing Start Game -->
+        <StackPane fx:id="levelSelectOverlay" styleClass="pause-menu-overlay" visible="false" managed="false" StackPane.alignment="CENTER">
+            <VBox spacing="16" alignment="CENTER" styleClass="level-menu-card">
+                <Label text="CHOOSE YOUR LEVEL" styleClass="pause-menu-title"/>
+                <VBox alignment="CENTER" spacing="8">
+                    <Button onAction="#handleLevelClassic" styleClass="pause-btn, pause-btn">
+                        <graphic>
+                            <Label text="Classic" styleClass="pause-btn-label"/>
+                        </graphic>
+                    </Button>
+                    <Button onAction="#handleLevelL1" styleClass="pause-btn">
+                        <graphic>
+                            <Label text="L1" styleClass="pause-btn-label"/>
+                        </graphic>
+                    </Button>
+                    <Button onAction="#handleLevelL2" styleClass="pause-btn">
+                        <graphic>
+                            <Label text="L2" styleClass="pause-btn-label"/>
+                        </graphic>
+                    </Button>
+                </VBox>
+                <Button onAction="#cancelLevelSelect" styleClass="pause-btn">
+                    <graphic>
+                        <Label text="◄ Back" styleClass="pause-btn-label"/>
+                    </graphic>
+                </Button>
+            </VBox>
+        </StackPane>
+
         <ImageView fx:id="staticScreen" fitWidth="900" fitHeight="720" visible="true" managed="true" mouseTransparent="true" preserveRatio="false" />
 
         <!-- Curtain Animation - Covers entire window (900x720) -->

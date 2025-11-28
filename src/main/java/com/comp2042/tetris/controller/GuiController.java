@@ -117,6 +117,15 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     @FXML
     private VBox mainMenuCard;
 
+    // Level selection overlay (added for level choice after Start Game)
+    @FXML
+    private StackPane levelSelectOverlay;
+
+    // Simple enum to track the selected level; currently only CLASSIC is wired into gameplay
+    private enum Level { CLASSIC, L1, L2 }
+
+    private Level selectedLevel = Level.CLASSIC;
+
 
     @FXML
     private Pane curtainLeft;
@@ -395,40 +404,94 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     @FXML
     private void handleStartGame(ActionEvent actionEvent) {
-        // CRITICAL: Ensure mainContent is completely invisible (opacity 0) to prevent flash
-        if (mainContent != null) {
-            mainContent.setOpacity(0.0);
-            mainContent.setVisible(true);
-            mainContent.setManaged(true);
-        }
+        // Show the level selection overlay instead of immediately starting.
+        // This preserves the existing curtain/start flow which will be triggered by the level handlers.
+        if (levelSelectOverlay != null) {
+            setNodeVisibility(levelSelectOverlay, true);
+            // Hide the main menu when the level selection is shown
+            setNodeVisibility(mainMenuOverlay, false);
+        } else {
+            // Fallback: if overlay missing, proceed with existing start flow
+            // CRITICAL: Ensure mainContent is completely invisible (opacity 0) to prevent flash
+            if (mainContent != null) {
+                mainContent.setOpacity(0.0);
+                mainContent.setVisible(true);
+            }
 
-        // IMPORTANT: Show curtains FIRST (covering everything) to prevent flash of old game state
+            // IMPORTANT: Show curtains FIRST (covering everything) to prevent flash of old game state
+            if (curtainLeft != null && curtainRight != null) {
+                curtainLeft.setTranslateX(0);
+                curtainRight.setTranslateX(0);
+                curtainLeft.setVisible(true);
+                curtainLeft.setManaged(true);
+                curtainRight.setVisible(true);
+                curtainRight.setManaged(true);
+            }
+
+            Platform.runLater(() -> {
+                setNodeVisibility(mainMenuOverlay, false);
+                setNodeVisibility(mainMenuCard, true);
+                playCurtainAnimation();
+            });
+        }
+    }
+
+    // Level selection handlers
+    @FXML
+    private void handleLevelClassic(ActionEvent actionEvent) {
+        selectedLevel = Level.CLASSIC;
+        // Hide overlay and start existing curtain animation -> will refresh/create new game behind curtains
+        setNodeVisibility(levelSelectOverlay, false);
+        // Show curtains and play animation sequence
         if (curtainLeft != null && curtainRight != null) {
-            // Position curtains to cover entire window (both at center, overlapping)
             curtainLeft.setTranslateX(0);
             curtainRight.setTranslateX(0);
             curtainLeft.setVisible(true);
             curtainLeft.setManaged(true);
             curtainRight.setVisible(true);
             curtainRight.setManaged(true);
-
-            // DO NOT call toFront() - we want curtains BEHIND the controller frame
-            // The frontFrame should always be on top (defined last in FXML)
         }
-
-        // Use Platform.runLater to ensure curtains are rendered before hiding menu
-        // This prevents any timing issues where menu hides before curtains appear
-        Platform.runLater(() -> {
-            // Now it's safe to hide menu overlay - curtains are rendered and covering screen
-            setNodeVisibility(mainMenuOverlay, false);
-           // setNodeVisibility(settingsPanel, false);
-            setNodeVisibility(mainMenuCard, true);
-
-            // Play the curtain opening animation
-            playCurtainAnimation();
-        });
+        Platform.runLater(this::playCurtainAnimation);
     }
 
+    @FXML
+    private void handleLevelL1(ActionEvent actionEvent) {
+        selectedLevel = Level.L1;
+        // For now L1 behaves the same as classic but selection is recorded for future use
+        setNodeVisibility(levelSelectOverlay, false);
+        if (curtainLeft != null && curtainRight != null) {
+            curtainLeft.setTranslateX(0);
+            curtainRight.setTranslateX(0);
+            curtainLeft.setVisible(true);
+            curtainLeft.setManaged(true);
+            curtainRight.setVisible(true);
+            curtainRight.setManaged(true);
+        }
+        Platform.runLater(this::playCurtainAnimation);
+    }
+
+    @FXML
+    private void handleLevelL2(ActionEvent actionEvent) {
+        selectedLevel = Level.L2;
+        // For now L2 behaves the same as classic but selection is recorded for future use
+        setNodeVisibility(levelSelectOverlay, false);
+        if (curtainLeft != null && curtainRight != null) {
+            curtainLeft.setTranslateX(0);
+            curtainRight.setTranslateX(0);
+            curtainLeft.setVisible(true);
+            curtainLeft.setManaged(true);
+            curtainRight.setVisible(true);
+            curtainRight.setManaged(true);
+        }
+        Platform.runLater(this::playCurtainAnimation);
+    }
+
+    @FXML
+    private void cancelLevelSelect(ActionEvent actionEvent) {
+        // Hide overlay and return to main menu
+        setNodeVisibility(levelSelectOverlay, false);
+        setNodeVisibility(mainMenuOverlay, true);
+    }
 
     @FXML
     private void exitGame(ActionEvent actionEvent) {
@@ -878,15 +941,29 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     @FXML
     private void cancelAction(ActionEvent actionEvent) {
-        // Execute cancel action
+        // Hide confirmation overlay
         setNodeVisibility(confirmationOverlay, false);
+
         if (pendingCancelAction != null) {
+            // If a specific cancel action was provided (e.g., from game over flow), run it
             pendingCancelAction.run();
-            pendingCancelAction = null;
+        } else {
+            // No specific cancel handler -> return to pause menu (keep the game paused)
+            setNodeVisibility(pauseMenuOverlay, true);
         }
+
+        // Clear pending actions
+        pendingCancelAction = null;
         pendingConfirmationAction = null;
+
+        // Re-enable pause button so user can interact with pause menu
         if (pauseButton != null) {
             pauseButton.setDisable(false);
+        }
+
+        // Ensure keyboard focus remains on the game panel while paused
+        if (gamePanel != null) {
+            gamePanel.requestFocus();
         }
     }
 
