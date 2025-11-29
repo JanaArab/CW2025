@@ -35,19 +35,16 @@ class ShootingStarAnimatorTest {
 
     @Test
     void testCreateShootingStarWithDefaultSize() {
-        // This test will fail if the shooting_star.png resource is not present
-        // Remove the assertThrows if the resource is available
-        assertThrows(RuntimeException.class, () -> {
-            javafx.scene.Group star = animator.createShootingStar();
-        }, "Should throw RuntimeException when shooting_star.png is not found");
+        // Should create a Group regardless of whether an image resource is present
+        javafx.scene.Group star = animator.createShootingStar();
+        assertNotNull(star);
     }
 
     @Test
     void testCreateShootingStarWithCustomSize() {
-        // This test will fail if the shooting_star.png resource is not present
-        assertThrows(RuntimeException.class, () -> {
-            javafx.scene.Group star = animator.createShootingStar(150, 75);
-        }, "Should throw RuntimeException when shooting_star.png is not found");
+        // Should create a Group regardless of whether an image resource is present
+        javafx.scene.Group star = animator.createShootingStar(150, 75);
+        assertNotNull(star);
     }
 
     // Note: The following tests require JavaFX Application thread to be initialized
@@ -89,4 +86,3 @@ class ShootingStarAnimatorTest {
     }
     */
 }
-

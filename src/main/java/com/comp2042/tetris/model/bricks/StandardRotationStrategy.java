@@ -13,17 +13,14 @@ public class StandardRotationStrategy implements RotationStrategy {
 
         // Try current position first
         if (!MatrixOperations.intersect(boardMatrix, rotatedShape, currentX, currentY)) {
-            if (isAboveVisibleArea(rotatedShape, currentY)) {
-                return null;
-            }
+            // If the current position is valid, return the optimized position (or same position on small boards)
             return optimizePosition(boardMatrix, rotatedShape, currentX, currentY);
         }
 
         // Current position doesn't work, try wall kicks
         for (int dx : KICKS) {
             int newX = currentX + dx;
-            if (!MatrixOperations.intersect(boardMatrix, rotatedShape, newX, currentY)
-                    && !isAboveVisibleArea(rotatedShape, currentY)) {
+            if (!MatrixOperations.intersect(boardMatrix, rotatedShape, newX, currentY)) {
                 // Found a valid kick position, optimize it before returning
                 return optimizePosition(boardMatrix, rotatedShape, newX, currentY);
             }

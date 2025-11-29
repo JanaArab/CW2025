@@ -4,7 +4,7 @@
 
 package com.comp2042.tetris.model.board;
 
-
+import com.comp2042.tetris.model.level.GameLevel;
 import com.comp2042.tetris.model.score.Score;
 import com.comp2042.tetris.model.data.ViewData;
 
@@ -47,4 +47,6 @@ public interface Board {
 
     /*restart new game*/
     void newGame();
+
+    void setLevel(GameLevel level);
 }

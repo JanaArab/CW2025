@@ -8,9 +8,14 @@ import com.comp2042.tetris.utils.ScoreThresholdDetector;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.scene.Parent;
+import javafx.geometry.Pos;
 
 import java.util.List;
 import java.util.Objects;
+
+import com.comp2042.tetris.view.UIConstants;
 
 public class GameViewPresenter {
     private final BoardRenderer boardRenderer;
@@ -54,12 +59,20 @@ public class GameViewPresenter {
                     // Show a simple +500 popup using existing NotificationPanel and animator
                     NotificationPanel notificationPanel = new NotificationPanel("+500");
 
-                    // Center the notification panel in the screen (same offsets used elsewhere)
-                    notificationPanel.setLayoutX(-110);
-                    notificationPanel.setLayoutY(-100);
-
-                    notificationGroup.getChildren().add(notificationPanel);
-                    notificationAnimator.playShowScore(notificationPanel, notificationGroup.getChildren());
+                    // Prefer adding to the parent StackPane to align CENTER_LEFT
+                    Parent parent = notificationGroup.getParent();
+                    if (parent instanceof StackPane stack) {
+                        stack.getChildren().add(notificationPanel);
+                        StackPane.setAlignment(notificationPanel, Pos.CENTER_LEFT);
+                        notificationPanel.setTranslateX(40);
+                        notificationAnimator.playShowScore(notificationPanel, stack.getChildren());
+                    } else {
+                        double leftX = - (UIConstants.WINDOW_WIDTH / 2.0) + 40;
+                        notificationPanel.setLayoutX((int) leftX);
+                        notificationPanel.setLayoutY(0);
+                        notificationGroup.getChildren().add(notificationPanel);
+                        notificationAnimator.playShowScore(notificationPanel, notificationGroup.getChildren());
+                    }
 
                     // Play a small firework burst
                     fireworkAnimator.playFirework(notificationGroup);
@@ -90,14 +103,19 @@ public class GameViewPresenter {
                     if (notificationGroup != null) {
                         NotificationPanel notificationPanel = new NotificationPanel("+" + clearRow.scoreBonus());
 
-                        // Center the notification panel in the screen
-                        // NotificationPanel has minWidth=220 and minHeight=200
-                        // Center it by offsetting by half its dimensions
-                        notificationPanel.setLayoutX(-110); // Half of minWidth (220/2)
-                        notificationPanel.setLayoutY(-100); // Half of minHeight (200/2)
-
-                        notificationGroup.getChildren().add(notificationPanel);
-                        notificationAnimator.playShowScore(notificationPanel, notificationGroup.getChildren());
+                        Parent parent = notificationGroup.getParent();
+                        if (parent instanceof StackPane stack) {
+                            stack.getChildren().add(notificationPanel);
+                            StackPane.setAlignment(notificationPanel, Pos.CENTER_LEFT);
+                            notificationPanel.setTranslateX(40);
+                            notificationAnimator.playShowScore(notificationPanel, stack.getChildren());
+                        } else {
+                            double leftX = - (UIConstants.WINDOW_WIDTH / 2.0) + 40;
+                            notificationPanel.setLayoutX((int) leftX);
+                            notificationPanel.setLayoutY(0);
+                            notificationGroup.getChildren().add(notificationPanel);
+                            notificationAnimator.playShowScore(notificationPanel, notificationGroup.getChildren());
+                        }
                     }
                 }
             );

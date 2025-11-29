@@ -6,6 +6,8 @@ import javafx.animation.TranslateTransition;
 import javafx.animation.Interpolator;
 import javafx.scene.Group;
 import javafx.scene.effect.GaussianBlur;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.LinearGradient;
@@ -15,12 +17,14 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
+import java.net.URL;
 import java.util.Random;
 
 /**
  * ShootingStarAnimator creates and animates shooting star effects across the game screen.
  * The shooting stars move diagonally from top-left to bottom-right with a fading effect.
- * Stars are generated programmatically using JavaFX shapes.
+ * Stars are generated programmatically using JavaFX shapes. If a bundled image resource
+ * named '/shooting_star.png' is available on the classpath it will be used for the star head.
  */
 public class ShootingStarAnimator {
 
@@ -70,6 +74,45 @@ public class ShootingStarAnimator {
      * @return a new Group configured as a shooting star
      */
     public Group createShootingStar(double length, double thickness) {
+        // Try to load a packaged image resource first; if not present, fall back to programmatic shapes
+        URL resource = getClass().getResource("/shooting_star.png");
+        if (resource != null) {
+            try {
+                Image img = new Image(resource.toExternalForm());
+                ImageView view = new ImageView(img);
+                // Scale image to approximate star head size
+                view.setPreserveRatio(true);
+                view.setFitWidth(thickness * 3);
+                Group star = new Group();
+
+                // Create a simple trail behind the image using a blurred rectangle
+                Rectangle trail = new Rectangle(length, thickness);
+                trail.setTranslateX(-length);
+                trail.setTranslateY(-thickness / 2);
+                LinearGradient gradient = new LinearGradient(
+                    0, 0, 1, 0, true, CycleMethod.NO_CYCLE,
+                    new Stop(0, Color.TRANSPARENT),
+                    new Stop(0.6, Color.rgb(255, 255, 255, 0.6)),
+                    new Stop(1, Color.WHITE)
+                );
+                trail.setFill(gradient);
+                trail.setEffect(new GaussianBlur(3));
+
+                view.setTranslateX(0);
+                view.setTranslateY(-thickness);
+                view.setEffect(new GaussianBlur(4));
+
+                star.getChildren().addAll(trail, view);
+                star.setRotate(45);
+                star.setOpacity(0.9);
+                star.setCache(true);
+                return star;
+            } catch (Exception e) {
+                // If anything goes wrong with the image path, fall back to programmatic star
+            }
+        }
+
+        // Fallback: programmatic star (existing behavior)
         Group star = new Group();
 
         // Define multiple vibrant colors for variety
@@ -85,14 +128,7 @@ public class ShootingStarAnimator {
         // Randomly select a color for this star
         Color selectedColor = starColors[random.nextInt(starColors.length)];
 
-        // Calculate mid-tone color for gradient (darker version)
-        Color midColor = Color.rgb(
-            (int)(selectedColor.getRed() * 200),
-            (int)(selectedColor.getGreen() * 200),
-            (int)(selectedColor.getBlue() * 200)
-        );
-
-        // Create the bright star head (small circle) - RANDOM COLOR!
+        // Create the bright star head (small circle)
         Circle starHead = new Circle(thickness * 1.5);
         starHead.setFill(selectedColor);
         GaussianBlur headBlur = new GaussianBlur(5);
@@ -242,7 +278,4 @@ public class ShootingStarAnimator {
         }
     }
 }
-
-
-
 

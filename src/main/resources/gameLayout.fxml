@@ -168,7 +168,12 @@
         <Pane styleClass="frontFrame" mouseTransparent="true"/>
 
         <!-- Score notification popups group -->
-        <Group fx:id="groupNotification" StackPane.alignment="CENTER" mouseTransparent="true" pickOnBounds="false"/>
+        <Group fx:id="groupNotification" StackPane.alignment="CENTER" mouseTransparent="true" pickOnBounds="false">
+            <children>
+                <!-- Debug label shown when rotation/notification events fire (hidden by default) -->
+                <Label fx:id="debugNotificationLabel" text="" visible="false" styleClass="debug-notification" />
+            </children>
+        </Group>
 
         <!-- Game Over Panel (separate from notifications) -->
         <StackPane StackPane.alignment="CENTER" mouseTransparent="true" pickOnBounds="false">

@@ -12,7 +12,12 @@ import com.comp2042.tetris.model.data.ViewData;
 import com.comp2042.tetris.model.event.GameEventListener;
 import com.comp2042.tetris.model.event.GameStateSnapshot;
 import com.comp2042.tetris.model.event.ScoreChangeEvent;
+import com.comp2042.tetris.model.level.ClassicLevel;
+import com.comp2042.tetris.model.level.GameLevel;
+import com.comp2042.tetris.model.level.Level1;
+import com.comp2042.tetris.model.level.Level2;
 import com.comp2042.tetris.view.*;
+import com.comp2042.tetris.view.UIConstants;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -37,6 +42,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.scene.layout.HBox;
 import javafx.scene.Parent;
+import javafx.util.Duration;
+import javafx.geometry.Pos;
 
 
 public class GuiController implements Initializable, IGuiController, GameEventListener {
@@ -45,11 +52,6 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     @FXML
     private ImageView staticScreen;
 
-    @FXML
-    private Pane background1;
-
-    @FXML
-    private Pane background2;
 
     @FXML
     private Pane pixelStarLayer;
@@ -94,6 +96,9 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     private Group groupNotification;
 
     @FXML
+    private Label debugNotificationLabel;
+
+    @FXML
     private Pane activeBrickLayer;
 
     @FXML
@@ -121,17 +126,13 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     @FXML
     private StackPane levelSelectOverlay;
 
-    // Simple enum to track the selected level; currently only CLASSIC is wired into gameplay
-    private enum Level { CLASSIC, L1, L2 }
-
-    private Level selectedLevel = Level.CLASSIC;
-
-
     @FXML
     private Pane curtainLeft;
 
     @FXML
     private Pane curtainRight;
+
+    private GameLevel currentLevel = new ClassicLevel();
 
     private IGameController gameController;
 
@@ -155,6 +156,8 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     private PixelStarAnimator pixelStarAnimator;
     private NebulaCloudAnimator nebulaCloudAnimator;
     private GameTimer gameTimer;
+
+    private int lastRotationUsed = -1; // track last seen rotationsUsed to detect changes
 
 
 
@@ -439,42 +442,29 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     // Level selection handlers
     @FXML
     private void handleLevelClassic(ActionEvent actionEvent) {
-        selectedLevel = Level.CLASSIC;
-        // Hide overlay and start existing curtain animation -> will refresh/create new game behind curtains
-        setNodeVisibility(levelSelectOverlay, false);
-        // Show curtains and play animation sequence
-        if (curtainLeft != null && curtainRight != null) {
-            curtainLeft.setTranslateX(0);
-            curtainRight.setTranslateX(0);
-            curtainLeft.setVisible(true);
-            curtainLeft.setManaged(true);
-            curtainRight.setVisible(true);
-            curtainRight.setManaged(true);
-        }
-        Platform.runLater(this::playCurtainAnimation);
+        currentLevel = new ClassicLevel();
+        initiateGameStart();
     }
 
     @FXML
     private void handleLevelL1(ActionEvent actionEvent) {
-        selectedLevel = Level.L1;
-        // For now L1 behaves the same as classic but selection is recorded for future use
-        setNodeVisibility(levelSelectOverlay, false);
-        if (curtainLeft != null && curtainRight != null) {
-            curtainLeft.setTranslateX(0);
-            curtainRight.setTranslateX(0);
-            curtainLeft.setVisible(true);
-            curtainLeft.setManaged(true);
-            curtainRight.setVisible(true);
-            curtainRight.setManaged(true);
-        }
-        Platform.runLater(this::playCurtainAnimation);
+        currentLevel = new Level1();
+        initiateGameStart();
     }
 
     @FXML
     private void handleLevelL2(ActionEvent actionEvent) {
-        selectedLevel = Level.L2;
-        // For now L2 behaves the same as classic but selection is recorded for future use
+        currentLevel = new Level2();
+        initiateGameStart();
+    }
+
+
+
+    private void initiateGameStart() {
         setNodeVisibility(levelSelectOverlay, false);
+        if (gameController != null) {
+            gameController.setLevel(currentLevel);
+        }
         if (curtainLeft != null && curtainRight != null) {
             curtainLeft.setTranslateX(0);
             curtainRight.setTranslateX(0);
@@ -522,6 +512,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         }
 
         gameActive = true;
+        animationHandler.setTickInterval(currentLevel.getTickInterval(0));
         animationHandler.ensureInitialized();
         if (gameController != null) {
             gameController.createNewGame();
@@ -770,6 +761,10 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         if (gameViewPresenter != null) {
             gameViewPresenter.updateScore(event);
         }
+        if (animationHandler != null && currentLevel != null) {
+            Duration newInterval = currentLevel.getTickInterval(event.newScore());
+            animationHandler.setTickInterval(newInterval);
+        }
     }
 
     @Override
@@ -779,7 +774,85 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
             boolean paused = animationHandler != null && animationHandler.isPaused();
             gameViewPresenter.refreshBrick(viewData, paused);
         }
+
+        // Show rotation notification when rotationsUsed increases
+        try {
+            int rotationsUsed = viewData.getRotationsUsed();
+            int stateCount = viewData.getRotationStateCount();
+
+            // Only show rotation messages for Level2
+            if (!(currentLevel instanceof Level2)) {
+                // keep lastRotationUsed in sync to avoid accidental popups when switching levels
+                lastRotationUsed = rotationsUsed;
+            } else {
+                if (stateCount > 1 && rotationsUsed > 0 && rotationsUsed != lastRotationUsed) {
+                    showRotationNotification(rotationsUsed, stateCount);
+                }
+                lastRotationUsed = rotationsUsed;
+            }
+        } catch (Exception ignored) {
+            // If ViewData doesn't have rotation metadata older constructors, ignore
+        }
     }
+
+    // Display a transient notification in groupNotification (non-blocking)
+    private void showRotationNotification(int rotationsUsed, int rotationStateCount) {
+        if (groupNotification == null) return;
+
+        int remaining = Math.max(0, rotationStateCount - rotationsUsed);
+        // Use the same visual style as score popups (NotificationPanel)
+        String text;
+        if (remaining == 1) {
+            text = String.format("1 rotation left");
+        } else {
+            text = String.format("%d rotations left", remaining);
+        }
+
+        NotificationPanel notificationPanel = new NotificationPanel(text);
+
+        // Prefer adding to the parent StackPane and align CENTER_LEFT with a margin
+        double marginLeft = 40.0;
+        javafx.scene.Parent parent = groupNotification.getParent();
+        if (parent instanceof StackPane stack) {
+            // add to stack so we can use StackPane alignment reliably
+            stack.getChildren().add(notificationPanel);
+            StackPane.setAlignment(notificationPanel, Pos.CENTER_LEFT);
+            notificationPanel.setTranslateX(marginLeft);
+
+            // Debug logging
+            double sceneWidth = stack.getScene() != null ? stack.getScene().getWidth() : UIConstants.WINDOW_WIDTH;
+            System.out.println("[RotationNotification] added to StackPane parent, text='" + text + "' remaining=" + remaining + " sceneWidth=" + sceneWidth + " translateX=" + notificationPanel.getTranslateX());
+
+            // Also set the debug label so it's visible in the UI for quick confirmation
+            if (debugNotificationLabel != null) {
+                debugNotificationLabel.setText(text + " (" + remaining + " left)");
+                debugNotificationLabel.setVisible(true);
+                // Hide after 2 seconds
+                javafx.animation.PauseTransition hide = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(2));
+                hide.setOnFinished(e -> debugNotificationLabel.setVisible(false));
+                hide.play();
+            }
+
+            // Use animator with the stack's children list so removal works
+            NotificationAnimator animator = new NotificationAnimator();
+            animator.playShowScore(notificationPanel, stack.getChildren());
+        } else {
+            // Fallback: add to the groupNotification as before
+            double sceneWidth = groupNotification.getScene() != null ? groupNotification.getScene().getWidth() : UIConstants.WINDOW_WIDTH;
+            double leftX = - (sceneWidth / 2.0) + 40; // 40px margin from left edge
+            notificationPanel.setLayoutX(leftX);
+            notificationPanel.setLayoutY(0);
+
+            System.out.println("[RotationNotification] fallback to Group, text='" + text + "' remaining=" + remaining + " sceneWidth=" + sceneWidth + " leftX=" + leftX);
+
+            groupNotification.getChildren().add(notificationPanel);
+            NotificationAnimator animator = new NotificationAnimator();
+            animator.playShowScore(notificationPanel, groupNotification.getChildren());
+        }
+
+        // ...existing code...
+    }
+
     @Override
     public void onBoardUpdated(int[][] boardMatrix) {
         ensureConfigured();

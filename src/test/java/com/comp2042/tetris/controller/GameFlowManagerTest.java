@@ -147,11 +147,16 @@ class GameFlowManagerTest {
 
         @Override
         public com.comp2042.tetris.model.score.Score getScore() {
-            return null;
+            return new com.comp2042.tetris.model.score.Score();
         }
 
         @Override
         public void newGame() {}
+
+        @Override
+        public void setLevel(com.comp2042.tetris.model.level.GameLevel level) {
+            // no-op for test stub
+        }
     }
 
     private static final class StubPublisher implements GameEventPublisher {

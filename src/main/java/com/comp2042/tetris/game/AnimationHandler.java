@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class AnimationHandler {
     private final GameStateManager gameStateManager;
-    private final Duration tickInterval;
+    private  Duration tickInterval;
     private final Runnable tickAction;
     private GameLoop gameLoop;
 
@@ -17,6 +17,12 @@ public class AnimationHandler {
     public void ensureInitialized() {
         if (gameLoop == null) {
             gameLoop = new GameLoop(tickInterval, tickAction);
+        }
+    }
+    public void setTickInterval(Duration newInterval) {
+        this.tickInterval = newInterval;
+        if (gameLoop != null) {
+            gameLoop.updateInterval(newInterval);
         }
     }
     public void start(){

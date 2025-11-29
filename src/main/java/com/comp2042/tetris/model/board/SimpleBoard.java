@@ -8,13 +8,13 @@ import com.comp2042.tetris.model.bricks.Brick;
 import com.comp2042.tetris.model.bricks.BrickGenerator;
 import com.comp2042.tetris.model.bricks.BrickRotator;
 import com.comp2042.tetris.model.bricks.RandomBrickGenerator;
+import com.comp2042.tetris.model.level.ClassicLevel;
+import com.comp2042.tetris.model.level.GameLevel;
 import com.comp2042.tetris.utils.MatrixOperations;
 import com.comp2042.tetris.model.data.ViewData;
 import com.comp2042.tetris.model.score.Score;
 import java.awt.Point;
-import java.util.ArrayList;
 import java.util.List;
-
 
 
 public class SimpleBoard implements Board {
@@ -28,6 +28,8 @@ public class SimpleBoard implements Board {
     private Point currentOffset;
     private final Score score;
 
+    private GameLevel currentLevel;
+    private int currentBrickRotationCount = 0;
 
     public SimpleBoard(int rows, int cols) {
         this(rows, cols, new RandomBrickGenerator(), new BrickRotator(), new Score());
@@ -38,7 +40,13 @@ public class SimpleBoard implements Board {
         this.brickGenerator = brickGenerator;
         this.brickRotator = brickRotator;
         this.score = score;
-        currentGameMatrix = new int[rows][cols];
+        this.currentGameMatrix = new int[rows][cols];
+        this.currentLevel = new ClassicLevel();
+    }
+
+    @Override
+    public void setLevel(GameLevel level) {
+        this.currentLevel = level;
     }
 
     @Override
@@ -87,9 +95,17 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean rotateLeftBrick() {
+        int limit = currentLevel.getRotationLimit();
+
+        // 2. If limit exists and we reached it, "Freeze" rotation (return false)
+        if (limit != -1 && currentBrickRotationCount >= limit) {
+            return false;
+        }
+
         Point adjustedOffset = brickRotator.tryRotateLeft(currentGameMatrix, currentOffset);
         if (adjustedOffset != null) {
             currentOffset = adjustedOffset;
+            currentBrickRotationCount++;
             return true;
         }
 
@@ -98,6 +114,7 @@ public class SimpleBoard implements Board {
 
     @Override
     public boolean createNewBrick() {
+        currentBrickRotationCount = 0;
         Brick currentBrick = brickGenerator.getBrick();
         brickRotator.setBrick(currentBrick);
         // Compute horizontal spawn so the piece is centered for any board width.
@@ -129,7 +146,10 @@ public class SimpleBoard implements Board {
         for (Brick brick : brickGenerator.getNextBricks(3)) {
             nextBricksShapes.add(brick.getShapeMatrix().get(0));
         }
-        return new ViewData(brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY(), nextBricksShapes, ghostY);
+        int currentIndex = brickRotator.getCurrentShapeIndex();
+        int stateCount = brickRotator.getRotationStateCount();
+        int rotationsUsed = currentBrickRotationCount;
+        return new ViewData(brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY(), nextBricksShapes, ghostY, currentIndex, stateCount, rotationsUsed);
     }
 
     /**
@@ -174,3 +194,4 @@ public class SimpleBoard implements Board {
         createNewBrick();
     }
 }
+

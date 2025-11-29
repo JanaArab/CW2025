@@ -162,5 +162,10 @@ class InputHandlerTest {
 
         @Override
         public void createNewGame() {}
+
+        @Override
+        public void setLevel(com.comp2042.tetris.model.level.GameLevel level) {
+            // no-op for tests
+        }
     }
 }

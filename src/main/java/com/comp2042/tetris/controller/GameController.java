@@ -11,6 +11,7 @@ import com.comp2042.tetris.model.event.GameStateSnapshot;
 import com.comp2042.tetris.model.event.GameEventPublisher;
 import com.comp2042.tetris.model.event.MoveEvent;
 import com.comp2042.tetris.model.score.ScoreManager;
+import com.comp2042.tetris.model.level.GameLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +49,12 @@ public class GameController implements IGameController {
     private void publishInitialState() {
         eventPublisher.publishGameInitialized(new GameStateSnapshot(board.getBoardMatrix(), board.getViewData()));
         scoreManager.publishCurrentScore();
+    }
+
+    @Override
+    public void setLevel(GameLevel level) {
+        // Pass the level down to the board logic
+        board.setLevel(level);
     }
 
     @Override
