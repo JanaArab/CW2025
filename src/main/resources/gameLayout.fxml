@@ -146,6 +146,11 @@
                             <Label text="L2" styleClass="pause-btn-label"/>
                         </graphic>
                     </Button>
+                    <Button onAction="#handleLevelL3" styleClass="pause-btn">
+                        <graphic>
+                            <Label text="L3 (Hard)" styleClass="pause-btn-label"/>
+                        </graphic>
+                    </Button>
                 </VBox>
                 <Button onAction="#cancelLevelSelect" styleClass="pause-btn">
                     <graphic>

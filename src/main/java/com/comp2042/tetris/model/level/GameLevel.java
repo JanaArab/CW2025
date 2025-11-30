@@ -7,4 +7,15 @@ public interface GameLevel {
     default int getRotationLimit() {
         return -1;
     }
+    default boolean isGarbageEnabled() {
+        return false;
+    }
+
+    default boolean isFlickerEnabled() {
+        return false;
+    }
+
+    default boolean isNextBrickHidden() {
+        return false;
+    }
 }

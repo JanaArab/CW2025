@@ -44,7 +44,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.Parent;
 import javafx.util.Duration;
 import javafx.geometry.Pos;
-
+import javafx.animation.Timeline;
+import javafx.animation.KeyFrame;
+import javafx.animation.FadeTransition;
+import javafx.util.Duration;
+import java.util.Random;
 
 public class GuiController implements Initializable, IGuiController, GameEventListener {
 
@@ -158,7 +162,8 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     private GameTimer gameTimer;
 
     private int lastRotationUsed = -1; // track last seen rotationsUsed to detect changes
-
+    private Timeline flickerScheduler;
+    private final Random random = new Random();
 
 
     @Override
@@ -324,6 +329,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     @Override
     public void gameOver() {
+        stopFlickerEffect();
         ensureConfigured();
         gameActive = false;
         if (animationHandler != null) {
@@ -457,6 +463,11 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         currentLevel = new Level2();
         initiateGameStart();
     }
+    @FXML
+    private void handleLevelL3(ActionEvent actionEvent) {
+        currentLevel = new com.comp2042.tetris.model.level.Level3();
+        initiateGameStart();
+    }
 
 
 
@@ -464,6 +475,22 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         setNodeVisibility(levelSelectOverlay, false);
         if (gameController != null) {
             gameController.setLevel(currentLevel);
+        }
+
+        if (nextBrickPanel != null) {
+            boolean hideNext = currentLevel.isNextBrickHidden();
+            // We hide the parent BorderPane or the GridPane
+            Node parent = nextBrickPanel.getParent();
+            if(parent != null) {
+                parent.setVisible(!hideNext);
+            } else {
+                nextBrickPanel.setVisible(!hideNext);
+            }
+        }
+
+        stopFlickerEffect(); // Clear any existing timer
+        if (currentLevel.isFlickerEnabled()) {
+            startFlickerEffect();
         }
         if (curtainLeft != null && curtainRight != null) {
             curtainLeft.setTranslateX(0);
@@ -727,6 +754,48 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         });
 
         pause.play();
+    }
+    private void startFlickerEffect() {
+        // Schedule flicker every 30 seconds
+        flickerScheduler = new Timeline(new KeyFrame(Duration.seconds(30), e -> performFlicker()));
+        flickerScheduler.setCycleCount(Timeline.INDEFINITE);
+        flickerScheduler.play();
+    }
+
+    private void stopFlickerEffect() {
+        if (flickerScheduler != null) {
+            flickerScheduler.stop();
+            flickerScheduler = null;
+        }
+        // Reset opacity just in case
+        if (gamePanel != null) gamePanel.setOpacity(1.0);
+        if (mainContent != null) mainContent.setOpacity(1.0);
+    }
+
+    private void performFlicker() {
+        if (mainContent == null) return;
+
+        // Create a glitchy flicker effect (rapid opacity changes)
+        Timeline flickerAnim = new Timeline();
+        int flickerCount = 10 + random.nextInt(10); // 10-20 flickers
+
+        for (int i = 0; i < flickerCount; i++) {
+            double timeOffset = i * 0.05; // very fast intervals (50ms)
+            double randomOpacity = 0.3 + random.nextDouble() * 0.7; // 0.3 to 1.0
+
+            flickerAnim.getKeyFrames().add(
+                    new KeyFrame(Duration.seconds(timeOffset),
+                            evt -> mainContent.setOpacity(randomOpacity))
+            );
+        }
+
+        // Ensure it returns to full opacity at the end
+        flickerAnim.getKeyFrames().add(
+                new KeyFrame(Duration.seconds(flickerCount * 0.05),
+                        evt -> mainContent.setOpacity(1.0))
+        );
+
+        flickerAnim.play();
     }
 
     private void togglePauseState() {

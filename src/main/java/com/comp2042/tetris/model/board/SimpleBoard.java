@@ -15,6 +15,7 @@ import com.comp2042.tetris.model.data.ViewData;
 import com.comp2042.tetris.model.score.Score;
 import java.awt.Point;
 import java.util.List;
+import java.util.Random;
 
 
 public class SimpleBoard implements Board {
@@ -30,6 +31,8 @@ public class SimpleBoard implements Board {
 
     private GameLevel currentLevel;
     private int currentBrickRotationCount = 0;
+    private final Random random = new Random();
+    private long nextGarbageTime;
 
     public SimpleBoard(int rows, int cols) {
         this(rows, cols, new RandomBrickGenerator(), new BrickRotator(), new Score());
@@ -47,10 +50,16 @@ public class SimpleBoard implements Board {
     @Override
     public void setLevel(GameLevel level) {
         this.currentLevel = level;
+        if (level.isGarbageEnabled()) {
+            scheduleNextGarbage();
+        }
     }
 
     @Override
     public boolean moveBrickDown() {
+        if (currentLevel.isGarbageEnabled()) {
+            checkAndAddGarbage();
+        }
         Point p = new Point(currentOffset);
         p.translate(0, 1);
         boolean conflict = MatrixOperations.intersect(currentGameMatrix, brickRotator.getCurrentShape(), (int) p.getX(), (int) p.getY());
@@ -61,7 +70,49 @@ public class SimpleBoard implements Board {
             return true;
         }
     }
+    private void scheduleNextGarbage() {
+        // Schedule next garbage in 30-45 seconds (in nanoseconds)
+        long delaySeconds = 30 + random.nextInt(16); // 30 to 45
+        nextGarbageTime = System.nanoTime() + (delaySeconds * 1_000_000_000L);
+    }
 
+    private void checkAndAddGarbage() {
+        if (System.nanoTime() >= nextGarbageTime) {
+            addGarbageRows();
+            scheduleNextGarbage();
+        }
+    }
+
+    private void addGarbageRows() {
+        int rowsToAdd = 1 + random.nextInt(2); // 1 or 2 rows
+
+        for (int k = 0; k < rowsToAdd; k++) {
+            // Shift everything up by 1
+            // Note: matrix[0] is top, matrix[rows-1] is bottom
+            for (int row = 0; row < rows - 1; row++) {
+                currentGameMatrix[row] = currentGameMatrix[row + 1];
+            }
+
+            // Create new bottom row
+            int[] newRow = new int[cols];
+            int holeCol = random.nextInt(cols);
+
+            // Fill row with garbage blocks (using color index 8 for garbage, or random 1-7)
+            for (int col = 0; col < cols; col++) {
+                if (col != holeCol) {
+                    newRow[col] = 1 + random.nextInt(7); // Random brick color
+                } else {
+                    newRow[col] = 0; // The hole
+                }
+            }
+            currentGameMatrix[rows - 1] = newRow;
+
+            // Push the current falling brick up to prevent immediate clipping if possible
+            if (currentOffset.getY() > 0) {
+                currentOffset.translate(0, -1);
+            }
+        }
+    }
 
     @Override
     public boolean moveBrickLeft() {
@@ -191,6 +242,9 @@ public class SimpleBoard implements Board {
     public void newGame() {
         currentGameMatrix = new int[rows][cols];
         score.reset();
+        if (currentLevel != null && currentLevel.isGarbageEnabled()) {
+            scheduleNextGarbage();
+        }
         createNewBrick();
     }
 }
