@@ -18,5 +18,8 @@ public class DefaultCommandRegistry implements CommandRegistry {
         commandRegistrar.registerCommand(rightCommand, true, KeyCode.RIGHT, KeyCode.D);
         commandRegistrar.registerCommand(downCommand, true, KeyCode.DOWN, KeyCode.S);
         commandRegistrar.registerCommand(rotateCommand, true, KeyCode.UP, KeyCode.W);
+
+        GameCommand instantDropCommand = inputCommandFactory.createInstantDropCommand(gameActionInvoker);
+        commandRegistrar.registerCommand(instantDropCommand, true, KeyCode.SPACE);
     }
 }

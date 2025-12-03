@@ -17,6 +17,6 @@ public interface GameEventListener {
     void onLinesCleared(ClearRow clearRow);
 
     void onGameOver();
+
+    void onBrickPlaced(BrickPlacedEvent event);
 }
-
-

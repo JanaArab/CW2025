@@ -63,5 +63,10 @@ public class SimpleGameEventBus implements GameEventPublisher {
         }
     }
 
+    @Override
+    public void publishBrickPlaced(BrickPlacedEvent event) {
+        for (GameEventListener listener : listeners) {
+            listener.onBrickPlaced(event);
+        }
+    }
 }
-

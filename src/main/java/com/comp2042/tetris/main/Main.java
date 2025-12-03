@@ -5,9 +5,7 @@
  * Loads the game layout
  * launches the main game window
  */
-
 package com.comp2042.tetris.main;
-
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -21,8 +19,6 @@ import com.comp2042.tetris.model.event.GameEventBusProvider;
 import com.comp2042.tetris.model.event.GameEventListener;
 import com.comp2042.tetris.model.event.GameEventPublisher;
 import com.comp2042.tetris.view.UIConstants;
-
-
 import java.net.URL;
 import java.util.ResourceBundle;
 

@@ -109,6 +109,13 @@ public class InputHandler implements GameActionInvoker, InputCommandRegistrar {
         }
     }
 
+    @Override
+    public void instantDrop() {
+        if (gameController != null) {
+            gameController.onInstantDropEvent(new MoveEvent(EventType.DOWN, EventSource.USER)); // Using DOWN type, but it's instant
+        }
+    }
+
     private boolean isInteractionDisabled() {
         return (isPauseSupplier != null && isPauseSupplier.getAsBoolean())
                 || (isGameOverSupplier != null && isGameOverSupplier.getAsBoolean());

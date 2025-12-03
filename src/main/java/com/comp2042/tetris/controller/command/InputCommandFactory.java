@@ -10,4 +10,6 @@ public interface InputCommandFactory {
     GameCommand createMoveDownCommand(GameActionInvoker gameActionInvoker);
 
     GameCommand createRotateCommand(GameActionInvoker gameActionInvoker);
+
+    GameCommand createInstantDropCommand(GameActionInvoker gameActionInvoker);
 }

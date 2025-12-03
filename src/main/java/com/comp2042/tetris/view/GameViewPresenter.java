@@ -4,6 +4,7 @@ import com.comp2042.tetris.model.board.ClearRow;
 import com.comp2042.tetris.model.data.ViewData;
 import com.comp2042.tetris.model.event.GameStateSnapshot;
 import com.comp2042.tetris.model.event.ScoreChangeEvent;
+import com.comp2042.tetris.utils.AudioManager;
 import com.comp2042.tetris.utils.ScoreThresholdDetector;
 import javafx.application.Platform;
 import javafx.scene.Group;
@@ -76,6 +77,8 @@ public class GameViewPresenter {
 
                     // Play a small firework burst
                     fireworkAnimator.playFirework(notificationGroup);
+                    // Play confetti SFX for threshold
+                    AudioManager.getInstance().playConfetti();
                 }
             }
 
@@ -116,6 +119,8 @@ public class GameViewPresenter {
                             notificationGroup.getChildren().add(notificationPanel);
                             notificationAnimator.playShowScore(notificationPanel, notificationGroup.getChildren());
                         }
+                        // Play confetti SFX when a row clear bonus notification is displayed
+                        AudioManager.getInstance().playConfetti();
                     }
                 }
             );
