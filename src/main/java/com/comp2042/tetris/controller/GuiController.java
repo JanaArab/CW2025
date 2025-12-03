@@ -46,6 +46,9 @@ import javafx.scene.text.Font;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
+import javafx.stage.Popup;
 
 import java.net.URL;
 import java.util.Objects;
@@ -93,6 +96,9 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     private StackPane musicControlOverlay;
 
     @FXML
+    private StackPane tutorialOverlay;
+
+    @FXML
     private javafx.scene.control.Slider musicVolumeSlider;
 
     @FXML
@@ -129,10 +135,15 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     private GridPane nextBrickPanel;
 
     @FXML
+    private Label nextTitleLabel;
+
+    @FXML
     private OverlayPanel gameOverPanel;
 
     @FXML
     private StackPane mainMenuOverlay;
+
+    private Node previousOverlay;
 
     @FXML
     private VBox mainMenuCard;
@@ -145,6 +156,18 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     @FXML
     private Pane curtainRight;
+
+    @FXML
+    private Button levelClassicButton;
+
+    @FXML
+    private Button levelL1Button;
+
+    @FXML
+    private Button levelL2Button;
+
+    @FXML
+    private Button levelL3Button;
 
     private GameLevel currentLevel = new ClassicLevel();
 
@@ -172,6 +195,9 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     private GameTimer gameTimer;
 
     private int lastRotationUsed = -1;
+    // Counter to track rotation-popup sequence per active brick so every brick (including S/Z)
+    // shows the same 4-step message sequence (3,2,1,0) regardless of model rotation states.
+    private int rotationPopupTicks = 0;
     private Timeline flickerScheduler;
     private final Random random = new Random();
 
@@ -272,6 +298,59 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         } catch (Exception ignored) {}
 
         Platform.runLater(() -> { try { setupHoverSounds(); setupClickSounds(); } catch (Throwable ignored) {} });
+
+        // Attach a tooltip and a Popup-based hover hint to the Classic level button so the full description is always visible
+        try {
+            if (levelClassicButton != null) {
+                // Popup-based hint (more reliable and won't be clipped) that appears immediately on hover
+                Platform.runLater(() -> {
+                    installLevelHint(levelClassicButton, "This is your normal tetris game with a galxy twist, HAVE FUN");
+                });
+            }
+            // Also attach hints to L1/L2/L3
+            Platform.runLater(() -> {
+                try { if (levelL1Button != null) installLevelHint(levelL1Button, "Every point pushes the accelerator! The higher your score, the faster the blocks fall"); } catch (Throwable ignored) {}
+                try { if (levelL2Button != null) installLevelHint(levelL2Button, "You only get four rotations per piece. Think fast, rotate smarter, and place perfectly"); } catch (Throwable ignored) {}
+                try { if (levelL3Button != null) installLevelHint(levelL3Button, "Welcome to pure madness, random garbage lines, flickering screen, reversed controls, and no next-piece preview. Only true Tetris warriors survive here."); } catch (Throwable ignored) {}
+            });
+        } catch (Throwable ignored) {}
+
+    }
+
+    // Helper: installs a Popup-based hint for a button with consistent styling and behavior
+    private void installLevelHint(Button target, String message) {
+        if (target == null || message == null) return;
+        try {
+            Popup hintPopup = new Popup();
+            Label hintLabel = new Label(message);
+            hintLabel.setStyle("-fx-background-color: rgba(0,0,0,0.95); -fx-text-fill: #ffffff; -fx-background-radius: 6; -fx-padding: 10 14;");
+            hintLabel.setWrapText(true);
+            hintLabel.setMaxWidth(520);
+            hintLabel.setPrefWidth(520);
+            hintLabel.setPadding(new Insets(10, 14, 10, 14));
+            try { hintLabel.setFont(Font.font("Press Start 2P", 14)); } catch (Throwable ignored) {}
+            hintPopup.getContent().add(hintLabel);
+            hintPopup.setAutoHide(true);
+
+            target.setOnMouseEntered(e -> {
+                try {
+                    if (target.getScene() == null || target.getScene().getWindow() == null) return;
+                    hintLabel.applyCss(); hintLabel.layout();
+                    double hintH = hintLabel.prefHeight(520);
+                    double hintW = hintLabel.prefWidth(-1);
+                    Point2D btnScreen = target.localToScreen(0, 0);
+                    if (btnScreen == null) return;
+                    double btnW = target.getWidth();
+                    double x = btnScreen.getX() + (btnW - hintW) / 2.0;
+                    double y = btnScreen.getY() - hintH - 12;
+                    if (x < 0) x = btnScreen.getX();
+                    if (y < 0) y = btnScreen.getY() + target.getHeight() + 6;
+                    hintPopup.show(target.getScene().getWindow(), x, y);
+                } catch (Throwable ignored) {}
+            });
+            target.setOnMouseExited(e -> { try { if (hintPopup.isShowing()) hintPopup.hide(); } catch (Throwable ignored) {} });
+            target.setOnMousePressed(e -> { try { if (hintPopup.isShowing()) hintPopup.hide(); } catch (Throwable ignored) {} });
+        } catch (Throwable ignored) {}
     }
 
     private void playIntroSequence() {
@@ -366,11 +445,16 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
         if (gameTimer != null) gameTimer.stop();
         if (pauseButton != null) pauseButton.setDisable(true);
-        if (gameOverOverlay != null) { gameOverOverlay.setVisible(true); gameOverOverlay.setManaged(true); }
+        if (gameOverOverlay != null) {
+            gameOverOverlay.setVisible(true);
+            gameOverOverlay.setManaged(true);
+        }
+        if (mainContent != null) mainContent.setOpacity(0.5);
 
         PauseTransition pause = new PauseTransition(Duration.seconds(3));
         pause.setOnFinished(e -> {
             if (gameOverOverlay != null) { gameOverOverlay.setVisible(false); gameOverOverlay.setManaged(false); }
+            if (mainContent != null) mainContent.setOpacity(1.0);
             if (curtainLeft != null) curtainLeft.setTranslateX(-900);
             if (curtainRight != null) curtainRight.setTranslateX(900);
 
@@ -430,15 +514,28 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     @FXML
     private void handleLevelL2(ActionEvent actionEvent) { currentLevel = new Level2(); switchBackgroundTo("/sounds/level2.mp3"); initiateGameStart(); }
     @FXML
-    private void handleLevelL3(ActionEvent actionEvent) { currentLevel = new com.comp2042.tetris.model.level.Level3(); switchBackgroundTo("/sounds/level3.mp3"); initiateGameStart(); }
+    private void handleLevelL3(ActionEvent actionEvent) {
+        currentLevel = new com.comp2042.tetris.model.level.Level3();
+        switchBackgroundTo("/sounds/level3.mp3");
+        // Enable inverted horizontal controls for Level 3
+        try { if (inputHandler != null) inputHandler.setInvertHorizontal(true); } catch (Throwable ignored) {}
+        initiateGameStart();
+    }
 
     private void initiateGameStart() {
         setNodeVisibility(levelSelectOverlay, false);
+        // Ensure horizontal inversion matches the selected level (Level3 inverts controls)
+        try { if (inputHandler != null) inputHandler.setInvertHorizontal(currentLevel instanceof com.comp2042.tetris.model.level.Level3); } catch (Throwable ignored) {}
         if (gameController != null) gameController.setLevel(currentLevel);
         if (nextBrickPanel != null) {
             boolean hideNext = currentLevel.isNextBrickHidden();
             Node parent = nextBrickPanel.getParent();
             if (parent != null) parent.setVisible(!hideNext); else nextBrickPanel.setVisible(!hideNext);
+            // Also hide the "NEXT" title label for levels that hide the next-brick view (Level 3)
+            if (nextTitleLabel != null) {
+                nextTitleLabel.setVisible(!hideNext);
+                nextTitleLabel.setManaged(!hideNext);
+            }
         }
         stopFlickerEffect();
         if (currentLevel.isFlickerEnabled()) startFlickerEffect();
@@ -455,6 +552,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         ensureConfigured(); if (animationHandler == null) return;
         AudioManager.getInstance().setSuppressSfx(false); AudioManager.getInstance().stopAll();
         if (gameOverOverlay != null) { gameOverOverlay.setVisible(false); gameOverOverlay.setManaged(false); }
+        if (mainContent != null) mainContent.setOpacity(1.0);
         if (pauseButton != null) { pauseButton.setVisible(true); pauseButton.setManaged(true); pauseButton.setDisable(false); }
         gameActive = true;
         animationHandler.setTickInterval(currentLevel.getTickInterval(0)); animationHandler.ensureInitialized(); if (gameController != null) gameController.createNewGame(); animationHandler.start();
@@ -520,6 +618,8 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
 
     private void showMainMenu() {
         gameActive = false;
+        // Reset any input inversion when returning to menu
+        try { if (inputHandler != null) inputHandler.setInvertHorizontal(false); } catch (Throwable ignored) {}
         if (animationHandler != null && !animationHandler.isGameOver() && !animationHandler.isPaused()) animationHandler.togglePause();
         if (curtainLeft != null) { curtainLeft.setVisible(false); curtainLeft.setManaged(false); }
         if (curtainRight != null) { curtainRight.setVisible(false); curtainRight.setManaged(false); }
@@ -584,16 +684,30 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     }
 
     private void showRotationNotification(int rotationsUsed, int rotationStateCount) {
-        if (groupNotification == null) return; int remaining = Math.max(0, rotationStateCount - rotationsUsed); String text = remaining == 1 ? "1 rotation left" : String.format("%d rotations left", remaining);
+        if (groupNotification == null) return;
+        // Reset the popup tick counter when a new brick appears (rotation counter decreased)
+        if (rotationsUsed < lastRotationUsed) {
+            rotationPopupTicks = 0;
+        }
+        // Advance tick for this rotation event; use it to compute a 4-step message sequence
+        rotationPopupTicks++;
+        int stepIndex = (rotationPopupTicks - 1) % 4; // 0..3
+        int remaining = 3 - stepIndex; // produces 3,2,1,0
+        String text = remaining == 1 ? "1 rotation left" : String.format("%d rotations left", remaining);
         NotificationPanel notificationPanel = new NotificationPanel(text);
-        double marginLeft = 40.0; Parent parent = groupNotification.getParent(); if (parent instanceof StackPane stack) {
-            stack.getChildren().add(notificationPanel); StackPane.setAlignment(notificationPanel, Pos.CENTER_LEFT); notificationPanel.setTranslateX(marginLeft);
-            double sceneWidth = stack.getScene() != null ? stack.getScene().getWidth() : UIConstants.WINDOW_WIDTH;
-            LOGGER.debug("[RotationNotification] added to StackPane parent, text='{}' remaining={} sceneWidth={} translateX={}", text, remaining, sceneWidth, notificationPanel.getTranslateX());
-            if (debugNotificationLabel != null) { debugNotificationLabel.setText(text + " (" + remaining + " left)"); debugNotificationLabel.setVisible(true); PauseTransition hide = new PauseTransition(Duration.seconds(2)); hide.setOnFinished(e -> debugNotificationLabel.setVisible(false)); hide.play(); }
-            NotificationAnimator animator = new NotificationAnimator(); animator.playShowScore(notificationPanel, stack.getChildren());
-        } else {
-            double sceneWidth = groupNotification.getScene() != null ? groupNotification.getScene().getWidth() : UIConstants.WINDOW_WIDTH; double leftX = - (sceneWidth / 2.0) + 40; notificationPanel.setLayoutX(leftX); notificationPanel.setLayoutY(0); LOGGER.debug("[RotationNotification] fallback to Group, text='{}' remaining={} sceneWidth={} leftX={}", text, remaining, sceneWidth, leftX); groupNotification.getChildren().add(notificationPanel); NotificationAnimator animator = new NotificationAnimator(); animator.playShowScore(notificationPanel, groupNotification.getChildren()); }
+        // Apply rotation-specific CSS so the panel is compact and left-center aligned
+        try { notificationPanel.getStyleClass().add("rotation-notification"); } catch (Throwable ignored) {}
+         double marginLeft = 160.0; Parent parent = groupNotification.getParent(); if (parent instanceof StackPane stack) {
+             stack.getChildren().add(notificationPanel); StackPane.setAlignment(notificationPanel, Pos.CENTER_LEFT); notificationPanel.setTranslateX(marginLeft);
+             double sceneWidth = stack.getScene() != null ? stack.getScene().getWidth() : UIConstants.WINDOW_WIDTH;
+             LOGGER.debug("[RotationNotification] added to StackPane parent, text='{}' remaining={} sceneWidth={} translateX={}", text, remaining, sceneWidth, notificationPanel.getTranslateX());
+            if (debugNotificationLabel != null) { debugNotificationLabel.setText(text + " (" + remaining + " left)"); debugNotificationLabel.setVisible(true); PauseTransition hide = new PauseTransition(Duration.seconds(1)); hide.setOnFinished(e -> debugNotificationLabel.setVisible(false)); hide.play(); }
+            NotificationAnimator animator = new NotificationAnimator(); animator.playShowRotation(notificationPanel, stack.getChildren());
+         } else {
+            double sceneWidth = groupNotification.getScene() != null ? groupNotification.getScene().getWidth() : UIConstants.WINDOW_WIDTH; double leftX = - (sceneWidth / 2.0) + 70; notificationPanel.setLayoutX(leftX); notificationPanel.setLayoutY(0); LOGGER.debug("[RotationNotification] fallback to Group, text='{}' remaining={} sceneWidth={} leftX={}", text, remaining, sceneWidth, leftX);
+             try { notificationPanel.getStyleClass().add("rotation-notification"); } catch (Throwable ignored) {}
+             groupNotification.getChildren().add(notificationPanel);
+             NotificationAnimator animator = new NotificationAnimator(); animator.playShowRotation(notificationPanel, groupNotification.getChildren()); }
     }
 
     @Override
@@ -614,13 +728,20 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     Label getScoreLabel() { return scoreLabel; }
     Group getGroupNotification() { return groupNotification; }
     OverlayPanel getGameOverPanel() { return gameOverPanel; }
+    BorderPane getGameBoard() { return gameBoard; }
 
     @FXML
     private void resumeGame(ActionEvent actionEvent) { togglePauseState(); }
     @FXML
-    private void openMusicControl(ActionEvent actionEvent) { setNodeVisibility(pauseMenuOverlay, false); setNodeVisibility(musicControlOverlay, true); if (pauseButton != null) pauseButton.setDisable(true); }
+    private void openMusicControl(ActionEvent actionEvent) { previousOverlay = pauseMenuOverlay.isVisible() ? pauseMenuOverlay : mainMenuOverlay; setNodeVisibility(previousOverlay, false); setNodeVisibility(musicControlOverlay, true); if (pauseButton != null) pauseButton.setDisable(true); }
     @FXML
-    private void closeMusicControl(ActionEvent actionEvent) { setNodeVisibility(musicControlOverlay, false); setNodeVisibility(pauseMenuOverlay, true); if (pauseButton != null) pauseButton.setDisable(false); }
+    private void closeMusicControl(ActionEvent actionEvent) { setNodeVisibility(musicControlOverlay, false); setNodeVisibility(previousOverlay, true); if (pauseButton != null) pauseButton.setDisable(false); }
+
+    @FXML
+    private void openTutorial(ActionEvent actionEvent) { previousOverlay = pauseMenuOverlay.isVisible() ? pauseMenuOverlay : mainMenuOverlay; setNodeVisibility(previousOverlay, false); setNodeVisibility(tutorialOverlay, true); if (pauseButton != null) pauseButton.setDisable(true); }
+
+    @FXML
+    private void closeTutorial(ActionEvent actionEvent) { setNodeVisibility(tutorialOverlay, false); setNodeVisibility(previousOverlay, true); if (pauseButton != null) pauseButton.setDisable(false); }
 
     @FXML
     private void startNewGameFromPause(ActionEvent actionEvent) {

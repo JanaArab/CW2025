@@ -13,6 +13,7 @@ import com.comp2042.tetris.view.OverlayPanel;
 import com.comp2042.tetris.view.UIConstants;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 
 import java.util.Objects;
@@ -27,6 +28,7 @@ public class DefaultGuiControllerDependenciesFactory {
         Label scoreLabel = controller.getScoreLabel();
         Group groupNotification = controller.getGroupNotification();
         OverlayPanel gameOverPanel = controller.getGameOverPanel();
+        BorderPane gameBoard = controller.getGameBoard();
 
         GameStateManager gameStateManager = new GameStateManager();
         AnimationHandler animationHandler = new AnimationHandler(

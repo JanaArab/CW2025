@@ -51,7 +51,7 @@
             </StackPane>
 
             <VBox alignment="CENTER" spacing="20" styleClass="side-panel">
-                <Label text="NEXT :" styleClass="panel-title"/>
+                <Label fx:id="nextTitleLabel" text="NEXT :" styleClass="panel-title"/>
                 <BorderPane styleClass="nextBoard">
                     <center>
                         <GridPane fx:id="nextBrickPanel" hgap="0" vgap="0" alignment="CENTER" maxWidth="100" maxHeight="290"/>
@@ -61,7 +61,7 @@
         </HBox>
         <StackPane fx:id="pauseMenuOverlay" styleClass="pause-menu-overlay" visible="false" managed="false" StackPane.alignment="CENTER">
             <VBox fx:id="pauseMenuCard" spacing="12" alignment="CENTER" styleClass="pause-menu-card">
-                <Label text="PAUSED" styleClass="pause-menu-title"/>
+                <Label text="PAUSED" styleClass="settings-title"/>
                 <VBox alignment="CENTER" spacing="6">
                     <Button onAction="#resumeGame" styleClass="pause-btn, pause-btn-primary">
                         <graphic>
@@ -125,35 +125,49 @@
                     </Button>
                 </VBox>
             </VBox>
+            <Button onAction="#openMusicControl" styleClass="pause-btn-small" StackPane.alignment="BOTTOM_RIGHT" style="-fx-translate-x: -158; -fx-translate-y: -90;">
+                <graphic>
+                    <Label text="🔊" style="-fx-text-fill: #ffffff; -fx-font-family: 'Press Start 2P'; -fx-font-size: 13px; -fx-translate-y: -1;"/>
+                </graphic>
+            </Button>
+            <Button onAction="#openTutorial" styleClass="pause-btn-small" StackPane.alignment="BOTTOM_LEFT" style="-fx-translate-x: 158; -fx-translate-y: -90;">
+                <graphic>
+                    <Label text="❓" style="-fx-text-fill: #ffffff; -fx-font-family: 'Press Start 2P'; -fx-font-size: 13px; -fx-translate-y: -1;"/>
+                </graphic>
+            </Button>
         </StackPane>
 
         <!-- Level Selection Overlay: appears after pressing Start Game -->
         <StackPane fx:id="levelSelectOverlay" styleClass="pause-menu-overlay" visible="false" managed="false" StackPane.alignment="CENTER">
             <VBox spacing="16" alignment="CENTER" styleClass="level-menu-card">
-                <Label text="CHOOSE YOUR LEVEL" styleClass="pause-menu-title"/>
+                <Label text="CHOOSE YOUR LEVEL" styleClass="settings-title"/>
                 <VBox alignment="CENTER" spacing="8">
-                    <Button onAction="#handleLevelClassic" styleClass="pause-btn, pause-btn">
-                        <graphic>
-                            <Label text="Classic" styleClass="pause-btn-label"/>
-                        </graphic>
-                    </Button>
-                    <Button onAction="#handleLevelL1" styleClass="pause-btn">
+                    <!-- Classic button: StackPane wrapper so hint overlays the button without affecting layout -->
+                    <StackPane styleClass="level-hint-container" alignment="CENTER">
+                        <Button fx:id="levelClassicButton" onAction="#handleLevelClassic" styleClass="pause-btn, level-classic">
+                            <graphic>
+                                <Label text="Classic" styleClass="pause-btn-label"/>
+                            </graphic>
+                        </Button>
+                        <!-- Hint label removed here; Popup-based hint in controller will handle showing the description to avoid duplicates -->
+                    </StackPane>
+                    <Button fx:id="levelL1Button" onAction="#handleLevelL1" styleClass="pause-btn, level-l1">
                         <graphic>
                             <Label text="L1" styleClass="pause-btn-label"/>
                         </graphic>
                     </Button>
-                    <Button onAction="#handleLevelL2" styleClass="pause-btn">
+                    <Button fx:id="levelL2Button" onAction="#handleLevelL2" styleClass="pause-btn, level-l2">
                         <graphic>
                             <Label text="L2" styleClass="pause-btn-label"/>
                         </graphic>
                     </Button>
-                    <Button onAction="#handleLevelL3" styleClass="pause-btn">
+                    <Button fx:id="levelL3Button" onAction="#handleLevelL3" styleClass="pause-btn, level-l3">
                         <graphic>
                             <Label text="L3 (Hard)" styleClass="pause-btn-label"/>
                         </graphic>
                     </Button>
                 </VBox>
-                <Button onAction="#cancelLevelSelect" styleClass="pause-btn">
+                <Button onAction="#cancelLevelSelect" styleClass="pause-btn, back-black">
                     <graphic>
                         <Label text="◄ Back" styleClass="pause-btn-label"/>
                     </graphic>
@@ -227,19 +241,37 @@
             </VBox>
         </StackPane>
 
+        <!-- Tutorial Panel -->
+        <StackPane fx:id="tutorialOverlay" styleClass="pause-menu-overlay" visible="false" managed="false" StackPane.alignment="CENTER">
+             <VBox spacing="12" alignment="CENTER" styleClass="tutorial-card">
+                <Label text="HOW TO PLAY" styleClass="settings-title"/>
+                <VBox spacing="8" alignment="CENTER">
+                    <Label text="Use arrow keys to move left/right and rotate." styleClass="setting-item" />
+                    <Label text="Press spacebar to drop the brick instantly." styleClass="setting-item" />
+                    <Label text="Clear full lines to score points." styleClass="setting-item" />
+                    <Label text="Game over when bricks reach the top." styleClass="setting-item" />
+                </VBox>
+                <Button onAction="#closeTutorial" styleClass="pause-btn">
+                    <graphic>
+                        <Label text="◄ Back" styleClass="pause-btn-label"/>
+                    </graphic>
+                </Button>
+            </VBox>
+        </StackPane>
+
         <!-- Game Over Screen -->
         <StackPane fx:id="gameOverOverlay" visible="false" managed="false" StackPane.alignment="CENTER" prefWidth="100" prefHeight="120">
         </StackPane>
 
         <Button fx:id="pauseButton"
                 onAction="#pauseGame"
-                styleClass="pause-button"
+                styleClass="pause-btn-small"
                 StackPane.alignment="BOTTOM_LEFT"
                 style="-fx-translate-x: 158; -fx-translate-y: -90;"
                 visible="false"
                 managed="false">
             <graphic>
-                <Label text="⏯" style="-fx-text-fill: #ffffff; -fx-font-family: 'Press Start 2P'; -fx-font-size: 22px; -fx-translate-y: -3;"/>
+                <Label text="❚❚" style="-fx-text-fill: #ffffff; -fx-font-family: 'Press Start 2P'; -fx-font-size: 13px; -fx-translate-y: -1;"/>
             </graphic>
         </Button>
     </children>
