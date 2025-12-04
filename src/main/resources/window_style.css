@@ -1,6 +1,4 @@
-/* ===================================
-   CSS VARIABLES (THEME COLORS)
-   =================================== */
+
 .root {
     -fx-theme-primary: #18dcff;
     -fx-theme-primary-light: #5ce4ff;
@@ -54,9 +52,7 @@
     -fx-pref-height: 720px;
 }
 
-/* ===================================
-   BACKGROUND STYLES
-   =================================== */
+
 .starBackground {
     -fx-background-size: cover;
     -fx-background-repeat: no-repeat;
@@ -71,9 +67,6 @@
     -fx-background-position: center;
 }
 
-/* ===================================
-   GAME BOARD STYLES
-   =================================== */
 .gameBoard {
     -fx-border-color: -fx-theme-secondary;
     -fx-border-width: 3px;
@@ -118,9 +111,7 @@
     -fx-effect: null;
 }
 
-/* ===================================
-   BASE TEXT STYLES
-   =================================== */
+
 .nextBrickLabel {
     -fx-font-family: "Let's go Digital";
     -fx-padding: 20px 0 0 0;
@@ -163,12 +154,6 @@
                 dropshadow(gaussian, black, 30, 0.95, 0, 0);
 }
 
-.helpInfo {
-    -fx-fill: -fx-theme-text-white;
-    -fx-alignment: center-left;
-    -fx-text-alignment: left;
-    -fx-font-size: 10px;
-}
 
 .info-panel {
     -fx-border-color: -fx-theme-text-white;
@@ -176,9 +161,6 @@
     -fx-background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* ===================================
-   TITLE STYLES
-   =================================== */
 .game-title, .title-galaxy {
     -fx-font-family: "Press Start 2P";
     -fx-font-size: 18px;
@@ -237,9 +219,7 @@
     -fx-text-fill: -fx-theme-secondary;
 }
 
-/* ===================================
-   BASE BUTTON STYLE
-   =================================== */
+
 .btn-base {
     -fx-font-family: "Press Start 2P";
     -fx-font-size: 12px;
@@ -263,9 +243,6 @@
     -fx-effect: none;
 }
 
-/* ===================================
-   MENU BUTTONS (THEMED VARIATIONS)
-   =================================== */
 .menu-button {
     -fx-font-family: "Press Start 2P";
     -fx-font-size: 12px;
@@ -347,9 +324,6 @@
         -fx-theme-danger 85%, -fx-theme-danger 100%);
 }
 
-/* ===================================
-   PAUSE & LEVEL BUTTONS
-   =================================== */
 .pause-btn {
     -fx-font-family: "Press Start 2P";
     -fx-background-radius: 3;
@@ -427,9 +401,7 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 3, 0, 2, 2);
 }
 
-/* ===================================
-   LEVEL BUTTON VARIANTS
-   =================================== */
+
 .level-classic {
     -fx-text-fill: #022b35;
     -fx-border-color: #0ab0d1;
@@ -504,9 +476,7 @@
     -fx-text-fill: #000000;
 }
 
-/* ===================================
-   OVERLAY & CARD STYLES (SHARED)
-   =================================== */
+
 .main-menu-overlay {
     -fx-background-color: transparent;
 }
@@ -593,9 +563,7 @@
     -fx-spacing: 8;
 }
 
-/* ===================================
-   GAME OVER SCREEN
-   =================================== */
+
 .game-label {
     -fx-font-family: "Press Start 2P";
     -fx-font-size: 48px;
@@ -614,9 +582,7 @@
     -fx-effect: dropshadow(gaussian, red, 10, 0.8, 0, 0);
 }
 
-/* ===================================
-   MISCELLANEOUS
-   =================================== */
+
 .curtain {
     -fx-background-color: black;
     -fx-max-width: 900px;
@@ -671,28 +637,4 @@
 .level-hint-container:hover .level-hint {
     -fx-opacity: 1;
     -fx-translate-y: -30;
-}
-
-.ipad-dark-grey {
-    -fx-background-color: linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
-    linear-gradient(#020b02, #3a3a3a),
-    linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #343534 80%, #242424 100%),
-    linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #343534 80%, #262626 100%),
-    linear-gradient(#777777 0%, #606060 50%, #505250 51%, #2a2b2a 100%);
-    -fx-background-insets: 0, 1, 4, 5, 6;
-    -fx-background-radius: 9, 8, 5, 4, 3;
-    -fx-padding: 8;
-    -fx-font-family: "Let's go Digital";
-    -fx-font-size: 22px;
-    -fx-font-weight: bold;
-    -fx-text-fill: -fx-theme-text-white;
-    -fx-effect: dropshadow(three-pass-box, rgba(255, 255, 255, 0.2), 1, 0.0, 0, 1);
-}
-
-.rectangleStyle {
-    -fx-fill: linear-gradient(from 41px 34px to 50px 50px, reflect, #ff7f50 30%, #faebd7 47%);
-}
-
-.vbox {
-    -fx-spacing: 12;
 }

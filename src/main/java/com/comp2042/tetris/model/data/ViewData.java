@@ -81,11 +81,6 @@ public final class ViewData {
         return ghostYPosition;
     }
 
-    public int[][] getNextBrickData() {
-        return MatrixOperations.copy(nextBrickData);
-        //this method will be used later on to show next brick
-    }
-
     public List<int[][]> getNextBricksData() {
         List<int[][]> copies = new ArrayList<>();
         for (int[][] brickData : nextBricksData) {
