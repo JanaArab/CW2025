@@ -188,7 +188,7 @@ public abstract class MenuController {
         currentLevel = new com.comp2042.tetris.model.level.Level3();
         switchBackgroundTo("/sounds/level3.mp3");
         try {
-            if (inputHandler != null) inputHandler.setInvertHorizontal(true);
+            if (inputHandler != null) inputHandler.setInvertHorizontal(currentLevel.areControlsInverted());
         } catch (Throwable ignored) {
         }
         initiateGameStart();
@@ -198,7 +198,7 @@ public abstract class MenuController {
         setNodeVisibility(levelSelectOverlay, false);
         try {
             if (inputHandler != null)
-                inputHandler.setInvertHorizontal(currentLevel instanceof com.comp2042.tetris.model.level.Level3);
+                inputHandler.setInvertHorizontal(currentLevel.areControlsInverted());
         } catch (Throwable ignored) {
         }
         if (gameController != null) gameController.setLevel(currentLevel);
@@ -405,7 +405,7 @@ public abstract class MenuController {
                 bgResource = "/sounds/level1.mp3";
             } else if (currentLevel instanceof Level2) {
                 bgResource = "/sounds/level2.mp3";
-            } else if (currentLevel instanceof com.comp2042.tetris.model.level.Level3) {
+            } else if (currentLevel.areControlsInverted()) {
                 bgResource = "/sounds/level3.mp3";
             } else if (currentLevel instanceof ClassicLevel) {
                 bgResource = "/sounds/classic.mp3";

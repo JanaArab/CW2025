@@ -488,7 +488,7 @@ public class GuiController extends MenuController implements Initializable, IGui
                 bgResource = "/sounds/level1.mp3";
             } else if (currentLevel instanceof Level2) {
                 bgResource = "/sounds/level2.mp3";
-            } else if (currentLevel instanceof com.comp2042.tetris.model.level.Level3) {
+            } else if (currentLevel.areControlsInverted()) {
                 bgResource = "/sounds/level3.mp3";
             } else if (currentLevel instanceof ClassicLevel) {
                 bgResource = "/sounds/classic.mp3";
