@@ -8,6 +8,7 @@ import com.comp2042.tetris.view.GameViewPresenter;
 public record GuiControllerDependencies(
         AnimationHandler animationHandler,
         InputHandler inputHandler,
+        InputController inputController,
         CommandRegistry commandRegistry,
         BoardRenderer boardRenderer,
         GameViewPresenter gameViewPresenter

@@ -45,6 +45,8 @@ public class DefaultGuiControllerDependenciesFactory {
                 commandRegistry,
                 inputCommandFactory);
 
+        InputController inputController = new InputController(inputHandler);
+
         BoardRenderer boardRenderer = new BoardRenderer(gamePanel, brickPanel, ghostBrickPanel, nextBrickPanel, UIConstants.BRICK_SIZE);
         NotificationAnimator notificationAnimator = new NotificationAnimator();
         GameViewPresenter gameViewPresenter = new GameViewPresenter(
@@ -54,7 +56,7 @@ public class DefaultGuiControllerDependenciesFactory {
                 gameOverPanel,
                 notificationAnimator);
 
-        return new GuiControllerDependencies(animationHandler, inputHandler, commandRegistry, boardRenderer, gameViewPresenter);
+        return new GuiControllerDependencies(animationHandler, inputHandler, inputController, commandRegistry, boardRenderer, gameViewPresenter);
     }
 
 }

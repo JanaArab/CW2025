@@ -102,13 +102,13 @@ public class GuiController extends MenuController implements Initializable, IGui
     // Sound management extracted to SoundManager
     private SoundManager soundManager;
 
-    private Button lastHoveredButton = null;
+    // InputController centralizes all input handling (keyboard, mouse hover, clicks)
+    private InputController inputController;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupFont();
         if (gameOverPanel != null) gameOverPanel.setVisible(false);
-        setupGamePanelKeyListener();
         setupNebulaClouds();
         setupPixelStars();
         setupShootingStars();
@@ -142,7 +142,7 @@ public class GuiController extends MenuController implements Initializable, IGui
         // Load small SFX - delegates to SoundManager
         soundManager.loadSmallSFX();
 
-        Platform.runLater(() -> { try { setupHoverSounds(); setupClickSounds(); } catch (Throwable ignored) {} });
+        Platform.runLater(() -> { try { setupInputController(); } catch (Throwable ignored) {} });
 
         // Attach a tooltip and a Popup-based hover hint to the Classic level button so the full description is always visible
         try {
@@ -220,10 +220,16 @@ public class GuiController extends MenuController implements Initializable, IGui
         this.dependencies = Objects.requireNonNull(dependencies, "dependencies");
         this.animationHandler = dependencies.animationHandler();
         this.inputHandler = dependencies.inputHandler();
+        this.inputController = dependencies.inputController();
         this.boardRenderer = dependencies.boardRenderer();
         this.gameViewPresenter = dependencies.gameViewPresenter();
         configureInputCommands();
         updatePauseUi(false);
+
+        // Setup keyboard input handling via InputController
+        if (inputController != null && gamePanel != null) {
+            inputController.setupKeyboardInput(gamePanel);
+        }
     }
 
     private void setupFont() {
@@ -234,14 +240,26 @@ public class GuiController extends MenuController implements Initializable, IGui
         } catch (Exception e) { LOGGER.warn("Failed to load font", e); }
     }
 
-    private void setupGamePanelKeyListener() {
-        if (gamePanel == null) return;
-        gamePanel.setFocusTraversable(true);
-        gamePanel.requestFocus();
-        gamePanel.setOnKeyPressed(keyEvent -> {
-            try { if (keyEvent.getCode() == KeyCode.R) { AudioManager.getInstance().playRotation(); keyEvent.consume(); return; } } catch (Throwable ignored) {}
-            handleKeyInput(keyEvent);
-        });
+    /**
+     * Sets up all input handling (keyboard, hover, click) via InputController.
+     * Called after the scene is available.
+     */
+    private void setupInputController() {
+        if (inputController == null) return;
+
+        Scene scene = gamePanel.getScene();
+        if (scene != null) {
+            inputController.setupHoverSounds(scene);
+            inputController.setupClickSounds(scene);
+        } else {
+            // Scene not yet available, listen for when it becomes available
+            gamePanel.sceneProperty().addListener((obs, oldScene, newScene) -> {
+                if (newScene != null) {
+                    inputController.setupHoverSounds(newScene);
+                    inputController.setupClickSounds(newScene);
+                }
+            });
+        }
     }
 
     private void configureInputCommands() {
@@ -253,10 +271,8 @@ public class GuiController extends MenuController implements Initializable, IGui
     void handleTick() {
         if (!gameActive) return;
         if (inputHandler != null) inputHandler.moveDown(EventSource.THREAD);
-        gamePanel.requestFocus();
+        if (inputController != null) inputController.requestFocus(gamePanel);
     }
-
-    private void handleKeyInput(KeyEvent keyEvent) { if (inputHandler != null) inputHandler.handle(keyEvent); gamePanel.requestFocus(); }
 
     @Override
     public void initGameView(int[][] boardMatrix, ViewData brick) {
@@ -321,8 +337,8 @@ public class GuiController extends MenuController implements Initializable, IGui
                     try { AudioManager.getInstance().setSuppressSfx(false); AudioManager.getInstance().stopAll(); } catch (Throwable ignored) {}
                     // Show main menu
                     showMainMenu();
-                    // Reattach hover/click handlers
-                    Platform.runLater(() -> { try { setupHoverSounds(); setupClickSounds(); } catch (Throwable ignored) {} });
+                    // Reattach hover/click handlers via InputController
+                    Platform.runLater(() -> { try { setupInputController(); } catch (Throwable ignored) {} });
                     // Force stop any existing background and switch to main.mp3 immediately
                     Platform.runLater(() -> {
                         try {
@@ -438,50 +454,19 @@ public class GuiController extends MenuController implements Initializable, IGui
         try { PauseTransition stopSound = new PauseTransition(Duration.seconds(flickerDurationSeconds)); stopSound.setOnFinished(e -> { try { AudioManager.getInstance().stopFlickering(); } catch (Throwable ignored) {} }); stopSound.play(); } catch (Throwable ignored) {}
     }
 
-    // --- input sound wiring (hover/click) ---
+    // --- Implementations required by MenuController abstract methods ---
+    @Override
     protected void setupHoverSounds() {
-        Scene scene = gamePanel.getScene();
-        if (scene != null) {
-            attachHoverHandler(scene);
-        } else {
-            gamePanel.sceneProperty().addListener((obs, oldScene, newScene) -> { if (newScene != null) attachHoverHandler(newScene); });
-        }
-        if (gamePanel.getScene() != null && gamePanel.getScene().getRoot() != null) {
-            gamePanel.getScene().getRoot().lookupAll(".button").forEach(node -> { if (node instanceof Button) ((Button) node).setOnMouseEntered(e -> playHoverSound()); });
-        }
-    }
-
-    private void attachHoverHandler(Scene scene) {
-        Objects.requireNonNull(scene, "scene");
-        scene.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_MOVED, e -> {
-            Node picked = e.getPickResult().getIntersectedNode(); Button btn = null; Node cur = picked;
-            while (cur != null) { if (cur instanceof Button) { btn = (Button) cur; break; } cur = cur.getParent(); }
-            if (btn != null) { if (btn != lastHoveredButton) { lastHoveredButton = btn; playHoverSound(); } } else lastHoveredButton = null;
-        });
+        // Delegated to InputController via setupInputController() method
+        // This override maintains compatibility with MenuController abstract methods
+        setupInputController();
     }
 
     @Override
     protected void setupClickSounds() {
-        Scene scene = gamePanel.getScene();
-        if (scene != null) {
-            attachClickHandler(scene);
-        } else {
-            gamePanel.sceneProperty().addListener((obs, oldScene, newScene) -> { if (newScene != null) attachClickHandler(newScene); });
-        }
-        if (gamePanel.getScene() != null && gamePanel.getScene().getRoot() != null) {
-            gamePanel.getScene().getRoot().lookupAll(".button").forEach(node -> { if (node instanceof Button b) { b.setOnMousePressed(ev -> playButtonClickSound()); } });
-        }
+        // Delegated to InputController via setupInputController() method
+        // This override maintains compatibility with MenuController abstract methods
+        // No-op here since setupInputController() handles both hover and click
     }
-
-    private void attachClickHandler(Scene scene) {
-        Objects.requireNonNull(scene, "scene");
-        scene.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, e -> {
-            Node picked = e.getPickResult().getIntersectedNode(); Node cur = picked;
-            while (cur != null) { if (cur instanceof Button) { playButtonClickSound(); break; } cur = cur.getParent(); }
-        });
-    }
-
-    private void playButtonClickSound() { AudioManager.getInstance().playClick(); }
-    private void playHoverSound() { AudioManager.getInstance().playHover(); }
 
 }
