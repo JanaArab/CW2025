@@ -19,13 +19,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -43,20 +41,17 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.ResourceBundle;
 
-import com.comp2042.tetris.utils.SafeMediaPlayer;
 import com.comp2042.tetris.utils.AudioManager;
 
 public class GuiController extends MenuController implements Initializable, IGuiController, GameEventListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GuiController.class);
 
-
     @FXML
     private Label scoreLabel;
 
     @FXML
     private Label timerLabel;
-
 
     @FXML
     private GridPane gamePanel;
@@ -82,9 +77,7 @@ public class GuiController extends MenuController implements Initializable, IGui
     @FXML
     private OverlayPanel gameOverPanel;
 
-
     private BoardRenderer boardRenderer;
-
 
     private GuiControllerDependencies dependencies;
 
@@ -92,18 +85,17 @@ public class GuiController extends MenuController implements Initializable, IGui
     private PixelStarAnimator pixelStarAnimator;
     private NebulaCloudAnimator nebulaCloudAnimator;
 
-
     private int lastRotationUsed = -1;
 
     private int rotationPopupTicks = 0;
     private Timeline flickerScheduler;
     private final Random random = new Random();
 
-    // Sound management extracted to SoundManager
     private SoundManager soundManager;
 
-    // InputController centralizes all input handling (keyboard, mouse hover, clicks)
     private InputController inputController;
+
+    private GameOverManager gameOverManager;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -114,7 +106,6 @@ public class GuiController extends MenuController implements Initializable, IGui
         setupShootingStars();
         gameTimer = new GameTimer(timerLabel);
 
-        // Initialize SoundManager and delegate all sound setup to it
         soundManager = new SoundManager(this);
 
         // Play start sound - delegates to SoundManager
@@ -226,7 +217,9 @@ public class GuiController extends MenuController implements Initializable, IGui
         configureInputCommands();
         updatePauseUi(false);
 
-        // Setup keyboard input handling via InputController
+        // Initialize GameOverManager
+        initializeGameOverManager();
+
         if (inputController != null && gamePanel != null) {
             inputController.setupKeyboardInput(gamePanel);
         }
@@ -240,10 +233,6 @@ public class GuiController extends MenuController implements Initializable, IGui
         } catch (Exception e) { LOGGER.warn("Failed to load font", e); }
     }
 
-    /**
-     * Sets up all input handling (keyboard, hover, click) via InputController.
-     * Called after the scene is available.
-     */
     private void setupInputController() {
         if (inputController == null) return;
 
@@ -260,6 +249,26 @@ public class GuiController extends MenuController implements Initializable, IGui
                 }
             });
         }
+    }
+
+    private void initializeGameOverManager() {
+        if (animationHandler == null) {
+            LOGGER.warn("Cannot initialize GameOverManager: animationHandler is null");
+            return;
+        }
+
+        gameOverManager = new GameOverManager(
+            gameOverOverlay,
+            mainContent,
+            curtainLeft,
+            curtainRight,
+            pauseButton,
+            gameTimer,
+            animationHandler
+        );
+
+        // Set up the callback for showing the confirmation dialog after game over
+        gameOverManager.setOnShowConfirmationDialog(this::showGameOverConfirmationDialog);
     }
 
     private void configureInputCommands() {
@@ -294,11 +303,60 @@ public class GuiController extends MenuController implements Initializable, IGui
         stopFlickerEffect();
         ensureConfigured();
         gameActive = false;
-        if (animationHandler != null) animationHandler.onGameOver();
         updatePauseUi(false);
 
+        // Stop music players
         try { if (mainPlayer != null) mainPlayer.stop(); } catch (Exception ignored) {}
         try { if (startPlayer != null) { startPlayer.stop(); startPlayer.dispose(); startPlayer = null; } } catch (Exception ignored) {}
+
+        // Delegate game over sequence to GameOverManager
+        if (gameOverManager != null) {
+            gameOverManager.showGameOver();
+        } else {
+            LOGGER.warn("GameOverManager is null, falling back to legacy game over logic");
+            fallbackGameOver();
+        }
+    }
+
+    /**
+     * Shows the confirmation dialog after the game over overlay has been displayed.
+     * This method is called by the GameOverManager as a callback.
+     */
+    private void showGameOverConfirmationDialog() {
+        closeCurtains(() -> {
+            if (confirmationMessage != null) confirmationMessage.setText("Play again?");
+
+            pendingConfirmationAction = () -> {
+                setNodeVisibility(confirmationOverlay, false);
+                if (curtainLeft != null) { curtainLeft.setVisible(false); curtainLeft.setManaged(false); }
+                if (curtainRight != null) { curtainRight.setVisible(false); curtainRight.setManaged(false); }
+                if (mainContent != null) { mainContent.setVisible(true); mainContent.setManaged(true); mainContent.setOpacity(1.0); mainContent.setMouseTransparent(false); }
+                startNewGameDirect();
+            };
+
+            pendingCancelAction = () -> {
+                // Hide confirmation UI
+                setNodeVisibility(confirmationOverlay, false);
+                // Re-enable SFX
+                try { AudioManager.getInstance().setSuppressSfx(false); AudioManager.getInstance().stopAll(); } catch (Throwable ignored) {}
+                // Show main menu
+                showMainMenu();
+                // Reattach hover/click handlers via InputController
+                Platform.runLater(() -> { try { setupInputController(); } catch (Throwable ignored) {} });
+                // Force stop any existing background and switch to main.mp3 immediately
+                Platform.runLater(() -> {
+                    try {
+                        restartMainMenuMusicImmediate();
+                    } catch (Throwable ignored) {}
+                });
+            };
+
+            setNodeVisibility(confirmationOverlay, true);
+        });
+    }
+
+    private void fallbackGameOver() {
+        if (animationHandler != null) animationHandler.onGameOver();
 
         AudioManager audio = AudioManager.getInstance();
         audio.setSuppressSfx(true);
@@ -318,37 +376,7 @@ public class GuiController extends MenuController implements Initializable, IGui
             if (mainContent != null) mainContent.setOpacity(1.0);
             if (curtainLeft != null) curtainLeft.setTranslateX(-900);
             if (curtainRight != null) curtainRight.setTranslateX(900);
-
-            closeCurtains(() -> {
-                if (confirmationMessage != null) confirmationMessage.setText("Play again?");
-
-                pendingConfirmationAction = () -> {
-                    setNodeVisibility(confirmationOverlay, false);
-                    if (curtainLeft != null) { curtainLeft.setVisible(false); curtainLeft.setManaged(false); }
-                    if (curtainRight != null) { curtainRight.setVisible(false); curtainRight.setManaged(false); }
-                    if (mainContent != null) { mainContent.setVisible(true); mainContent.setManaged(true); mainContent.setOpacity(1.0); mainContent.setMouseTransparent(false); }
-                    startNewGameDirect();
-                };
-
-                pendingCancelAction = () -> {
-                    // Hide confirmation UI
-                    setNodeVisibility(confirmationOverlay, false);
-                    // Re-enable SFX
-                    try { AudioManager.getInstance().setSuppressSfx(false); AudioManager.getInstance().stopAll(); } catch (Throwable ignored) {}
-                    // Show main menu
-                    showMainMenu();
-                    // Reattach hover/click handlers via InputController
-                    Platform.runLater(() -> { try { setupInputController(); } catch (Throwable ignored) {} });
-                    // Force stop any existing background and switch to main.mp3 immediately
-                    Platform.runLater(() -> {
-                        try {
-                            restartMainMenuMusicImmediate();
-                        } catch (Throwable ignored) {}
-                    });
-                };
-
-                setNodeVisibility(confirmationOverlay, true);
-            });
+            showGameOverConfirmationDialog();
         });
         pause.play();
     }
@@ -418,7 +446,41 @@ public class GuiController extends MenuController implements Initializable, IGui
 
     @FXML
     private void startNewGameDirect() {
-        ensureConfigured(); if (animationHandler == null) return; AudioManager.getInstance().setSuppressSfx(false); AudioManager.getInstance().stopAll(); if (gameViewPresenter != null) gameViewPresenter.hideGameOver(); updatePauseUi(false); if (gameOverOverlay != null) { gameOverOverlay.setVisible(false); gameOverOverlay.setManaged(false); } if (pauseButton != null) { pauseButton.setVisible(true); pauseButton.setManaged(true); pauseButton.setDisable(false); } gameActive = true; animationHandler.ensureInitialized(); if (gameController != null) gameController.createNewGame(); animationHandler.start(); if (gameTimer != null) { gameTimer.reset(); gameTimer.start(); } gamePanel.requestFocus();
+        ensureConfigured();
+        if (animationHandler == null) return;
+
+        AudioManager.getInstance().setSuppressSfx(false);
+        AudioManager.getInstance().stopAll();
+
+        if (gameViewPresenter != null) gameViewPresenter.hideGameOver();
+        updatePauseUi(false);
+
+        // Use GameOverManager to hide overlay if available
+        if (gameOverManager != null) {
+            gameOverManager.hideOverlay();
+        } else if (gameOverOverlay != null) {
+            gameOverOverlay.setVisible(false);
+            gameOverOverlay.setManaged(false);
+        }
+
+        if (pauseButton != null) {
+            pauseButton.setVisible(true);
+            pauseButton.setManaged(true);
+            pauseButton.setDisable(false);
+        }
+
+        gameActive = true;
+        animationHandler.ensureInitialized();
+
+        if (gameController != null) gameController.createNewGame();
+        animationHandler.start();
+
+        if (gameTimer != null) {
+            gameTimer.reset();
+            gameTimer.start();
+        }
+
+        gamePanel.requestFocus();
         try {
             // Determine background music based on the selected level (primary). This ensures replaying a level plays its track.
             String bgResource = "/sounds/main.mp3";
@@ -432,7 +494,6 @@ public class GuiController extends MenuController implements Initializable, IGui
                 bgResource = "/sounds/classic.mp3";
             }
 
-            // Invalidate any in-progress background fades so they won't overwrite our intended selection.
             backgroundChangeId++;
             switchBackgroundTo(bgResource);
         } catch (Throwable ignored) {}
@@ -454,19 +515,13 @@ public class GuiController extends MenuController implements Initializable, IGui
         try { PauseTransition stopSound = new PauseTransition(Duration.seconds(flickerDurationSeconds)); stopSound.setOnFinished(e -> { try { AudioManager.getInstance().stopFlickering(); } catch (Throwable ignored) {} }); stopSound.play(); } catch (Throwable ignored) {}
     }
 
-    // --- Implementations required by MenuController abstract methods ---
     @Override
     protected void setupHoverSounds() {
-        // Delegated to InputController via setupInputController() method
-        // This override maintains compatibility with MenuController abstract methods
         setupInputController();
     }
 
     @Override
     protected void setupClickSounds() {
-        // Delegated to InputController via setupInputController() method
-        // This override maintains compatibility with MenuController abstract methods
-        // No-op here since setupInputController() handles both hover and click
-    }
 
+    }
 }
