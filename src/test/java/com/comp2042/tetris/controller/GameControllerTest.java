@@ -157,6 +157,11 @@ class GameControllerTest {
         public void setLevel(com.comp2042.tetris.model.level.GameLevel level) {
             // no-op for test stub
         }
+
+        @Override
+        public void addRows(int[][] rows) {
+            // no-op for test stub
+        }
     }
 
     private static final class StubPublisher implements GameEventPublisher {

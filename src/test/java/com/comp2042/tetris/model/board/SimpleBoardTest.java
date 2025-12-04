@@ -216,6 +216,80 @@ class SimpleBoardTest {
         }
     }
 
+    @Test
+    void addRowsShiftsExistingRowsUpAndAddsNewRowsAtBottom() {
+        SimpleBoard board = createBoard(6, 4, SINGLE_SHAPE, new StandardRotationStrategy());
+        assertFalse(board.createNewBrick());
+
+        // Fill the bottom two rows with specific values
+        int[][] matrix = accessMatrix(board);
+        int bottomRow = matrix.length - 1;
+        int secondBottomRow = matrix.length - 2;
+        for (int col = 0; col < matrix[bottomRow].length; col++) {
+            matrix[bottomRow][col] = 5;
+            matrix[secondBottomRow][col] = 6;
+        }
+
+        // Add one garbage row
+        int[][] garbageRows = new int[1][];
+        garbageRows[0] = new int[]{1, 2, 3, 4};
+        board.addRows(garbageRows);
+
+        // Verify the bottom row is now the new garbage row
+        int[][] updatedMatrix = board.getBoardMatrix();
+        assertArrayEquals(new int[]{1, 2, 3, 4}, updatedMatrix[bottomRow]);
+
+        // Verify rows shifted up
+        assertArrayEquals(new int[]{5, 5, 5, 5}, updatedMatrix[secondBottomRow]);
+        assertArrayEquals(new int[]{6, 6, 6, 6}, updatedMatrix[matrix.length - 3]);
+    }
+
+    @Test
+    void addRowsMovesCurrentBrickUpToAvoidClipping() {
+        SimpleBoard board = createBoard(6, 4, SINGLE_SHAPE, new StandardRotationStrategy());
+        assertFalse(board.createNewBrick());
+
+        // Move brick down a few times
+        board.moveBrickDown();
+        board.moveBrickDown();
+        int yBeforeGarbage = board.getViewData().getYPosition();
+
+        // Add garbage rows
+        int[][] garbageRows = new int[2][];
+        garbageRows[0] = new int[]{1, 0, 1, 1};
+        garbageRows[1] = new int[]{1, 1, 0, 1};
+        board.addRows(garbageRows);
+
+        // Verify brick moved up by 2 positions
+        assertEquals(yBeforeGarbage - 2, board.getViewData().getYPosition());
+    }
+
+    @Test
+    void addRowsHandlesNullArrayGracefully() {
+        SimpleBoard board = createBoard(6, 4, SINGLE_SHAPE, new StandardRotationStrategy());
+        assertFalse(board.createNewBrick());
+
+        int[][] matrixBefore = board.getBoardMatrix();
+        board.addRows(null);
+        int[][] matrixAfter = board.getBoardMatrix();
+
+        // Matrix should be unchanged
+        assertArrayEquals(matrixBefore, matrixAfter);
+    }
+
+    @Test
+    void addRowsHandlesEmptyArrayGracefully() {
+        SimpleBoard board = createBoard(6, 4, SINGLE_SHAPE, new StandardRotationStrategy());
+        assertFalse(board.createNewBrick());
+
+        int[][] matrixBefore = board.getBoardMatrix();
+        board.addRows(new int[0][]);
+        int[][] matrixAfter = board.getBoardMatrix();
+
+        // Matrix should be unchanged
+        assertArrayEquals(matrixBefore, matrixAfter);
+    }
+
     private static final class RejectingRotationStrategy implements RotationStrategy {
         @Override
         public Point findOffsetForRotation(int[][] boardMatrix, int[][] rotatedShape, Point currentOffset) {

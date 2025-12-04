@@ -58,6 +58,13 @@ public class GameController implements IGameController {
     public void setLevel(GameLevel level) {
         // Pass the level down to the board logic
         board.setLevel(level);
+
+        // Enable or disable garbage based on the level
+        if (level.isGarbageEnabled()) {
+            gameFlowManager.enableGarbage();
+        } else {
+            gameFlowManager.disableGarbage();
+        }
     }
 
     @Override
@@ -109,6 +116,7 @@ public class GameController implements IGameController {
     @Override
     public void createNewGame() {
         board.newGame();
+        gameFlowManager.resetGarbage();
         eventPublisher.publishBoardUpdated(board.getBoardMatrix());
         eventPublisher.publishBrickUpdated(board.getViewData());
         scoreManager.publishCurrentScore();

@@ -49,4 +49,7 @@ public interface Board {
     void newGame();
 
     void setLevel(GameLevel level);
+
+    /*add garbage rows to the board from bottom*/
+    void addRows(int[][] rows);
 }
