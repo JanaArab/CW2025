@@ -10,6 +10,7 @@ import com.comp2042.tetris.model.event.GameEventPublisher;
 import com.comp2042.tetris.model.event.GameStateSnapshot;
 import com.comp2042.tetris.model.event.MoveEvent;
 import com.comp2042.tetris.model.event.ScoreChangeEvent;
+import com.comp2042.tetris.model.event.BrickPlacedEvent;
 import com.comp2042.tetris.model.score.Score;
 import com.comp2042.tetris.model.score.ScoreManager;
 import com.comp2042.tetris.model.score.ScorePolicy;
@@ -199,6 +200,9 @@ class GameFlowManagerTest {
         public void publishGameOver() {
             gameOverCalls++;
         }
+
+        @Override
+        public void publishBrickPlaced(BrickPlacedEvent event) {}
     }
 
     private static final class RecordingScorePolicy implements ScorePolicy {

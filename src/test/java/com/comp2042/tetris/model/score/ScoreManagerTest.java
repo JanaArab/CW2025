@@ -6,12 +6,12 @@ import com.comp2042.tetris.model.event.EventType;
 import com.comp2042.tetris.model.event.GameEventPublisher;
 import com.comp2042.tetris.model.event.MoveEvent;
 import com.comp2042.tetris.model.event.ScoreChangeEvent;
+import com.comp2042.tetris.model.event.BrickPlacedEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -133,6 +133,9 @@ class ScoreManagerTest {
         @Override
         public void publishGameOver() {
         }
+
+        @Override
+        public void publishBrickPlaced(BrickPlacedEvent event) {
+        }
     }
 }
-

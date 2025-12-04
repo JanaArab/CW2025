@@ -130,6 +130,11 @@ class InputHandlerTest {
         public GameCommand createRotateCommand(GameActionInvoker invoker) {
             return gameplayCommand;
         }
+
+        @Override
+        public GameCommand createInstantDropCommand(GameActionInvoker invoker) {
+            return gameplayCommand;
+        }
     }
 
     private static final class RecordingController implements IGameController {
@@ -158,6 +163,11 @@ class InputHandlerTest {
         @Override
         public void onRotateEvent(MoveEvent event) {
             rotateCalls++;
+        }
+
+        @Override
+        public void onInstantDropEvent(MoveEvent event) {
+            // no-op
         }
 
         @Override

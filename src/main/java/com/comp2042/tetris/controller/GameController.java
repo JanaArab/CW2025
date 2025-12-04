@@ -90,7 +90,8 @@ public class GameController implements IGameController {
         System.out.println("Instant drop triggered");
         // Instantly drop the brick to the bottom
         while (board.moveBrickDown()) {
-            // Continue dropping until it can't move down anymore
+            scoreManager.handleDrop(event);
+
         }
         // Now merge and handle as in handleDownEvent
         board.mergeBrickToBackground();

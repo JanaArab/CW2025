@@ -10,6 +10,7 @@ import com.comp2042.tetris.model.event.GameEventPublisher;
 import com.comp2042.tetris.model.event.GameStateSnapshot;
 import com.comp2042.tetris.model.event.MoveEvent;
 import com.comp2042.tetris.model.event.ScoreChangeEvent;
+import com.comp2042.tetris.model.event.BrickPlacedEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -195,5 +196,8 @@ class GameControllerTest {
 
         @Override
         public void publishGameOver() {}
+
+        @Override
+        public void publishBrickPlaced(BrickPlacedEvent event) {}
     }
 }

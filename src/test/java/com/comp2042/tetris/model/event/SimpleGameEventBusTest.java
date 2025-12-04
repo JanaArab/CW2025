@@ -123,5 +123,8 @@ class SimpleGameEventBusTest {
         public void onGameOver() {
             gameOverCount++;
         }
+
+        @Override
+        public void onBrickPlaced(BrickPlacedEvent event) {}
     }
 }
