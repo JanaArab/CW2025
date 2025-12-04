@@ -15,13 +15,11 @@ import com.comp2042.tetris.model.event.GameStateSnapshot;
 import com.comp2042.tetris.model.event.ScoreChangeEvent;
 import com.comp2042.tetris.model.event.BrickPlacedEvent;
 import com.comp2042.tetris.model.level.ClassicLevel;
-import com.comp2042.tetris.model.level.GameLevel;
 import com.comp2042.tetris.model.level.Level1;
 import com.comp2042.tetris.model.level.Level2;
 import com.comp2042.tetris.view.*;
 import javafx.animation.*;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -32,16 +30,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 import org.slf4j.Logger;
@@ -58,21 +52,10 @@ import java.util.ResourceBundle;
 import com.comp2042.tetris.utils.SafeMediaPlayer;
 import com.comp2042.tetris.utils.AudioManager;
 
-public class GuiController implements Initializable, IGuiController, GameEventListener {
+public class GuiController extends MenuController implements Initializable, IGuiController, GameEventListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GuiController.class);
 
-    @FXML
-    private ImageView staticScreen;
-
-    @FXML
-    private Pane pixelStarLayer;
-
-    @FXML
-    private HBox mainContent;
-
-    @FXML
-    private Button pauseButton;
 
     @FXML
     private Label scoreLabel;
@@ -80,35 +63,6 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     @FXML
     private Label timerLabel;
 
-    @FXML
-    private StackPane pauseMenuOverlay;
-
-    @FXML
-    private VBox pauseMenuCard;
-
-    @FXML
-    private StackPane confirmationOverlay;
-
-    @FXML
-    private Label confirmationMessage;
-
-    @FXML
-    private StackPane musicControlOverlay;
-
-    @FXML
-    private StackPane tutorialOverlay;
-
-    @FXML
-    private javafx.scene.control.Slider musicVolumeSlider;
-
-    @FXML
-    private javafx.scene.control.Slider sfxVolumeSlider;
-
-    @FXML
-    private StackPane gameOverOverlay;
-
-    @FXML
-    private BorderPane gameBoard;
 
     @FXML
     private GridPane gamePanel;
@@ -132,80 +86,25 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     private GridPane ghostBrickPanel;
 
     @FXML
-    private GridPane nextBrickPanel;
-
-    @FXML
-    private Label nextTitleLabel;
-
-    @FXML
     private OverlayPanel gameOverPanel;
 
-    @FXML
-    private StackPane mainMenuOverlay;
-
-    private Node previousOverlay;
-
-    @FXML
-    private VBox mainMenuCard;
-
-    @FXML
-    private StackPane levelSelectOverlay;
-
-    @FXML
-    private Pane curtainLeft;
-
-    @FXML
-    private Pane curtainRight;
-
-    @FXML
-    private Button levelClassicButton;
-
-    @FXML
-    private Button levelL1Button;
-
-    @FXML
-    private Button levelL2Button;
-
-    @FXML
-    private Button levelL3Button;
-
-    private GameLevel currentLevel = new ClassicLevel();
-
-    private IGameController gameController;
-
-    private AnimationHandler animationHandler;
-
-    private InputHandler inputHandler;
 
     private BoardRenderer boardRenderer;
 
-    private GameViewPresenter gameViewPresenter;
 
     private GuiControllerDependencies dependencies;
-
-    private boolean gameActive = false;
-
-    private Runnable pendingConfirmationAction;
-
-    private Runnable pendingCancelAction;
 
     private ShootingStarAnimator shootingStarAnimator;
     private PixelStarAnimator pixelStarAnimator;
     private NebulaCloudAnimator nebulaCloudAnimator;
-    private GameTimer gameTimer;
+
 
     private int lastRotationUsed = -1;
-    // Counter to track rotation-popup sequence per active brick so every brick (including S/Z)
-    // shows the same 4-step message sequence (3,2,1,0) regardless of model rotation states.
+
     private int rotationPopupTicks = 0;
     private Timeline flickerScheduler;
     private final Random random = new Random();
 
-    private SafeMediaPlayer startPlayer;
-    private SafeMediaPlayer mainPlayer;
-    private String activeBackgroundResourcePath = null;
-    // Token to track background music change operations. Incrementing this invalidates previously-started fade timelines.
-    private volatile long backgroundChangeId = 0L;
     private SafeMediaPlayer bricksTouchPlayer;
     private SafeMediaPlayer hoverButtonPlayer;
     private SafeMediaPlayer buttonClickPlayer;
@@ -423,7 +322,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     @Override
     public void refreshGameBackground(int[][] board) { ensureConfigured(); if (gameViewPresenter != null) gameViewPresenter.refreshBoard(board); }
 
-    private void updatePauseUi(boolean paused) { if (pauseMenuOverlay != null) { pauseMenuOverlay.setVisible(paused); pauseMenuOverlay.setManaged(paused); } }
+    protected void updatePauseUi(boolean paused) { if (pauseMenuOverlay != null) { pauseMenuOverlay.setVisible(paused); pauseMenuOverlay.setManaged(paused); } }
 
     @Override
     public void setGameController(IGameController gameController) { this.gameController = gameController; if (inputHandler != null) inputHandler.setGameController(gameController); }
@@ -491,183 +390,8 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         });
         pause.play();
     }
-
-    public void newGame(ActionEvent actionEvent) { startNewGame(); }
-    public void pauseGame(ActionEvent actionEvent) { togglePauseState(); }
-
-    @FXML
-    private void handleStartGame(ActionEvent actionEvent) {
-        if (levelSelectOverlay != null) {
-            setNodeVisibility(levelSelectOverlay, true);
-            setNodeVisibility(mainMenuOverlay, false);
-        } else {
-            if (mainContent != null) { mainContent.setOpacity(0.0); mainContent.setVisible(true); }
-            if (curtainLeft != null && curtainRight != null) { curtainLeft.setTranslateX(0); curtainRight.setTranslateX(0); curtainLeft.setVisible(true); curtainLeft.setManaged(true); curtainRight.setVisible(true); curtainRight.setManaged(true); }
-            Platform.runLater(() -> { setNodeVisibility(mainMenuOverlay, false); setNodeVisibility(mainMenuCard, true); playCurtainAnimation(); });
-        }
-    }
-
-    @FXML
-    private void handleLevelClassic(ActionEvent actionEvent) { currentLevel = new ClassicLevel(); switchBackgroundTo("/sounds/classic.mp3"); initiateGameStart(); }
-    @FXML
-    private void handleLevelL1(ActionEvent actionEvent) { currentLevel = new Level1(); switchBackgroundTo("/sounds/level1.mp3"); initiateGameStart(); }
-    @FXML
-    private void handleLevelL2(ActionEvent actionEvent) { currentLevel = new Level2(); switchBackgroundTo("/sounds/level2.mp3"); initiateGameStart(); }
-    @FXML
-    private void handleLevelL3(ActionEvent actionEvent) {
-        currentLevel = new com.comp2042.tetris.model.level.Level3();
-        switchBackgroundTo("/sounds/level3.mp3");
-        // Enable inverted horizontal controls for Level 3
-        try { if (inputHandler != null) inputHandler.setInvertHorizontal(true); } catch (Throwable ignored) {}
-        initiateGameStart();
-    }
-
-    private void initiateGameStart() {
-        setNodeVisibility(levelSelectOverlay, false);
-        // Ensure horizontal inversion matches the selected level (Level3 inverts controls)
-        try { if (inputHandler != null) inputHandler.setInvertHorizontal(currentLevel instanceof com.comp2042.tetris.model.level.Level3); } catch (Throwable ignored) {}
-        if (gameController != null) gameController.setLevel(currentLevel);
-        if (nextBrickPanel != null) {
-            boolean hideNext = currentLevel.isNextBrickHidden();
-            Node parent = nextBrickPanel.getParent();
-            if (parent != null) parent.setVisible(!hideNext); else nextBrickPanel.setVisible(!hideNext);
-            // Also hide the "NEXT" title label for levels that hide the next-brick view (Level 3)
-            if (nextTitleLabel != null) {
-                nextTitleLabel.setVisible(!hideNext);
-                nextTitleLabel.setManaged(!hideNext);
-            }
-        }
-        stopFlickerEffect();
-        if (currentLevel.isFlickerEnabled()) startFlickerEffect();
-        if (curtainLeft != null && curtainRight != null) { curtainLeft.setTranslateX(0); curtainRight.setTranslateX(0); curtainLeft.setVisible(true); curtainLeft.setManaged(true); curtainRight.setVisible(true); curtainRight.setManaged(true); }
-        Platform.runLater(this::playCurtainAnimation);
-    }
-
-    @FXML
-    private void cancelLevelSelect(ActionEvent actionEvent) { setNodeVisibility(levelSelectOverlay, false); setNodeVisibility(mainMenuOverlay, true); }
-    @FXML
-    private void exitGame(ActionEvent actionEvent) { Platform.exit(); }
-
-    private void startNewGame() {
-        ensureConfigured(); if (animationHandler == null) return;
-        AudioManager.getInstance().setSuppressSfx(false); AudioManager.getInstance().stopAll();
-        if (gameOverOverlay != null) { gameOverOverlay.setVisible(false); gameOverOverlay.setManaged(false); }
-        if (mainContent != null) mainContent.setOpacity(1.0);
-        if (pauseButton != null) { pauseButton.setVisible(true); pauseButton.setManaged(true); pauseButton.setDisable(false); }
-        gameActive = true;
-        animationHandler.setTickInterval(currentLevel.getTickInterval(0)); animationHandler.ensureInitialized(); if (gameController != null) gameController.createNewGame(); animationHandler.start();
-        if (gameTimer != null) { gameTimer.reset(); gameTimer.start(); }
-        gamePanel.requestFocus();
-
-        // Restart background music for the selected level when the player restarts the game (e.g. presses N)
-        try {
-            String bgResource = "/sounds/main.mp3";
-            if (currentLevel instanceof Level1) {
-                bgResource = "/sounds/level1.mp3";
-            } else if (currentLevel instanceof Level2) {
-                bgResource = "/sounds/level2.mp3";
-            } else if (currentLevel instanceof com.comp2042.tetris.model.level.Level3) {
-                bgResource = "/sounds/level3.mp3";
-            } else if (currentLevel instanceof ClassicLevel) {
-                bgResource = "/sounds/classic.mp3";
-            }
-            // Invalidate any in-progress background fades so they won't overwrite our immediate restart.
-            backgroundChangeId++;
-            // Start the level music immediately from the beginning (no cross fade) when restarting the game.
-            restartBackgroundMusicImmediate(bgResource);
-        } catch (Throwable ignored) {}
-    }
-
-    // Forcefully stop any background players and start a fresh player for the given resource immediately.
-    private void restartBackgroundMusicImmediate(String resourcePath) {
-        try {
-            if (resourcePath == null) return;
-            URL url = getClass().getResource(resourcePath);
-            if (url == null) return;
-
-            // Invalidate any in-progress background-change fades.
-            backgroundChangeId++;
-
-            // Stop and dispose previous players
-            try { if (mainPlayer != null) { mainPlayer.stop(); mainPlayer.dispose(); mainPlayer = null; } } catch (Throwable ignored) {}
-            try { if (startPlayer != null) { startPlayer.stop(); startPlayer.dispose(); startPlayer = null; } } catch (Throwable ignored) {}
-
-            // Create and play the new background player at normal volume
-            SafeMediaPlayer newPlayer = new SafeMediaPlayer(url);
-            newPlayer.setCycleCount(Animation.INDEFINITE);
-            // Apply UI music slider (0-100) scaled into target volume (default target 0.5)
-            double uiVol = 0.5; // default
-            try { if (musicVolumeSlider != null) uiVol = (musicVolumeSlider.getValue() / 100.0); } catch (Throwable ignored) {}
-            newPlayer.setVolume(Math.max(0.0, Math.min(1.0, uiVol * 0.5)));
-            newPlayer.play();
-
-            mainPlayer = newPlayer;
-            activeBackgroundResourcePath = resourcePath;
-        } catch (Exception e) {
-            LOGGER.debug("Failed to restart background music immediately for {}", resourcePath, e);
-        }
-    }
-
-    private void refreshGameBehindCurtains() {
-        ensureConfigured(); if (animationHandler == null) return; if (gameViewPresenter != null) gameViewPresenter.hideGameOver(); updatePauseUi(false);
-        if (gameOverOverlay != null) { gameOverOverlay.setVisible(false); gameOverOverlay.setManaged(false); }
-        gameActive = true; animationHandler.ensureInitialized(); if (gameController != null) gameController.createNewGame(); if (mainContent != null) { mainContent.setVisible(true); mainContent.setManaged(true); mainContent.setMouseTransparent(false); mainContent.setOpacity(0.0); }
-    }
-
-    private void startGameLoopAndTimer() { if (animationHandler != null) animationHandler.start(); if (gameTimer != null) { gameTimer.reset(); gameTimer.start(); } if (pauseButton != null) { pauseButton.setVisible(true); pauseButton.setManaged(true); pauseButton.setDisable(false); } gamePanel.requestFocus(); }
-
-    private void showMainMenu() {
-        gameActive = false;
-        // Reset any input inversion when returning to menu
-        try { if (inputHandler != null) inputHandler.setInvertHorizontal(false); } catch (Throwable ignored) {}
-        if (animationHandler != null && !animationHandler.isGameOver() && !animationHandler.isPaused()) animationHandler.togglePause();
-        if (curtainLeft != null) { curtainLeft.setVisible(false); curtainLeft.setManaged(false); }
-        if (curtainRight != null) { curtainRight.setVisible(false); curtainRight.setManaged(false); }
-        setNodeVisibility(mainMenuOverlay, true); setNodeVisibility(mainMenuCard, true); setMainContentVisible(false);
-        if (pauseButton != null) { pauseButton.setVisible(false); pauseButton.setManaged(false); }
-    }
-
-    private void setMainContentVisible(boolean visible) { if (mainContent == null) return; mainContent.setManaged(true); mainContent.setVisible(true); mainContent.setMouseTransparent(!visible); mainContent.setOpacity(visible ? 1.0 : 0.0); mainContent.requestLayout(); }
-    private void setNodeVisibility(Node node, boolean visible) { if (node != null) { node.setVisible(visible); node.setManaged(visible); } }
-
-    private void playCurtainAnimation() {
-        if (curtainLeft == null || curtainRight == null) { startNewGame(); return; }
-        curtainLeft.setTranslateX(0); curtainRight.setTranslateX(0);
-        refreshGameBehindCurtains();
-        PauseTransition pause = new PauseTransition(Duration.millis(500));
-        pause.setOnFinished(e -> {
-            TranslateTransition leftTransition = new TranslateTransition(Duration.millis(1200), curtainLeft); leftTransition.setFromX(0); leftTransition.setToX(-900); leftTransition.setInterpolator(Interpolator.EASE_OUT);
-            TranslateTransition rightTransition = new TranslateTransition(Duration.millis(1200), curtainRight); rightTransition.setFromX(0); rightTransition.setToX(900); rightTransition.setInterpolator(Interpolator.EASE_OUT);
-            ParallelTransition parallelTransition = new ParallelTransition(leftTransition, rightTransition);
-            parallelTransition.setOnFinished(event -> {
-                curtainLeft.setVisible(false); curtainLeft.setManaged(false); curtainRight.setVisible(false); curtainRight.setManaged(false);
-                if (pauseButton != null) { pauseButton.setVisible(true); pauseButton.setManaged(true); pauseButton.setDisable(false); }
-                if (mainContent != null) {
-                    FadeTransition fadeIn = new FadeTransition(Duration.millis(600), mainContent); fadeIn.setFromValue(0.0); fadeIn.setToValue(1.0); fadeIn.setInterpolator(Interpolator.EASE_IN);
-                    fadeIn.setOnFinished(fadeEvent -> startGameLoopAndTimer()); fadeIn.play();
-                } else { setMainContentVisible(true); startGameLoopAndTimer(); }
-            });
-            parallelTransition.play();
-        });
-        pause.play();
-    }
-
-    private void startFlickerEffect() { flickerScheduler = new Timeline(new KeyFrame(Duration.seconds(30), e -> performFlicker())); flickerScheduler.setCycleCount(Timeline.INDEFINITE); flickerScheduler.play(); }
-    private void stopFlickerEffect() { if (flickerScheduler != null) { flickerScheduler.stop(); flickerScheduler = null; } if (gamePanel != null) gamePanel.setOpacity(1.0); if (mainContent != null) mainContent.setOpacity(1.0); try { AudioManager.getInstance().stopFlickering(); } catch (Throwable ignored) {} }
-
-    private void performFlicker() {
-        if (mainContent == null) return;
-        try { AudioManager.getInstance().playFlickering(); } catch (Throwable ignored) {}
-        Timeline flickerAnim = new Timeline(); int flickerCount = 10 + random.nextInt(10); double stepInterval = 0.05;
-        try { double audioDur = AudioManager.getInstance().getFlickeringDurationSeconds(); double visualDur = flickerCount * stepInterval; if (audioDur > visualDur + 0.05) stepInterval = audioDur / flickerCount; } catch (Throwable ignored) {}
-        for (int i = 0; i < flickerCount; i++) { double timeOffset = i * stepInterval; double randomOpacity = 0.3 + random.nextDouble() * 0.7; flickerAnim.getKeyFrames().add(new KeyFrame(Duration.seconds(timeOffset), evt -> mainContent.setOpacity(randomOpacity))); }
-        flickerAnim.getKeyFrames().add(new KeyFrame(Duration.seconds(flickerCount * stepInterval), evt -> mainContent.setOpacity(1.0)));
-        flickerAnim.play();
-        double flickerDurationSeconds = flickerCount * stepInterval;
-        try { PauseTransition stopSound = new PauseTransition(Duration.seconds(flickerDurationSeconds)); stopSound.setOnFinished(e -> { try { AudioManager.getInstance().stopFlickering(); } catch (Throwable ignored) {} }); stopSound.play(); } catch (Throwable ignored) {}
-    }
-
-    private void togglePauseState() { ensureConfigured(); if (animationHandler == null || animationHandler.isGameOver()) return; animationHandler.togglePause(); boolean isPaused = animationHandler.isPaused(); updatePauseUi(isPaused); if (gameTimer != null) { if (isPaused) gameTimer.pause(); else gameTimer.resume(); } gamePanel.requestFocus(); }
+    @Override
+    protected void togglePauseState() { ensureConfigured(); if (animationHandler == null || animationHandler.isGameOver()) return; animationHandler.togglePause(); boolean isPaused = animationHandler.isPaused(); updatePauseUi(isPaused); if (gameTimer != null) { if (isPaused) gameTimer.pause(); else gameTimer.resume(); } gamePanel.requestFocus(); }
 
     @Override
     public void onGameInitialized(GameStateSnapshot snapshot) { initGameView(snapshot.boardMatrix(), snapshot.viewData()); }
@@ -701,7 +425,7 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
              stack.getChildren().add(notificationPanel); StackPane.setAlignment(notificationPanel, Pos.CENTER_LEFT); notificationPanel.setTranslateX(marginLeft);
              double sceneWidth = stack.getScene() != null ? stack.getScene().getWidth() : UIConstants.WINDOW_WIDTH;
              LOGGER.debug("[RotationNotification] added to StackPane parent, text='{}' remaining={} sceneWidth={} translateX={}", text, remaining, sceneWidth, notificationPanel.getTranslateX());
-            if (debugNotificationLabel != null) { debugNotificationLabel.setText(text + " (" + remaining + " left)"); debugNotificationLabel.setVisible(true); PauseTransition hide = new PauseTransition(Duration.seconds(1)); hide.setOnFinished(e -> debugNotificationLabel.setVisible(false)); hide.play(); }
+
             NotificationAnimator animator = new NotificationAnimator(); animator.playShowRotation(notificationPanel, stack.getChildren());
          } else {
             double sceneWidth = groupNotification.getScene() != null ? groupNotification.getScene().getWidth() : UIConstants.WINDOW_WIDTH; double leftX = - (sceneWidth / 2.0) + 70; notificationPanel.setLayoutX(leftX); notificationPanel.setLayoutY(0); LOGGER.debug("[RotationNotification] fallback to Group, text='{}' remaining={} sceneWidth={} leftX={}", text, remaining, sceneWidth, leftX);
@@ -731,64 +455,6 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
     BorderPane getGameBoard() { return gameBoard; }
 
     @FXML
-    private void resumeGame(ActionEvent actionEvent) { togglePauseState(); }
-    @FXML
-    private void openMusicControl(ActionEvent actionEvent) { previousOverlay = pauseMenuOverlay.isVisible() ? pauseMenuOverlay : mainMenuOverlay; setNodeVisibility(previousOverlay, false); setNodeVisibility(musicControlOverlay, true); if (pauseButton != null) pauseButton.setDisable(true); }
-    @FXML
-    private void closeMusicControl(ActionEvent actionEvent) { setNodeVisibility(musicControlOverlay, false); setNodeVisibility(previousOverlay, true); if (pauseButton != null) pauseButton.setDisable(false); }
-
-    @FXML
-    private void openTutorial(ActionEvent actionEvent) { previousOverlay = pauseMenuOverlay.isVisible() ? pauseMenuOverlay : mainMenuOverlay; setNodeVisibility(previousOverlay, false); setNodeVisibility(tutorialOverlay, true); if (pauseButton != null) pauseButton.setDisable(true); }
-
-    @FXML
-    private void closeTutorial(ActionEvent actionEvent) { setNodeVisibility(tutorialOverlay, false); setNodeVisibility(previousOverlay, true); if (pauseButton != null) pauseButton.setDisable(false); }
-
-    @FXML
-    private void startNewGameFromPause(ActionEvent actionEvent) {
-        if (confirmationMessage != null) confirmationMessage.setText("Start a new game?");
-        pendingConfirmationAction = () -> {
-            setNodeVisibility(pauseMenuOverlay, false);
-            if (animationHandler != null && animationHandler.isPaused()) togglePauseState();
-            startNewGame();
-        };
-        setNodeVisibility(pauseMenuOverlay, false); setNodeVisibility(confirmationOverlay, true); if (pauseButton != null) pauseButton.setDisable(true);
-    }
-
-    @FXML
-    private void goToMainMenuFromPause(ActionEvent actionEvent) {
-        if (confirmationMessage != null) confirmationMessage.setText("Return to main menu?");
-        pendingConfirmationAction = () -> {
-            gameActive = false; if (gameTimer != null) gameTimer.stop(); if (animationHandler != null && animationHandler.isPaused()) togglePauseState(); if (animationHandler != null) animationHandler.onGameOver(); setNodeVisibility(pauseMenuOverlay, false); showMainMenu();
-            // Ensure main menu audio and SFX are resumed when returning from pause
-            Platform.runLater(() -> {
-                try {
-                    AudioManager.getInstance().setSuppressSfx(false);
-                    AudioManager.getInstance().stopAll();
-                } catch (Throwable ignored) {}
-                try {
-                    restartMainMenuMusicImmediate();
-                } catch (Throwable ignored) {}
-                try { setupHoverSounds(); setupClickSounds(); } catch (Throwable ignored) {}
-            });
-        };
-        setNodeVisibility(pauseMenuOverlay, false); setNodeVisibility(confirmationOverlay, true); if (pauseButton != null) pauseButton.setDisable(true);
-    }
-
-    @FXML
-    private void endGameFromPause(ActionEvent actionEvent) { if (confirmationMessage != null) confirmationMessage.setText("End game and exit?"); pendingConfirmationAction = () -> Platform.exit(); setNodeVisibility(pauseMenuOverlay, false); setNodeVisibility(confirmationOverlay, true); if (pauseButton != null) pauseButton.setDisable(true); }
-
-    @FXML
-    private void confirmAction(ActionEvent actionEvent) { setNodeVisibility(confirmationOverlay, false); if (pendingConfirmationAction != null) { pendingConfirmationAction.run(); pendingConfirmationAction = null; } pendingCancelAction = null; if (pauseButton != null) pauseButton.setDisable(false); }
-
-    @FXML
-    private void cancelAction(ActionEvent actionEvent) {
-        setNodeVisibility(confirmationOverlay, false);
-        if (pendingCancelAction != null) pendingCancelAction.run(); else setNodeVisibility(pauseMenuOverlay, true);
-        pendingCancelAction = null; pendingConfirmationAction = null; if (pauseButton != null) pauseButton.setDisable(false); if (gamePanel != null) gamePanel.requestFocus();
-    }
-
-    private void closeCurtains(Runnable onFinished) { if (curtainLeft == null || curtainRight == null) { onFinished.run(); return; } curtainLeft.setVisible(true); curtainLeft.setManaged(true); curtainRight.setVisible(true); curtainRight.setManaged(true); TranslateTransition leftTransition = new TranslateTransition(Duration.millis(1200), curtainLeft); leftTransition.setFromX(curtainLeft.getTranslateX()); leftTransition.setToX(0); TranslateTransition rightTransition = new TranslateTransition(Duration.millis(1200), curtainRight); rightTransition.setFromX(curtainRight.getTranslateX()); rightTransition.setToX(0); leftTransition.setInterpolator(Interpolator.EASE_OUT); rightTransition.setInterpolator(Interpolator.EASE_OUT); ParallelTransition parallel = new ParallelTransition(leftTransition, rightTransition); parallel.setOnFinished(e -> onFinished.run()); parallel.play(); }
-
     private void startNewGameDirect() {
         ensureConfigured(); if (animationHandler == null) return; AudioManager.getInstance().setSuppressSfx(false); AudioManager.getInstance().stopAll(); if (gameViewPresenter != null) gameViewPresenter.hideGameOver(); updatePauseUi(false); if (gameOverOverlay != null) { gameOverOverlay.setVisible(false); gameOverOverlay.setManaged(false); } if (pauseButton != null) { pauseButton.setVisible(true); pauseButton.setManaged(true); pauseButton.setDisable(false); } gameActive = true; animationHandler.ensureInitialized(); if (gameController != null) gameController.createNewGame(); animationHandler.start(); if (gameTimer != null) { gameTimer.reset(); gameTimer.start(); } gamePanel.requestFocus();
         try {
@@ -809,110 +475,25 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
             switchBackgroundTo(bgResource);
         } catch (Throwable ignored) {}
     }
+    @Override
+    protected void startFlickerEffect() { flickerScheduler = new Timeline(new KeyFrame(Duration.seconds(30), e -> performFlicker())); flickerScheduler.setCycleCount(Timeline.INDEFINITE); flickerScheduler.play(); }
 
-    private void fadeToMainMusic() {
-        try {
-            URL mainUrl = getClass().getResource("/sounds/main.mp3");
-            if (mainUrl != null) {
-                activeBackgroundResourcePath = "/sounds/main.mp3";
-                mainPlayer = new SafeMediaPlayer(mainUrl);
-                mainPlayer.setVolume(0.0);
-                mainPlayer.setCycleCount(Animation.INDEFINITE);
-                mainPlayer.play();
-                double targetMainVolume = 0.5; double durationSeconds = 3.5; double initialStartVolume = startPlayer != null ? startPlayer.getVolume() : 1.0; int steps = 35; Timeline fadeTimeline = new Timeline();
-                // Adjust targetMainVolume by music slider
-                try { if (musicVolumeSlider != null) targetMainVolume = 0.5 * (musicVolumeSlider.getValue() / 100.0); } catch (Throwable ignored) {}
-                for (int i = 0; i <= steps; i++) {
-                    final double frac = (double) i / steps;
-                    final double startVol = initialStartVolume * (1.0 - frac);
-                    final double mainVol = targetMainVolume * frac;
-                    double time = frac * durationSeconds;
-                    fadeTimeline.getKeyFrames().add(new KeyFrame(Duration.seconds(time), evt -> { if (startPlayer != null) startPlayer.setVolume(startVol); if (mainPlayer != null) mainPlayer.setVolume(mainVol); }));
-                }
-                fadeTimeline.setOnFinished(e -> { if (startPlayer != null) { startPlayer.stop(); startPlayer.dispose(); startPlayer = null; } });
-                fadeTimeline.play();
-            }
-        } catch (Exception e) { LOGGER.warn("Failed to load main sound", e); }
-    }
-
-    private void switchBackgroundTo(String resourcePath) {
-        try {
-            URL newUrl = getClass().getResource(resourcePath);
-            if (newUrl == null) return;
-
-            // Mark a new background change operation and capture its id for this transition.
-            final long myChangeId = ++backgroundChangeId;
-
-            SafeMediaPlayer oldPlayer = mainPlayer != null ? mainPlayer : startPlayer;
-            SafeMediaPlayer newPlayer = new SafeMediaPlayer(newUrl);
-            if (!newPlayer.isAvailable()) return;
-            newPlayer.setVolume(0.0); newPlayer.setCycleCount(Animation.INDEFINITE); newPlayer.play(); double targetVolume = 0.5; double durationSeconds = 1.2; double initialOldVolume = oldPlayer != null ? oldPlayer.getVolume() : 1.0; int steps = 12; Timeline fadeTimeline = new Timeline();
-            // Adjust targetVolume by UI music slider
-            try { if (musicVolumeSlider != null) targetVolume = 0.5 * (musicVolumeSlider.getValue() / 100.0); } catch (Throwable ignored) {}
-            for (int i = 0; i <= steps; i++) {
-                final double frac = (double) i / steps;
-                final double oldVol = initialOldVolume * (1.0 - frac);
-                final double newVol = targetVolume * frac;
-                double time = frac * durationSeconds;
-                fadeTimeline.getKeyFrames().add(new KeyFrame(Duration.seconds(time), evt -> { try { if (oldPlayer != null) oldPlayer.setVolume(oldVol); if (newPlayer != null) newPlayer.setVolume(newVol); } catch (Throwable ignored) {} }));
-            }
-            fadeTimeline.setOnFinished(e -> {
-                // If another background change started after this one, abort applying this fade's result.
-                if (myChangeId != backgroundChangeId) {
-                    try { if (newPlayer != null) { newPlayer.stop(); newPlayer.dispose(); } } catch (Throwable ignored) {}
-                    return;
-                }
-                 try {
-                     if (oldPlayer != null && oldPlayer != newPlayer) { oldPlayer.stop(); oldPlayer.dispose(); if (oldPlayer == startPlayer) startPlayer = null; if (oldPlayer == mainPlayer) mainPlayer = null; }
-                 } catch (Throwable ignored) {}
-                 mainPlayer = newPlayer; activeBackgroundResourcePath = resourcePath;
-             });
-             fadeTimeline.play();
-         } catch (Exception e) { LOGGER.warn("Failed to switch background music to {}", resourcePath, e); }
-     }
-
-    // Forcefully stop any background players and start a fresh main menu music player immediately.
-    private void restartMainMenuMusicImmediate() {
-        try {
-            // Invalidate any in-progress background-change fades so they won't overwrite our manual restart.
-            backgroundChangeId++;
-
-            URL mainUrl = getClass().getResource("/sounds/main.mp3");
-            if (mainUrl == null) return;
-
-            try {
-                if (mainPlayer != null) {
-                    mainPlayer.stop();
-                    mainPlayer.dispose();
-                    mainPlayer = null;
-                }
-            } catch (Throwable ignored) {}
-
-            try {
-                if (startPlayer != null) {
-                    startPlayer.stop();
-                    startPlayer.dispose();
-                    startPlayer = null;
-                }
-            } catch (Throwable ignored) {}
-
-            // Create a fresh main player and start it at target volume
-            SafeMediaPlayer newMain = new SafeMediaPlayer(mainUrl);
-            newMain.setCycleCount(Animation.INDEFINITE);
-            double uiVol = 0.5;
-            try { if (musicVolumeSlider != null) uiVol = (musicVolumeSlider.getValue() / 100.0); } catch (Throwable ignored) {}
-            newMain.setVolume(Math.max(0.0, Math.min(1.0, uiVol * 0.5)));
-            newMain.play();
-
-            mainPlayer = newMain;
-            activeBackgroundResourcePath = "/sounds/main.mp3";
-        } catch (Exception e) {
-            LOGGER.debug("Failed to restart main menu music immediately", e);
-        }
+    @Override
+    protected void stopFlickerEffect() { if (flickerScheduler != null) { flickerScheduler.stop(); flickerScheduler = null; } if (gamePanel != null) gamePanel.setOpacity(1.0); if (mainContent != null) mainContent.setOpacity(1.0); try { AudioManager.getInstance().stopFlickering(); } catch (Throwable ignored) {} }
+    private void performFlicker() {
+        if (mainContent == null) return;
+        try { AudioManager.getInstance().playFlickering(); } catch (Throwable ignored) {}
+        Timeline flickerAnim = new Timeline(); int flickerCount = 10 + random.nextInt(10); double stepInterval = 0.05;
+        try { double audioDur = AudioManager.getInstance().getFlickeringDurationSeconds(); double visualDur = flickerCount * stepInterval; if (audioDur > visualDur + 0.05) stepInterval = audioDur / flickerCount; } catch (Throwable ignored) {}
+        for (int i = 0; i < flickerCount; i++) { double timeOffset = i * stepInterval; double randomOpacity = 0.3 + random.nextDouble() * 0.7; flickerAnim.getKeyFrames().add(new KeyFrame(Duration.seconds(timeOffset), evt -> mainContent.setOpacity(randomOpacity))); }
+        flickerAnim.getKeyFrames().add(new KeyFrame(Duration.seconds(flickerCount * stepInterval), evt -> mainContent.setOpacity(1.0)));
+        flickerAnim.play();
+        double flickerDurationSeconds = flickerCount * stepInterval;
+        try { PauseTransition stopSound = new PauseTransition(Duration.seconds(flickerDurationSeconds)); stopSound.setOnFinished(e -> { try { AudioManager.getInstance().stopFlickering(); } catch (Throwable ignored) {} }); stopSound.play(); } catch (Throwable ignored) {}
     }
 
     // --- input sound wiring (hover/click) ---
-    private void setupHoverSounds() {
+    protected void setupHoverSounds() {
         Scene scene = gamePanel.getScene();
         if (scene != null) {
             attachHoverHandler(scene);
@@ -933,7 +514,8 @@ public class GuiController implements Initializable, IGuiController, GameEventLi
         });
     }
 
-    private void setupClickSounds() {
+    @Override
+    protected void setupClickSounds() {
         Scene scene = gamePanel.getScene();
         if (scene != null) {
             attachClickHandler(scene);

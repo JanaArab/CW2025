@@ -153,17 +153,17 @@
                     </StackPane>
                     <Button fx:id="levelL1Button" onAction="#handleLevelL1" styleClass="pause-btn, level-l1">
                         <graphic>
-                            <Label text="L1" styleClass="pause-btn-label"/>
+                            <Label text="TurboRush" styleClass="pause-btn-label"/>
                         </graphic>
                     </Button>
                     <Button fx:id="levelL2Button" onAction="#handleLevelL2" styleClass="pause-btn, level-l2">
                         <graphic>
-                            <Label text="L2" styleClass="pause-btn-label"/>
+                            <Label text="QuadLock" styleClass="pause-btn-label"/>
                         </graphic>
                     </Button>
                     <Button fx:id="levelL3Button" onAction="#handleLevelL3" styleClass="pause-btn, level-l3">
                         <graphic>
-                            <Label text="L3 (Hard)" styleClass="pause-btn-label"/>
+                            <Label text="Disorder Zone" styleClass="pause-btn-label"/>
                         </graphic>
                     </Button>
                 </VBox>
