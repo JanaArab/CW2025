@@ -23,4 +23,22 @@ public class NotificationAnimator {
         transition.setOnFinished(event -> list.remove(panel));
         transition.play();
     }
+
+    /**
+     * Shorter, snappier notification used for rotation messages so they don't linger.
+     */
+    public void playShowRotation(Node panel, ObservableList<Node> list) {
+        if (panel == null || list == null) return;
+
+        // Faster fade + smaller translate to keep the message brief and unobtrusive
+        FadeTransition fade = new FadeTransition(Duration.millis(800), panel);
+        TranslateTransition translate = new TranslateTransition(Duration.millis(1000), panel);
+        translate.setToY(panel.getLayoutY() - 20);
+        fade.setFromValue(1);
+        fade.setToValue(0);
+
+        ParallelTransition p = new ParallelTransition(translate, fade);
+        p.setOnFinished(e -> list.remove(panel));
+        p.play();
+    }
 }

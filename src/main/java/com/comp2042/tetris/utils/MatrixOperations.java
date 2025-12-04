@@ -107,12 +107,11 @@ public final class MatrixOperations {
         }
         int linesRemoved = clearedRows.size();
         int scoreBonus = ScoreCalculator.calculateRowClearBonus(linesRemoved);
-        return new ClearRow(linesRemoved, tmp, scoreBonus);
+        return new ClearRow(linesRemoved, tmp, scoreBonus, clearedRows);
     }
 
     @Pure
     public static List<int[][]> deepCopyList(List<int[][]> list) {
         return list.stream().map(MatrixOperations::copy).collect(Collectors.toList());
     }
-
 }

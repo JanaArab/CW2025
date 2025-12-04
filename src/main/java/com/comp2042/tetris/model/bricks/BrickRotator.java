@@ -59,5 +59,14 @@ public class BrickRotator {
         return brick.cloneShape();
     }
 
+    // Accessors for rotation metadata
+    public int getRotationStateCount() {
+        if (brick == null) return 0;
+        return getBrickShapes().size();
+    }
+
+    public int getCurrentShapeIndex() {
+        return currentShape;
+    }
 
 }

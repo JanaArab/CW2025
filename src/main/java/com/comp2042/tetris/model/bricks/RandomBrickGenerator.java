@@ -3,6 +3,7 @@ package com.comp2042.tetris.model.bricks;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RandomBrickGenerator implements BrickGenerator {
 
@@ -15,7 +16,7 @@ public class RandomBrickGenerator implements BrickGenerator {
     private final int previewSize;
 
     public RandomBrickGenerator() {
-        this(new ShuffleBagPolicy(), 2);
+        this(new ShuffleBagPolicy(), 3);
     }
 
     public RandomBrickGenerator(BrickBagPolicy bagPolicy, int previewSize) {
@@ -37,6 +38,15 @@ public class RandomBrickGenerator implements BrickGenerator {
         refillIfNeeded();
         return nextBricks.peek();
     }
+
+    @Override
+    public List<Brick> getNextBricks(int count) {
+        refillIfNeeded();
+        return nextBricks.stream()
+                .limit(count)
+                .collect(Collectors.toList());
+    }
+
     private void refillIfNeeded() {
         while (nextBricks.size() < previewSize) {
             nextBricks.addAll(bagPolicy.createBag(brickList));

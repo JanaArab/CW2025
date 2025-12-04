@@ -25,6 +25,8 @@ public class InputHandler implements GameActionInvoker, InputCommandRegistrar {
     private final CommandRegistry commandRegistry;
     private final InputCommandFactory inputCommandFactory;
     private  IGameController gameController;
+    // When true, left/right inputs are inverted (left -> right, right -> left).
+    private volatile boolean invertHorizontal = false;
 
     public InputHandler(BooleanSupplier isPauseSupplier,
                         BooleanSupplier isGameOverSupplier,
@@ -34,6 +36,14 @@ public class InputHandler implements GameActionInvoker, InputCommandRegistrar {
         this.inputCommandFactory = Objects.requireNonNull(inputCommandFactory, "inputCommandFactory");
         this.isPauseSupplier = isPauseSupplier;
         this.isGameOverSupplier = isGameOverSupplier;
+    }
+
+    /**
+     * Enable or disable horizontal inversion. When enabled, moveLeft() will trigger a right event and
+     * moveRight() will trigger a left event. This is used by special levels (e.g. Level 3) to invert controls.
+     */
+    public void setInvertHorizontal(boolean invert) {
+        this.invertHorizontal = invert;
     }
 
     public void setGameController(IGameController gameController) {
@@ -91,14 +101,24 @@ public class InputHandler implements GameActionInvoker, InputCommandRegistrar {
     @Override
     public void moveLeft() {
         if (gameController != null) {
-            gameController.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER));
+            // If horizontal inversion is active, call the right event instead of left.
+            if (invertHorizontal) {
+                gameController.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER));
+            } else {
+                gameController.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER));
+            }
         }
     }
 
     @Override
     public void moveRight() {
         if (gameController != null) {
-            gameController.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER));
+            // If horizontal inversion is active, call the left event instead of right.
+            if (invertHorizontal) {
+                gameController.onLeftEvent(new MoveEvent(EventType.LEFT, EventSource.USER));
+            } else {
+                gameController.onRightEvent(new MoveEvent(EventType.RIGHT, EventSource.USER));
+            }
         }
     }
 
@@ -106,6 +126,13 @@ public class InputHandler implements GameActionInvoker, InputCommandRegistrar {
     public void rotate() {
         if (gameController != null) {
             gameController.onRotateEvent(new MoveEvent(EventType.ROTATE, EventSource.USER));
+        }
+    }
+
+    @Override
+    public void instantDrop() {
+        if (gameController != null) {
+            gameController.onInstantDropEvent(new MoveEvent(EventType.DOWN, EventSource.USER)); // Using DOWN type, but it's instant
         }
     }
 

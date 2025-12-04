@@ -130,6 +130,11 @@ class InputHandlerTest {
         public GameCommand createRotateCommand(GameActionInvoker invoker) {
             return gameplayCommand;
         }
+
+        @Override
+        public GameCommand createInstantDropCommand(GameActionInvoker invoker) {
+            return gameplayCommand;
+        }
     }
 
     private static final class RecordingController implements IGameController {
@@ -161,6 +166,16 @@ class InputHandlerTest {
         }
 
         @Override
+        public void onInstantDropEvent(MoveEvent event) {
+            // no-op
+        }
+
+        @Override
         public void createNewGame() {}
+
+        @Override
+        public void setLevel(com.comp2042.tetris.model.level.GameLevel level) {
+            // no-op for tests
+        }
     }
 }

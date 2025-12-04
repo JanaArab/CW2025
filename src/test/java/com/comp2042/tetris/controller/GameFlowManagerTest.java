@@ -10,6 +10,7 @@ import com.comp2042.tetris.model.event.GameEventPublisher;
 import com.comp2042.tetris.model.event.GameStateSnapshot;
 import com.comp2042.tetris.model.event.MoveEvent;
 import com.comp2042.tetris.model.event.ScoreChangeEvent;
+import com.comp2042.tetris.model.event.BrickPlacedEvent;
 import com.comp2042.tetris.model.score.Score;
 import com.comp2042.tetris.model.score.ScoreManager;
 import com.comp2042.tetris.model.score.ScorePolicy;
@@ -59,7 +60,7 @@ class GameFlowManagerTest {
     @Test
     void handleDownEventMergesClearsAndSpawnsNewBrickWhenMoveFailsAndNewBrickFits() {
         board.moveDownResult = false;
-        board.clearRowResult = new ClearRow(1, new int[][]{{1}}, 100);
+        board.clearRowResult = new ClearRow(1, new int[][]{{1}}, 100, java.util.List.of(5));
         board.createNewBrickResult = false;
 
         manager.handleDownEvent(new MoveEvent(EventType.DOWN, EventSource.USER));
@@ -77,7 +78,7 @@ class GameFlowManagerTest {
     @Test
     void handleDownEventPublishesGameOverWhenNewBrickCannotSpawn() {
         board.moveDownResult = false;
-        board.clearRowResult = new ClearRow(0, new int[][]{{0}}, 0);
+        board.clearRowResult = new ClearRow(0, new int[][]{{0}}, 0, java.util.Collections.emptyList());
         board.createNewBrickResult = true;
 
         manager.handleDownEvent(new MoveEvent(EventType.DOWN, EventSource.USER));
@@ -92,7 +93,7 @@ class GameFlowManagerTest {
 
     private static final class StubBoard implements Board {
         private boolean moveDownResult;
-        private ClearRow clearRowResult = new ClearRow(0, new int[][]{{0}}, 0);
+        private ClearRow clearRowResult = new ClearRow(0, new int[][]{{0}}, 0, java.util.Collections.emptyList());
         private boolean createNewBrickResult;
         private boolean mergeCalled;
 
@@ -147,11 +148,16 @@ class GameFlowManagerTest {
 
         @Override
         public com.comp2042.tetris.model.score.Score getScore() {
-            return null;
+            return new com.comp2042.tetris.model.score.Score();
         }
 
         @Override
         public void newGame() {}
+
+        @Override
+        public void setLevel(com.comp2042.tetris.model.level.GameLevel level) {
+            // no-op for test stub
+        }
     }
 
     private static final class StubPublisher implements GameEventPublisher {
@@ -194,6 +200,9 @@ class GameFlowManagerTest {
         public void publishGameOver() {
             gameOverCalls++;
         }
+
+        @Override
+        public void publishBrickPlaced(BrickPlacedEvent event) {}
     }
 
     private static final class RecordingScorePolicy implements ScorePolicy {

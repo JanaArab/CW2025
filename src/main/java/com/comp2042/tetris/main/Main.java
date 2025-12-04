@@ -5,9 +5,7 @@
  * Loads the game layout
  * launches the main game window
  */
-
 package com.comp2042.tetris.main;
-
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -20,8 +18,7 @@ import com.comp2042.tetris.controller.DefaultGuiControllerDependenciesFactory;
 import com.comp2042.tetris.model.event.GameEventBusProvider;
 import com.comp2042.tetris.model.event.GameEventListener;
 import com.comp2042.tetris.model.event.GameEventPublisher;
-
-
+import com.comp2042.tetris.view.UIConstants;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -53,9 +50,12 @@ public class Main extends Application {
         guiController.setGameController(components.gameController());
 
         primaryStage.setTitle("TetrisJFX");
-        Scene scene = new Scene(root, 300, 510);
+        primaryStage.setResizable(false);
+
+        Scene scene = new Scene(root, UIConstants.WINDOW_WIDTH, UIConstants.WINDOW_HEIGHT);
         primaryStage.setScene(scene);
         primaryStage.show();
+
 
     }
 

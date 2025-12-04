@@ -19,5 +19,7 @@ public interface InputEventListener {
 
     void  onRotateEvent(MoveEvent event);
 
+    void onInstantDropEvent(MoveEvent event);
+
     void createNewGame();
 }

@@ -22,4 +22,5 @@ public interface GameEventPublisher {
 
     void publishGameOver();
 
+    void publishBrickPlaced(BrickPlacedEvent event);
 }

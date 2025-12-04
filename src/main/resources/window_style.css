@@ -1,17 +1,69 @@
 .root {
-    -fx-background-image: url("background_image.png");
+    -fx-background-color: black;
+    -fx-max-width: 900px;
+    -fx-max-height: 720px;
+    -fx-pref-width: 900px;
+    -fx-pref-height: 720px;
 }
 
-.nextBrick {
-    -fx-border-width: 2px;
-    -fx-border-color: whitesmoke;
-    -fx-border-radius: 17px;
+.starBackground {
+    /*-fx-background-image: url("game_background1.jpeg");*/
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+.frontFrame {
+    -fx-background-image: url("controller_Navy2.png");
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
 }
 
 .gameBoard {
-    -fx-border-color: linear-gradient(#2A5058, #61a2b1);
-    -fx-border-width: 12px;
-    -fx-border-radius: 12px;
+    -fx-border-color: #8b5cf6;
+        -fx-border-width: 3px;
+        -fx-border-radius: 4px;
+        /* Super sheer black background */
+        -fx-background-color: rgba(0, 0, 0, 0.2);
+        /* Outer glow effect */
+        -fx-effect: dropshadow(three-pass-box, rgba(139, 92, 246, 0.6), 15, 0, 0, 0);
+        -fx-max-width: 264;
+        -fx-max-height: 424;
+}
+.nextBoard {
+    -fx-border-color: #8b5cf6;
+        -fx-border-width: 3px;
+        -fx-border-radius: 4px;
+        -fx-background-color: rgba(0, 0, 0, 0.2);
+        -fx-max-width: 120;
+        -fx-max-height: 320;
+        -fx-min-width: 120;
+        -fx-min-height: 320;
+        -fx-padding: 15 10 15 10;
+}
+
+.scoreBoard {
+    -fx-border-color: transparent;
+        -fx-border-width: 0px;
+        -fx-border-radius: 0px;
+        -fx-background-color: transparent;
+        -fx-max-width: 120;
+        -fx-max-height: 40;
+        -fx-min-width: 120;
+        -fx-min-height: 40;
+        -fx-padding: 0;
+}
+
+.timerBoard {
+    -fx-border-color: transparent;
+        -fx-border-width: 0px;
+        -fx-border-radius: 0px;
+        -fx-background-color: transparent;
+        -fx-max-width: 120;
+        -fx-max-height: 40;
+        -fx-min-width: 120;
+        -fx-min-height: 40;
+        -fx-padding: 0;
 }
 
 .nextBrickLabel {
@@ -54,19 +106,764 @@
 }
 
 .bonusStyle {
+    -fx-font-family: "SubSpace";
     -fx-font-size: 40px;
     -fx-font-weight: bold;
+    -fx-text-fill: linear-gradient(from 0% 0% to 100% 100%, #e9d5ff 0%, #c4b5fd 50%, #8b5cf6 100%);
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.8), 10, 0.5, 0, 0);
 }
 
 .gameOverStyle {
-    -fx-font-family: "Let's go Digital";
-    -fx-font-size: 48;
-    -fx-background-color: red;
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 52px;
+    -fx-text-fill: linear-gradient(#aef6ff 0%, #4cc8ff 45%, #0f6eff 100%);
+    -fx-background-color: transparent;
+    -fx-effect: dropshadow(gaussian, #0d58ff, 20, 0.7, 0, 0),
+                dropshadow(gaussian, black, 30, 0.95, 0, 0);
+}
+.score-title {
+    -fx-font-family: "SubSpace";
+    -fx-text-fill: white;
+    -fx-font-size: 26;
+    -fx-padding: 0;
 }
 
 .scoreClass{
-    -fx-font-family: "Let's go Digital";
-    -fx-font-size: 38;
-    -fx-fill: yellow;
-    -fx-text-fill: yellow;
+    -fx-font-family: "Subspace";
+    -fx-font-size: 28;
+    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #ffffff 0%, #e0f7ff 20%, #7ed6ff 50%, #00d2d3 80%, #18dcff 100%);
+    -fx-text-fill: white;
+
+}
+
+.timer-title {
+    -fx-font-family: "SubSpace";
+    -fx-text-fill: white;
+    -fx-font-size: 26;
+    -fx-padding: 0;
+}
+
+.timerClass{
+    -fx-font-family: "Subspace";
+    -fx-font-size: 28;
+    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #ffffff 0%, #e0f7ff 20%, #7ed6ff 50%, #00d2d3 80%, #18dcff 100%);
+    -fx-text-fill: #ffd32a;
+
+}
+
+.panel-title {
+    -fx-font-family: "SubSpace";
+    -fx-text-fill: white;
+    -fx-font-size: 26;
+}
+
+.info-panel {
+    -fx-border-color: white;
+    -fx-border-width: 2;
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+
+#activeBrickLayer {
+    -fx-max-width: 240;
+    -fx-max-height: 380;
+}
+
+#ghostBrickLayer {
+    -fx-max-width: 240;
+    -fx-max-height: 380;
+}
+
+.ghostBrick {
+    -fx-opacity: 0.25;
+    -fx-effect: null;
+}
+
+
+.main-menu-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.3);
+}
+
+.game-title {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 24px;
+    -fx-text-fill: #7ed6ff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.75), 10, 0.4, 0, 0);
+}
+
+
+.settings-card {
+    -fx-padding: 20 30 20 30;
+    -fx-spacing: 12;
+}
+
+.settings-title {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 16px;
+    -fx-text-fill: #c4b5fd;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.8), 12, 0.6, 0, 0),
+                dropshadow(gaussian, rgba(0, 0, 0, 0.9), 8, 0.5, 0, 2);
+    -fx-padding: 0 0 8 0;
+}
+
+.settings-list {
+    -fx-spacing: 8;
+    -fx-padding: 30 60;
+    -fx-background-color: rgba(0, 0, 0, 0.5);
+    -fx-border-color: rgba(24, 220, 255, 0.3);
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.setting-item {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 10px;
+    -fx-text-fill: #e9d5ff;
+}
+
+.menu-title {
+    -fx-spacing: 8;
+}
+
+.title-galaxy {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 18px;
+    -fx-text-fill: #7ed6ff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.75), 10, 0.4, 0, 0);
+}
+
+.title-tetris {
+    -fx-padding: 4 0 0 0;
+}
+
+.title-tetris-letter {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 80px;
+    -fx-text-alignment: center;
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.7), 10, 0.5, 0, 1);
+    -fx-scale-x: 1.0;
+    -fx-scale-y: 1.0;
+    -fx-cursor: hand;
+}
+
+.title-tetris-letter:hover {
+    -fx-scale-x: 1.15;
+    -fx-scale-y: 1.15;
+    -fx-border-color: rgba(255, 255, 255, 1.0);
+    -fx-effect:
+            dropshadow(gaussian, rgba(0, 0, 0, 0.8), 22, 0.5, 0, 3),
+            innershadow(gaussian, rgba(0,0,0,0.25), 10, 0.25, 0, 1),
+            dropshadow(three-pass-box, rgba(255,255,255,0.6), 8, 0.4, 0, 0);
+}
+
+.title-tetris-letter.letter-red {
+    -fx-text-fill: #ff4d6d;
+}
+
+.title-tetris-letter.letter-orange {
+    -fx-text-fill: #ff9f1a;
+}
+
+.title-tetris-letter.letter-yellow {
+    -fx-text-fill: #ffd32a;
+}
+
+.title-tetris-letter.letter-green {
+    -fx-text-fill: #2ed573;
+}
+
+.title-tetris-letter.letter-cyan {
+    -fx-text-fill: #18dcff;
+}
+
+.title-tetris-letter.letter-purple {
+    -fx-text-fill: #a55eea;
+}
+
+.menu-button-label {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 12px;
+    -fx-text-fill: #222;
+}
+
+.menu-button-arrow {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 14px;
+    -fx-text-fill: #1e272e;
+}
+
+
+/* --- Base Button Style (Blue Theme) --- */
+.menu-button {
+    -fx-font-family: "Press Start 2P"; /* Or "Kenney Pixel Square" if you installed it */
+    -fx-font-size: 12px;
+    -fx-text-fill: #0a3d5c; /* Dark blue text for contrast */
+
+    /* Pixel Art Shape */
+    -fx-background-radius: 4; /* Small radius for slightly rounded pixel corners */
+    -fx-border-radius: 4;
+    -fx-border-width: 3px;
+    -fx-border-color: #0a3d5c; /* Dark border color */
+
+    /* The "Bevel" Effect (Highlight top, Shadow bottom) */
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #5ce4ff 0%,    /* Top Highlight */
+            #5ce4ff 10%,   /* Hard stop */
+            #18dcff 10%,   /* Main Body Color - Tetris cyan */
+            #18dcff 85%,   /* Hard stop */
+            #0a8fb3 85%,   /* Bottom Shadow */
+            #0a8fb3 100%
+        );
+
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 0, 0, 3, 3); /* Hard pixel drop shadow */
+    -fx-scale-x: 1.0;
+    -fx-scale-y: 1.0;
+}
+
+
+/* HOVER */
+.menu-button:hover {
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #8cefff 0%,
+            #8cefff 20%,
+            #5ce4ff 20%,
+            #5ce4ff 85%,
+            #18dcff 85%,
+            #18dcff 100%
+        );
+
+
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+/* PRESSED */
+.menu-button:pressed {
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #0a8fb3 0%,
+            #0a8fb3 20%,
+            #18dcff 20%,
+            #18dcff 85%,
+            #5ce4ff 85%,
+            #5ce4ff 100%
+        );
+    -fx-translate-y: 3;
+    -fx-effect: none;
+}
+
+.menu-button.secondary {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 14px;
+    -fx-text-fill: #1c4a1c;
+
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-width: 4px;
+    -fx-border-color: #0f3a0f;
+
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #9ef59b 0%,
+            #9ef59b 20%,
+            #4caf50 20%,
+            #4caf50 85%,
+            #2e7d32 85%,
+            #2e7d32 100%
+        );
+
+    -fx-padding: 10 22;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.45), 6, 0, 4, 4);
+}
+
+/* HOVER */
+.menu-button.secondary:hover {
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #bfffc0 0%,
+            #bfffc0 20%,
+            #66bb6a 20%,
+            #66bb6a 85%,
+            #388e3c 85%,
+            #388e3c 100%
+        );
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+/* --- Secondary Button (Green - "Settings/Store" vibe) --- */
+.menu-button.secondary {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 12px;
+    -fx-text-fill: #1c4a1c;
+
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-width: 3px;
+    -fx-border-color: #0f3a0f;
+
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #7ae9a7 0%,
+            #7ae9a7 20%,
+            #2ed573 20%,
+            #2ed573 85%,
+            #1a7d44 85%,
+            #1a7d44 100%
+        );
+
+    -fx-padding: 9 18;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.45), 5, 0, 3, 3);
+}
+
+.level-menu-card {
+    -fx-padding: 20 20 20 20;
+    -fx-background-color: linear-gradient(to bottom, rgba(20, 10, 40, 0.95), rgba(10, 5, 25, 0.98));
+    -fx-border-color: #8b5cf6;
+    -fx-border-width: 3px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-effect: dropshadow(three-pass-box, rgba(139, 92, 246, 0.5), 20, 0.5, 0, 0),
+                innershadow(gaussian, rgba(139, 92, 246, 0.15), 8, 0.3, 0, 0);
+
+       -fx-min-width: 300;
+       -fx-pref-width: 200;
+
+       /* 2. Force the height to be taller (250px gives it that 'window' feel) */
+       -fx-min-height: 150;
+       -fx-pref-height: 100;
+
+       /* 3. Remove any max-width limits so it can actually get big */
+       -fx-max-width: 500;
+       -fx-max-height: 300;
+
+       /* 4. Ensure contents stay centered inside this big box */
+       -fx-alignment: center;
+}
+
+.tutorial-title {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 24px;
+    -fx-text-fill: #8b5cf6;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.75), 10, 0.4, 0, 0);
+}
+
+
+/* HOVER */
+.menu-button.secondary:hover {
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #a4f4be 0%,
+            #a4f4be 20%,
+            #7ae9a7 20%,
+            #7ae9a7 85%,
+            #2ed573 85%,
+            #2ed573 100%
+        );
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+/* --- Danger/Exit Button (Red) --- */
+.menu-button.danger {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 12px;
+    -fx-text-fill: #4d0d0d;
+
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-width: 3px;
+    -fx-border-color: #5a0c0c;
+
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #ffa0b1 0%,
+            #ffa0b1 20%,
+            #ff4d6d 20%,
+            #ff4d6d 85%,
+            #b33349 85%,
+            #b33349 100%
+        );
+
+    -fx-padding: 9 18;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.45), 5, 0, 3, 3);
+}
+
+.menu-button.danger:hover {
+    -fx-background-color:
+        linear-gradient(to bottom,
+            #ffc4d0 0%,
+            #ffc4d0 20%,
+            #ffa0b1 20%,
+            #ffa0b1 85%,
+            #ff4d6d 85%,
+            #ff4d6d 100%
+        );
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+/* Curtain Animation */
+.curtain {
+    -fx-background-color: black;
+    -fx-max-width: 900px;
+    -fx-max-height: 720px;
+    -fx-min-width: 900px;
+    -fx-min-height: 720px;
+}
+
+/* Pause Menu Styles */
+.pause-menu-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.8);
+}
+
+.pause-menu-card {
+    -fx-padding: 15 25 15 25;
+    -fx-background-color: linear-gradient(to bottom, rgba(20, 10, 40, 0.95), rgba(10, 5, 25, 0.98));
+    -fx-border-color: #8b5cf6;
+    -fx-border-width: 3px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-effect: dropshadow(three-pass-box, rgba(139, 92, 246, 0.5), 20, 0.5, 0, 0),
+                innershadow(gaussian, rgba(139, 92, 246, 0.15), 8, 0.3, 0, 0);
+    /* Make width flexible so the card hugs its contents */
+   -fx-min-width: 300;
+          -fx-pref-width: 150;
+
+          /* 2. Force the height to be taller (250px gives it that 'window' feel) */
+          -fx-min-height: 250;
+          -fx-pref-height: 90;
+
+          /* 3. Remove any max-width limits so it can actually get big */
+          -fx-max-width: 400;
+          -fx-max-height: 200;
+
+          /* 4. Ensure contents stay centered inside this big box */
+          -fx-alignment: center;
+}
+
+.tutorial-card {
+    -fx-padding: 15 25 15 25;
+    -fx-background-color: linear-gradient(to bottom, rgba(20, 10, 40, 0.95), rgba(10, 5, 25, 0.98));
+    -fx-border-color: #8b5cf6;
+    -fx-border-width: 3px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-effect: dropshadow(three-pass-box, rgba(139, 92, 246, 0.5), 20, 0.5, 0, 0),
+                innershadow(gaussian, rgba(139, 92, 246, 0.15), 8, 0.3, 0, 0);
+    /* Make width flexible so the card hugs its contents */
+   -fx-min-width: 500;
+          -fx-pref-width: 300;
+
+          /* 2. Force the height to be taller (250px gives it that 'window' feel) */
+          -fx-min-height: 250;
+          -fx-pref-height: 90;
+
+          /* 3. Remove any max-width limits so it can actually get big */
+          -fx-max-width: 600;
+          -fx-max-height: 200;
+
+          /* 4. Ensure contents stay centered inside this big box */
+          -fx-alignment: center;
+}
+
+/* Compact Pause Menu Buttons */
+.pause-btn {
+    -fx-font-family: "Press Start 2P";
+    -fx-background-radius: 3;
+    -fx-border-radius: 3;
+    -fx-border-width: 2px;
+    -fx-border-color: #6d28d9;
+    -fx-background-color: linear-gradient(to bottom, #7c3aed 0%, #5b21b6 100%);
+    /* Reduce horizontal padding and remove fixed width so button sizes to text */
+    -fx-padding: 4 8; /* top right bottom left */
+    -fx-min-width: 0; /* allow shrinking to text */
+    -fx-pref-width: USE_COMPUTED_SIZE;
+    -fx-max-width: 400; /* reasonable cap */
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 3, 0, 2, 2);
+}
+
+.pause-btn-label {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 10px;
+    -fx-text-fill: #e9d5ff;
+}
+
+/* Primary button (Resume) */
+.pause-btn-primary {
+    -fx-background-color: linear-gradient(to bottom, #10b981 0%, #059669 100%);
+    -fx-border-color: #047857;
+}
+
+.pause-btn-primary:hover {
+    -fx-background-color: linear-gradient(to bottom, #34d399 0%, #10b981 100%);
+    -fx-border-color: #6ee7b7;
+    -fx-effect: dropshadow(three-pass-box, rgba(16, 185, 129, 0.6), 6, 0.5, 0, 0);
+}
+
+.pause-btn-primary:pressed {
+    -fx-background-color: linear-gradient(to bottom, #059669 0%, #047857 100%);
+}
+
+/* Danger button (Exit) */
+.pause-btn-danger {
+    -fx-background-color: linear-gradient(to bottom, #dc2626 0%, #991b1b 100%);
+    -fx-border-color: #7f1d1d;
+}
+
+.pause-btn-danger:hover {
+    -fx-background-color: linear-gradient(to bottom, #ef4444 0%, #dc2626 100%);
+    -fx-border-color: #f87171;
+    -fx-effect: dropshadow(three-pass-box, rgba(220, 38, 38, 0.6), 6, 0.5, 0, 0);
+}
+
+.pause-btn-danger:pressed {
+    -fx-background-color: linear-gradient(to bottom, #991b1b 0%, #7f1d1d 100%);
+}
+
+/* Add hover effect for compact pause buttons (applies to L1/L2 etc.) */
+.pause-btn:hover {
+    -fx-background-color: linear-gradient(to bottom, #8b5cf6 0%, #6d28d9 100%);
+    -fx-border-color: #9b5eea;
+    -fx-effect: dropshadow(three-pass-box, rgba(139,92,246,0.6), 6, 0.5, 0, 0);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.pause-btn:pressed {
+    -fx-translate-y: 3;
+    -fx-effect: none;
+}
+
+/* Small pause button for in-game pause */
+.pause-btn-small {
+    -fx-background-radius: 3;
+    -fx-border-radius: 3;
+    -fx-border-width: 2px;
+    -fx-border-color: #2E4F4F;
+    -fx-background-color: #4682B4;
+    -fx-padding: 2 4;
+    -fx-min-width: 0;
+    -fx-pref-width: USE_COMPUTED_SIZE;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 3, 0, 2, 2);
+}
+
+/* Level button color variants (color-only) — inherit sizing/shape from .pause-btn */
+.level-classic {
+    -fx-text-fill: #022b35; /* slightly darker text for better contrast */
+    -fx-border-color: #0ab0d1;
+    -fx-background-color: linear-gradient(to bottom, #4fdfff 0%, #16caff 100%); /* adjusted cyan */
+}
+.level-classic:hover {
+    -fx-background-color: linear-gradient(to bottom, #7fefff 0%, #4fdfff 100%);
+    -fx-border-color: #4fe0ff;
+}
+.level-classic:pressed {
+    -fx-background-color: linear-gradient(to bottom, #16caff 0%, #0aa0c0 100%);
+}
+
+.level-l1 {
+    -fx-text-fill: #04260a;
+    -fx-border-color: #27a24a;
+    -fx-background-color: linear-gradient(to bottom, #8ff1a0 0%, #2ed573 100%); /* adjusted green */
+}
+.level-l1:hover {
+    -fx-background-color: linear-gradient(to bottom, #bfffcf 0%, #8ff1a0 100%);
+    -fx-border-color: #7ae9a7;
+}
+.level-l1:pressed {
+    -fx-background-color: linear-gradient(to bottom, #2ed573 0%, #1a7d44 100%);
+}
+
+.level-l2 {
+    -fx-text-fill: #3a1900;
+    -fx-border-color: #e07a00;
+    -fx-background-color: linear-gradient(to bottom, #ffc26a 0%, #ff9f1a 100%); /* adjusted orange */
+}
+.level-l2:hover {
+    -fx-background-color: linear-gradient(to bottom, #ffd98a 0%, #ffc26a 100%);
+    -fx-border-color: #ffb347;
+}
+.level-l2:pressed {
+    -fx-background-color: linear-gradient(to bottom, #ff9f1a 0%, #c26a00 100%);
+}
+
+.level-l3 {
+    -fx-text-fill: #4d0d0d; /* dark text similar to menu danger */
+    -fx-border-color: #5a0c0c;
+    -fx-background-color: linear-gradient(to bottom,
+        #ffa0b1 0%,
+        #ffa0b1 20%,
+        #ff4d6d 20%,
+        #ff4d6d 85%,
+        #b33349 85%,
+        #b33349 100%
+    );
+}
+.level-l3:hover {
+    -fx-background-color: linear-gradient(to bottom, #ffc4d0 0%, #ff4d6d 100%);
+    -fx-border-color: #f87171;
+}
+.level-l3:pressed {
+    -fx-background-color: linear-gradient(to bottom, #991b1b 0%, #7f1d1d 100%);
+}
+
+/* Ensure the label text inside level buttons is black for better contrast */
+.pause-btn.level-classic .pause-btn-label,
+.pause-btn.level-l1 .pause-btn-label,
+.pause-btn.level-l2 .pause-btn-label,
+.pause-btn.level-l3 .pause-btn-label {
+    -fx-text-fill: #000000; /* black text inside level buttons */
+}
+
+/* Specific helper class to make the Back button label black */
+.back-black .pause-btn-label {
+    -fx-text-fill: #000000;
+}
+
+/* Confirmation Overlay */
+.confirmation-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.35);
+}
+
+.confirmation-card {
+    -fx-padding:20 20 20 20;
+    -fx-background-color: linear-gradient(to bottom, rgba(20, 10, 40, 0.95), rgba(10, 5, 25, 0.98));
+    -fx-border-color: #8b5cf6;
+    -fx-border-width: 3px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-effect: dropshadow(three-pass-box, rgba(139, 92, 246, 0.5), 20, 0.5, 0, 0),
+                innershadow(gaussian, rgba(139, 92, 246, 0.15), 8, 0.3, 0, 0);
+       -fx-min-width: 300;
+       -fx-pref-width: 150;
+
+       /* 2. Force the height to be taller (250px gives it that 'window' feel) */
+       -fx-min-height: 100;
+       -fx-pref-height: 80;
+
+       /* 3. Remove any max-width limits so it can actually get big */
+       -fx-max-width: 400;
+       -fx-max-height: 150;
+
+       /* 4. Ensure contents stay centered inside this big box */
+       -fx-alignment: center;
+}
+
+.confirmation-title {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 16px;
+    -fx-text-fill: #c4b5fd;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.8), 12, 0.6, 0, 0),
+                dropshadow(gaussian, rgba(0, 0, 0, 0.9), 8, 0.5, 0, 2);
+    -fx-padding: 0 0 8 0;
+}
+
+/* Music Control Panel */
+.music-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.35);
+}
+
+.music-card {
+    -fx-padding: 20 20 20 20;
+    -fx-background-color: linear-gradient(to bottom, rgba(20, 10, 40, 0.95), rgba(10, 5, 25, 0.98));
+    -fx-border-color: #8b5cf6;
+    -fx-border-width: 3px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-effect: dropshadow(three-pass-box, rgba(139, 92, 246, 0.5), 20, 0.5, 0, 0),
+                innershadow(gaussian, rgba(139, 92, 246, 0.15), 8, 0.3, 0, 0);
+   -fx-min-width: 300;
+       -fx-pref-width: 150;
+
+       /* 2. Force the height to be taller (250px gives it that 'window' feel) */
+       -fx-min-height: 100;
+       -fx-pref-height: 80;
+
+       /* 3. Remove any max-width limits so it can actually get big */
+       -fx-max-width: 400;
+       -fx-max-height: 150;
+
+       /* 4. Ensure contents stay centered inside this big box */
+       -fx-alignment: center;
+}
+
+/* Game Over Screen Styles */
+.game-label {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 48px;
+    -fx-fill: transparent;
+    -fx-stroke: cyan;
+    -fx-stroke-width: 2;
+    -fx-effect: dropshadow(gaussian, cyan, 10, 0.8, 0, 0);
+}
+
+.over-label {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 48px;
+    -fx-fill: transparent;
+    -fx-stroke: red;
+    -fx-stroke-width: 2;
+    -fx-effect: dropshadow(gaussian, red, 10, 0.8, 0, 0);
+}
+
+/* Rotation notification styling (text-only, left-center aligned) */
+.rotation-notification {
+    -fx-background-color: transparent; /* no background box */
+    -fx-border-color: transparent;     /* no border */
+    -fx-border-width: 0;
+    -fx-padding: 0;                    /* let label control spacing */
+    -fx-background-radius: 0;
+    -fx-min-height: 0;
+    -fx-min-width: 0;
+}
+.rotation-notification .bonusStyle {
+    -fx-font-family: "SubSpace";
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: linear-gradient(from 0% 0% to 100% 100%, #ffffff 0%, #e0f7ff 20%, #7ed6ff 50%);
+    -fx-padding: 0 6 0 0; /* small right padding so text doesn't touch edges */
+}
+
+/* Ensure the notification panel aligns left-center within the notification group */
+.group-notification-left-center {
+    -fx-alignment: center-left;
+}
+
+/* Hover hint (door effect) for level buttons */
+.level-hint-container {
+    -fx-alignment: center;
+    -fx-spacing: 6;
+    -fx-pref-width: USE_COMPUTED_SIZE;
+    -fx-pref-height: USE_COMPUTED_SIZE;
+}
+
+.level-hint {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 14px; /* increased for readability */
+    -fx-background-color: rgba(0,0,0,0.95);
+    -fx-text-fill: #ffffff;
+    -fx-padding: 10 14; /* larger padding */
+    -fx-background-radius: 6;
+    -fx-opacity: 0; /* hidden by default */
+    -fx-translate-y: -12; /* slightly above the button */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 8, 0.3, 0, 4);
+    -fx-max-width: 480; /* wrap when long, wider */
+    -fx-wrap-text: true; /* ensure wrapping where supported */
+}
+
+.level-hint-container:hover .level-hint {
+    -fx-opacity: 1;
+    -fx-translate-y: -30; /* move further up when visible */
 }

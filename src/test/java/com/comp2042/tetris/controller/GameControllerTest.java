@@ -10,6 +10,7 @@ import com.comp2042.tetris.model.event.GameEventPublisher;
 import com.comp2042.tetris.model.event.GameStateSnapshot;
 import com.comp2042.tetris.model.event.MoveEvent;
 import com.comp2042.tetris.model.event.ScoreChangeEvent;
+import com.comp2042.tetris.model.event.BrickPlacedEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -139,7 +140,7 @@ class GameControllerTest {
         }
 
         @Override
-        public ClearRow clearRows() { return new ClearRow(0, new int[][]{{0}}, 0); }
+        public ClearRow clearRows() { return new ClearRow(0, new int[][]{{0}}, 0, java.util.Collections.emptyList()); }
 
         @Override
         public com.comp2042.tetris.model.score.Score getScore() { return score; }
@@ -150,6 +151,11 @@ class GameControllerTest {
         @Override
         public void newGame() {
             newGameCalls++;
+        }
+
+        @Override
+        public void setLevel(com.comp2042.tetris.model.level.GameLevel level) {
+            // no-op for test stub
         }
     }
 
@@ -190,5 +196,8 @@ class GameControllerTest {
 
         @Override
         public void publishGameOver() {}
+
+        @Override
+        public void publishBrickPlaced(BrickPlacedEvent event) {}
     }
 }

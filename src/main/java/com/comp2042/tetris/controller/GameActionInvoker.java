@@ -12,4 +12,6 @@ public interface GameActionInvoker {
     void moveRight();
 
     void rotate();
+
+    void instantDrop();
 }

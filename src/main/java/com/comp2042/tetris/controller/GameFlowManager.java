@@ -4,6 +4,7 @@ import com.comp2042.tetris.model.board.Board;
 import com.comp2042.tetris.model.board.ClearRow;
 import com.comp2042.tetris.model.event.GameEventPublisher;
 import com.comp2042.tetris.model.event.MoveEvent;
+import com.comp2042.tetris.model.event.BrickPlacedEvent;
 import com.comp2042.tetris.model.score.ScoreManager;
 
 import java.util.Objects;
@@ -25,6 +26,7 @@ public class GameFlowManager {
 
         if (!canMove) {
             board.mergeBrickToBackground();
+            eventPublisher.publishBrickPlaced(new BrickPlacedEvent());
             ClearRow clearRow = board.clearRows();
             eventPublisher.publishBoardUpdated(board.getBoardMatrix());
 

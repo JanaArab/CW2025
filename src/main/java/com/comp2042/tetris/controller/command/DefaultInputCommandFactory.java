@@ -23,6 +23,8 @@ public class DefaultInputCommandFactory implements InputCommandFactory  {
         return new RotateCommand(gameActionInvoker);
     }
 
-
-
+    @Override
+    public GameCommand createInstantDropCommand(GameActionInvoker gameActionInvoker) {
+        return new InstantDropCommand(gameActionInvoker);
+    }
 }
