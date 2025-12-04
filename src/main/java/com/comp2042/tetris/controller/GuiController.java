@@ -1,11 +1,5 @@
-/**
- * updates the screen, notifications and game over
- * it is basically what the player sees
- */
 
 package com.comp2042.tetris.controller;
-
-import com.comp2042.tetris.game.AnimationHandler;
 import com.comp2042.tetris.game.GameTimer;
 import com.comp2042.tetris.model.board.ClearRow;
 import com.comp2042.tetris.model.data.ViewData;
@@ -105,10 +99,8 @@ public class GuiController extends MenuController implements Initializable, IGui
     private Timeline flickerScheduler;
     private final Random random = new Random();
 
-    private SafeMediaPlayer bricksTouchPlayer;
-    private SafeMediaPlayer hoverButtonPlayer;
-    private SafeMediaPlayer buttonClickPlayer;
-    private SafeMediaPlayer gameOverPlayer;
+    // Sound management extracted to SoundManager
+    private SoundManager soundManager;
 
     private Button lastHoveredButton = null;
 
@@ -122,17 +114,11 @@ public class GuiController extends MenuController implements Initializable, IGui
         setupShootingStars();
         gameTimer = new GameTimer(timerLabel);
 
-        // Play start sound
-        try {
-            URL startUrl = getClass().getResource("/sounds/start.MP3");
-            if (startUrl != null) {
-                startPlayer = new SafeMediaPlayer(startUrl);
-                startPlayer.setVolume(1.0);
-                startPlayer.play();
-            }
-        } catch (Exception e) {
-            LOGGER.warn("Failed to load start sound", e);
-        }
+        // Initialize SoundManager and delegate all sound setup to it
+        soundManager = new SoundManager(this);
+
+        // Play start sound - delegates to SoundManager
+        startPlayer = soundManager.playStartSound();
 
         showMainMenu();
 
@@ -147,54 +133,14 @@ public class GuiController extends MenuController implements Initializable, IGui
 
         playIntroSequence();
 
-        // Delay the music fade until after the static animation completes
-        PauseTransition musicDelay = new PauseTransition(Duration.seconds(5.5));
-        musicDelay.setOnFinished(e -> fadeToMainMusic());
-        musicDelay.play();
+        // Delay the music fade until after the static animation completes - delegates to SoundManager
+        soundManager.scheduleFadeToMainMusic(this::fadeToMainMusic);
 
-        // Initialize music & SFX sliders (UI 0-100 -> internal 0.0-1.0)
-        Platform.runLater(() -> {
-            try {
-                if (musicVolumeSlider != null) {
-                    // default to 50%
-                    musicVolumeSlider.setValue(50);
-                    musicVolumeSlider.valueProperty().addListener((obs, oldV, newV) -> {
-                        double uiVol = Math.max(0.0, Math.min(1.0, newV.doubleValue() / 100.0));
-                        try {
-                            // scale to existing target (0.5 max in codebase)
-                            if (mainPlayer != null) mainPlayer.setVolume(uiVol * 0.5);
-                        } catch (Throwable ignored) {}
-                    });
-                }
-                if (sfxVolumeSlider != null) {
-                    sfxVolumeSlider.setValue(100);
-                    double initSfx = Math.max(0.0, Math.min(1.0, sfxVolumeSlider.getValue() / 100.0));
-                    try { AudioManager.getInstance().setSfxVolume(initSfx); } catch (Throwable ignored) {}
-                    sfxVolumeSlider.valueProperty().addListener((obs, oldV, newV) -> {
-                        double v = Math.max(0.0, Math.min(1.0, newV.doubleValue() / 100.0));
-                        try { AudioManager.getInstance().setSfxVolume(v); } catch (Throwable ignored) {}
-                    });
-                }
-            } catch (Throwable ignored) {}
-        });
+        // Initialize music & SFX sliders - delegates to SoundManager
+        soundManager.initializeVolumeSliders(musicVolumeSlider, sfxVolumeSlider, () -> mainPlayer);
 
-        // Load small SFX (controller keeps local references but playback is through AudioManager)
-        try {
-            URL bricksUrl = getClass().getResource("/sounds/bricks_touch.mp3");
-            if (bricksUrl != null) { bricksTouchPlayer = new SafeMediaPlayer(bricksUrl); bricksTouchPlayer.setVolume(1.0); }
-        } catch (Exception ignored) {}
-        try {
-            URL hoverUrl = getClass().getResource("/sounds/hover-button.mp3");
-            if (hoverUrl != null) { hoverButtonPlayer = new SafeMediaPlayer(hoverUrl); hoverButtonPlayer.setVolume(1.0); }
-        } catch (Exception ignored) {}
-        try {
-            URL clickUrl = getClass().getResource("/sounds/Button1.mp3");
-            if (clickUrl != null) { buttonClickPlayer = new SafeMediaPlayer(clickUrl); buttonClickPlayer.setVolume(1.0); }
-        } catch (Exception ignored) {}
-        try {
-            URL gameOverUrl = getClass().getResource("/sounds/Game Over sound effect.mp3");
-            if (gameOverUrl != null) { gameOverPlayer = new SafeMediaPlayer(gameOverUrl); gameOverPlayer.setVolume(1.0); gameOverPlayer.setCycleCount(1); }
-        } catch (Exception ignored) {}
+        // Load small SFX - delegates to SoundManager
+        soundManager.loadSmallSFX();
 
         Platform.runLater(() -> { try { setupHoverSounds(); setupClickSounds(); } catch (Throwable ignored) {} });
 
