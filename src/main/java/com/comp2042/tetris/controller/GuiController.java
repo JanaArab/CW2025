@@ -192,18 +192,54 @@ public class GuiController extends MenuController implements Initializable, IGui
         if (staticScreen != null) {
             StaticScreenAnimator staticAnimator = new StaticScreenAnimator();
             DistortionAnimator distortionAnimator = new DistortionAnimator();
-            staticAnimator.play(staticScreen, () -> { if (mainMenuOverlay != null) distortionAnimator.applyGlitchTransition(mainMenuOverlay, 3.5); });
+            staticAnimator.play(staticScreen, () -> {
+                if (mainMenuOverlay != null) distortionAnimator.applyGlitchTransition(mainMenuOverlay, 3.5);
+                if (pixelStarLayer != null) {
+                    LOGGER.info("Starting animation layer fade-in. Current opacity: {}", pixelStarLayer.getOpacity());
+                    FadeTransition fadeIn = new FadeTransition(Duration.seconds(2.0), pixelStarLayer);
+                    fadeIn.setFromValue(0.0);
+                    fadeIn.setToValue(1.0);
+                    fadeIn.setOnFinished(e -> LOGGER.info("Animation layer fade-in complete. Opacity: {}", pixelStarLayer.getOpacity()));
+                    fadeIn.play();
+                } else {
+                    LOGGER.warn("pixelStarLayer is null - animations will not be visible");
+                }
+            });
         }
     }
 
-    private void setupNebulaClouds() { nebulaCloudAnimator = new NebulaCloudAnimator(); nebulaCloudAnimator.fillWithClouds(pixelStarLayer, 5); }
-    private void setupPixelStars() { pixelStarAnimator = new PixelStarAnimator(); pixelStarAnimator.fillScreenWithStars(pixelStarLayer, 150); }
+    private void setupNebulaClouds() {
+        if (pixelStarLayer != null) {
+            nebulaCloudAnimator = new NebulaCloudAnimator();
+            nebulaCloudAnimator.fillWithClouds(pixelStarLayer, 5);
+            LOGGER.info("Nebula clouds created: {} children in pixelStarLayer", pixelStarLayer.getChildren().size());
+        } else {
+            LOGGER.warn("Cannot setup nebula clouds - pixelStarLayer is null");
+        }
+    }
+
+    private void setupPixelStars() {
+        if (pixelStarLayer != null) {
+            pixelStarAnimator = new PixelStarAnimator();
+            pixelStarAnimator.fillScreenWithStars(pixelStarLayer, 150);
+            LOGGER.info("Pixel stars created: {} children in pixelStarLayer", pixelStarLayer.getChildren().size());
+        } else {
+            LOGGER.warn("Cannot setup pixel stars - pixelStarLayer is null");
+        }
+    }
 
     private void setupShootingStars() {
-        shootingStarAnimator = new ShootingStarAnimator();
-        Timeline starTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> { if (Math.random() < 0.8) shootingStarAnimator.createAndAnimateStar(pixelStarLayer); } ));
-        starTimeline.setCycleCount(Animation.INDEFINITE);
-        starTimeline.play();
+        if (pixelStarLayer != null) {
+            shootingStarAnimator = new ShootingStarAnimator();
+            Timeline starTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+                if (Math.random() < 0.8) shootingStarAnimator.createAndAnimateStar(pixelStarLayer);
+            }));
+            starTimeline.setCycleCount(Animation.INDEFINITE);
+            starTimeline.play();
+            LOGGER.info("Shooting star timeline started");
+        } else {
+            LOGGER.warn("Cannot setup shooting stars - pixelStarLayer is null");
+        }
     }
 
     public void setDependencies(GuiControllerDependencies dependencies) {

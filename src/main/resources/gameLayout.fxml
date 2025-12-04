@@ -6,6 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.shape.Rectangle?>
 <?import java.net.URL?>
 <StackPane fx:controller="com.comp2042.tetris.controller.GuiController"
            prefHeight="720" prefWidth="900"
@@ -13,12 +14,12 @@
            xmlns:fx="http://javafx.com/fxml"
            styleClass="root">
     <children>
-        <Pane>
-            <Pane fx:id="background1" styleClass="starBackground" prefWidth="900" prefHeight="720" />
 
-            <Pane fx:id="background2" styleClass="starBackground" prefWidth="900" prefHeight="720" layoutY="-720" />
+
+        <!-- Star animation layer - placed early so it appears behind UI elements -->
+        <Pane fx:id="pixelStarLayer" mouseTransparent="true" pickOnBounds="false" prefWidth="900" prefHeight="720" opacity="4" visible="true" managed="true">
         </Pane>
-        <Pane fx:id="pixelStarLayer" mouseTransparent="true" pickOnBounds="false" prefWidth="900" prefHeight="720" />
+
         <HBox fx:id="mainContent" alignment="CENTER" spacing="50" visible="false" managed="false">
             <VBox alignment="TOP_LEFT" spacing="15" styleClass="side-panel" style="-fx-padding: 60 0 0 0;">
                 <VBox spacing="0">
@@ -186,6 +187,7 @@
               StackPane.alignment="CENTER"/>
 
         <Pane styleClass="frontFrame" mouseTransparent="true"/>
+
 
         <!-- Score notification popups group -->
         <Group fx:id="groupNotification" StackPane.alignment="CENTER" mouseTransparent="true" pickOnBounds="false">
