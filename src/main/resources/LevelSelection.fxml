@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+
+<StackPane fx:id="levelSelectOverlay"
+           fx:controller="com.comp2042.tetris.controller.LevelSelectionController"
+           styleClass="pause-menu-overlay"
+           visible="false"
+           managed="false"
+           xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           StackPane.alignment="CENTER">
+    <VBox spacing="16" alignment="CENTER" styleClass="level-menu-card">
+        <Label text="CHOOSE YOUR LEVEL" styleClass="settings-title"/>
+        <VBox alignment="CENTER" spacing="8">
+            <StackPane styleClass="level-hint-container" alignment="CENTER">
+                <Button fx:id="levelClassicButton" onAction="#handleLevelClassic" styleClass="pause-btn, level-classic">
+                    <graphic>
+                        <Label text="Classic" styleClass="pause-btn-label"/>
+                    </graphic>
+                </Button>
+            </StackPane>
+            <Button fx:id="levelL1Button" onAction="#handleLevelL1" styleClass="pause-btn, level-l1">
+                <graphic>
+                    <Label text="TurboRush" styleClass="pause-btn-label"/>
+                </graphic>
+            </Button>
+            <Button fx:id="levelL2Button" onAction="#handleLevelL2" styleClass="pause-btn, level-l2">
+                <graphic>
+                    <Label text="QuadLock" styleClass="pause-btn-label"/>
+                </graphic>
+            </Button>
+            <Button fx:id="levelL3Button" onAction="#handleLevelL3" styleClass="pause-btn, level-l3">
+                <graphic>
+                    <Label text="Disorder Zone" styleClass="pause-btn-label"/>
+                </graphic>
+            </Button>
+        </VBox>
+        <Button onAction="#cancelLevelSelect" styleClass="pause-btn, back-black">
+            <graphic>
+                <Label text="◄ Back" styleClass="pause-btn-label"/>
+            </graphic>
+        </Button>
+    </VBox>
+    <stylesheets>
+        <URL value="@window_style.css"/>
+    </stylesheets>
+</StackPane>
+

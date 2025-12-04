@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.comp2042.tetris.view.OverlayPanel?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+
+<StackPane fx:controller="com.comp2042.tetris.controller.GuiController"
+           prefHeight="720" prefWidth="900"
+           maxHeight="720" maxWidth="900"
+           xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           styleClass="root">
+    <children>
+        <!-- Background Layers -->
+        <Pane>
+            <Pane fx:id="background1" styleClass="starBackground" prefWidth="900" prefHeight="720" />
+            <Pane fx:id="background2" styleClass="starBackground" prefWidth="900" prefHeight="720" layoutY="-720" />
+        </Pane>
+
+        <Pane fx:id="pixelStarLayer" mouseTransparent="true" pickOnBounds="false" prefWidth="900" prefHeight="720" />
+
+        <!-- Game View Component -->
+        <fx:include fx:id="gameView" source="GameView.fxml" />
+
+        <!-- Main Menu Component -->
+        <fx:include fx:id="mainMenu" source="MainMenu.fxml" />
+
+        <!-- Pause Menu Component -->
+        <fx:include fx:id="pauseMenu" source="PauseMenu.fxml" />
+
+        <!-- Level Selection Component -->
+        <fx:include fx:id="levelSelection" source="LevelSelection.fxml" />
+
+        <!-- Settings Component -->
+        <fx:include fx:id="settings" source="Settings.fxml" />
+
+        <!-- Tutorial Component -->
+        <fx:include fx:id="tutorial" source="Tutorial.fxml" />
+
+        <!-- Confirmation Dialog Component -->
+        <fx:include fx:id="confirmationDialog" source="ConfirmationDialog.fxml" />
+
+        <!-- Static Screen Effect -->
+        <ImageView fx:id="staticScreen" fitWidth="900" fitHeight="720" visible="true" managed="true" mouseTransparent="true" preserveRatio="false" />
+
+        <!-- Curtain Animation -->
+        <Pane fx:id="curtainLeft" styleClass="curtain" visible="false" managed="false"
+              prefWidth="900" prefHeight="720" maxWidth="900" maxHeight="720" minWidth="900" minHeight="720"
+              StackPane.alignment="CENTER"/>
+        <Pane fx:id="curtainRight" styleClass="curtain" visible="false" managed="false"
+              prefWidth="900" prefHeight="720" maxWidth="900" maxHeight="720" minWidth="900" minHeight="720"
+              StackPane.alignment="CENTER"/>
+
+        <Pane styleClass="frontFrame" mouseTransparent="true"/>
+
+        <!-- Score notification popups group -->
+        <Group fx:id="groupNotification" StackPane.alignment="CENTER" mouseTransparent="true" pickOnBounds="false">
+            <children>
+                <Label fx:id="debugNotificationLabel" text="" visible="false" styleClass="debug-notification" />
+            </children>
+        </Group>
+
+        <!-- Game Over Panel -->
+        <StackPane StackPane.alignment="CENTER" mouseTransparent="true" pickOnBounds="false">
+            <OverlayPanel fx:id="gameOverPanel" message="GAME OVER"/>
+        </StackPane>
+
+        <!-- Game Over Screen -->
+        <StackPane fx:id="gameOverOverlay" visible="false" managed="false" StackPane.alignment="CENTER" prefWidth="100" prefHeight="120">
+        </StackPane>
+
+        <!-- Pause Button -->
+        <Button fx:id="pauseButton"
+                onAction="#pauseGame"
+                styleClass="pause-btn-small"
+                StackPane.alignment="BOTTOM_LEFT"
+                style="-fx-translate-x: 158; -fx-translate-y: -90;"
+                visible="false"
+                managed="false">
+            <graphic>
+                <Label text="❚❚" style="-fx-text-fill: #ffffff; -fx-font-family: 'Press Start 2P'; -fx-font-size: 13px; -fx-translate-y: -1;"/>
+            </graphic>
+        </Button>
+    </children>
+    <stylesheets>
+        <URL value="@window_style.css"/>
+    </stylesheets>
+</StackPane>
+

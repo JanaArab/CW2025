@@ -1,4 +1,3 @@
-
 package com.comp2042.tetris.controller;
 import com.comp2042.tetris.game.GameTimer;
 import com.comp2042.tetris.model.board.ClearRow;
@@ -318,10 +317,6 @@ public class GuiController extends MenuController implements Initializable, IGui
         }
     }
 
-    /**
-     * Shows the confirmation dialog after the game over overlay has been displayed.
-     * This method is called by the GameOverManager as a callback.
-     */
     private void showGameOverConfirmationDialog() {
         closeCurtains(() -> {
             if (confirmationMessage != null) confirmationMessage.setText("Play again?");

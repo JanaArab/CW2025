@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.comp2042.tetris.view.OverlayPanel?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+
+<HBox fx:id="mainContent"
+      fx:controller="com.comp2042.tetris.controller.GameViewController"
+      alignment="CENTER"
+      spacing="50"
+      visible="false"
+      managed="false"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml">
+    <VBox alignment="TOP_LEFT" spacing="15" styleClass="side-panel" style="-fx-padding: 60 0 0 0;">
+        <VBox spacing="0">
+            <Label text="SCORE :" styleClass="score-title"/>
+            <StackPane styleClass="scoreBoard" alignment="CENTER_LEFT">
+                <Label fx:id="scoreLabel" text="0" styleClass="scoreClass"/>
+            </StackPane>
+        </VBox>
+        <VBox spacing="0">
+            <Label text="TIME :" styleClass="timer-title"/>
+            <StackPane styleClass="timerBoard" alignment="CENTER_LEFT">
+                <Label fx:id="timerLabel" text="00:00" styleClass="timerClass"/>
+            </StackPane>
+        </VBox>
+    </VBox>
+
+    <StackPane alignment="CENTER" style="-fx-translate-y: -6;">
+        <BorderPane fx:id="gameBoard" styleClass="gameBoard" maxWidth="264" maxHeight="424">
+            <center>
+                <GridPane fx:id="gamePanel" hgap="0" vgap="0"/>
+            </center>
+        </BorderPane>
+        <Pane fx:id="ghostBrickLayer" mouseTransparent="true" pickOnBounds="false" maxWidth="240" maxHeight="380">
+            <GridPane fx:id="ghostBrickPanel" hgap="0" vgap="0"/>
+        </Pane>
+        <Pane fx:id="activeBrickLayer" mouseTransparent="true" pickOnBounds="false" maxWidth="240" maxHeight="380">
+            <GridPane fx:id="brickPanel" hgap="0" vgap="0"/>
+        </Pane>
+    </StackPane>
+
+    <VBox alignment="CENTER" spacing="20" styleClass="side-panel">
+        <Label fx:id="nextTitleLabel" text="NEXT :" styleClass="panel-title"/>
+        <BorderPane styleClass="nextBoard">
+            <center>
+                <GridPane fx:id="nextBrickPanel" hgap="0" vgap="0" alignment="CENTER" maxWidth="100" maxHeight="290"/>
+            </center>
+        </BorderPane>
+    </VBox>
+
+    <stylesheets>
+        <URL value="@window_style.css"/>
+    </stylesheets>
+</HBox>
+
