@@ -244,7 +244,7 @@
         </StackPane>
 
         <!-- Tutorial Panel -->
-        <StackPane fx:id="tutorialOverlay" styleClass="pause-menu-overlay" visible="false" managed="false" StackPane.alignment="CENTER">
+        <StackPane fx:id="tutorialOverlay" styleClass="music-overlay" visible="false" managed="false" StackPane.alignment="CENTER" style="-fx-background-radius: 10;">
              <VBox spacing="12" alignment="CENTER" styleClass="tutorial-card">
                 <Label text="HOW TO PLAY" styleClass="settings-title"/>
                 <VBox spacing="8" alignment="CENTER">

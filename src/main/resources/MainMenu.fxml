@@ -7,7 +7,7 @@
 
 <StackPane fx:id="mainMenuOverlay"
            fx:controller="com.comp2042.tetris.controller.MainMenuController"
-           styleClass="main-menu-overlay"
+           styleClass="pause-menu-overlay"
            visible="true"
            managed="true"
            xmlns="http://javafx.com/javafx"
@@ -35,7 +35,7 @@
                     </HBox>
                 </graphic>
             </Button>
-            <Button onAction="#exitGame" styleClass="menu-button, danger">
+            <Button onAction="#handleExitGame" styleClass="menu-button, danger">
                 <graphic>
                     <HBox alignment="CENTER" spacing="6">
                         <Label text="◀" styleClass="menu-button-arrow"/>

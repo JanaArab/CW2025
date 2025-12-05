@@ -7,7 +7,7 @@
 
 <StackPane fx:id="tutorialOverlay"
            fx:controller="com.comp2042.tetris.controller.TutorialController"
-           styleClass="pause-menu-overlay"
+           styleClass="music-overlay"
            visible="false"
            managed="false"
            xmlns="http://javafx.com/javafx"
