@@ -8,48 +8,110 @@ import com.comp2042.tetris.model.level.GameLevel;
 import com.comp2042.tetris.model.score.Score;
 import com.comp2042.tetris.model.data.ViewData;
 
+/**
+ * Represents the game board and defines the core game mechanics for Tetris.
+ * This interface provides methods for brick movement, rotation, and board management.
+ *
+ * <p>Implementations of this interface handle:</p>
+ * <ul>
+ *   <li>Moving bricks (down, left, right)</li>
+ *   <li>Rotating bricks</li>
+ *   <li>Creating new bricks when current one is placed</li>
+ *   <li>Clearing completed rows</li>
+ *   <li>Managing the game score</li>
+ * </ul>
+ *
+ * @see SimpleBoard
+ * @see ClearRow
+ */
 public interface Board {
 
-    /*If true returns correct movement of block down
-    * if there is no space then returns false */
+    /**
+     * Attempts to move the current brick down by one row.
+     *
+     * @return true if the brick was moved successfully, false if blocked
+     */
     boolean moveBrickDown();
 
-    /*If true returns correct movement of block left
-    * if there is no space then returns false */
+    /**
+     * Attempts to move the current brick left by one column.
+     *
+     * @return true if the brick was moved successfully, false if blocked
+     */
     boolean moveBrickLeft();
 
-    /*If true returns correct movement of block right
-    * if there is no space then returns false */
+    /**
+     * Attempts to move the current brick right by one column.
+     *
+     * @return true if the brick was moved successfully, false if blocked
+     */
     boolean moveBrickRight();
 
-    /*If true returns correct if rotation succeeded
-    * if there is no space then returns false */
+    /**
+     * Attempts to rotate the current brick counterclockwise.
+     *
+     * @return true if the rotation was successful, false if blocked
+     */
     boolean rotateLeftBrick();
 
-    /*in createNewBrick this method returns true(game over) if there is no space
-    * for new bricks, and false if there is enough space to add them */
+    /**
+     * Creates a new brick at the top of the board.
+     *
+     * @return true if game is over (no space for new brick), false otherwise
+     */
     boolean createNewBrick();
 
-    /*copy the current logical matrix*/
+    /**
+     * Returns a copy of the current board matrix.
+     *
+     * @return a 2D array representing the board state
+     */
     int[][] getBoardMatrix();
 
-    /*returns the view of bricks (current and upcoming)*/
+    /**
+     * Returns the view data containing brick positions and shapes for rendering.
+     *
+     * @return the current ViewData for the GUI
+     */
     ViewData getViewData();
 
-    /*makes sure the placed brick is locked in place */
+    /**
+     * Merges the current falling brick into the board background.
+     * Called when a brick is placed and can no longer move.
+     */
     void mergeBrickToBackground();
 
-    /*clear full rows*/
+    /**
+     * Checks and clears any completed rows from the board.
+     *
+     * @return a ClearRow containing information about cleared rows and score bonus
+     */
     ClearRow clearRows();
 
-    /*returns score*/
+    /**
+     * Returns the current game score.
+     *
+     * @return the Score object tracking the player's score
+     */
     Score getScore();
 
-    /*restart new game*/
+    /**
+     * Resets the board for a new game.
+     */
     void newGame();
 
+    /**
+     * Sets the current game level which affects game mechanics.
+     *
+     * @param level the GameLevel to apply
+     */
     void setLevel(GameLevel level);
 
-    /*add garbage rows to the board from bottom*/
+    /**
+     * Adds garbage rows to the bottom of the board.
+     * Used in special game modes.
+     *
+     * @param rows the garbage rows to add
+     */
     void addRows(int[][] rows);
 }

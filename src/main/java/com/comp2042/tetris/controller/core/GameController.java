@@ -1,5 +1,19 @@
 /**
- * connects the player , GUI and game logic
+ * Main game controller that connects the game model, user input, and GUI.
+ * Implements the {@link IGameController} interface to handle all game actions
+ * and coordinate between the board logic, score management, and event publishing.
+ *
+ * <p>Responsibilities include:</p>
+ * <ul>
+ *   <li>Processing player input events (move, rotate, drop)</li>
+ *   <li>Managing game flow (new game, level changes)</li>
+ *   <li>Publishing game state changes to listeners</li>
+ *   <li>Coordinating score updates</li>
+ * </ul>
+ *
+ * @see IGameController
+ * @see Board
+ * @see GameEventPublisher
  */
 
 package com.comp2042.tetris.controller.core;
@@ -29,10 +43,22 @@ public class GameController implements IGameController {
     private final ScoreManager scoreManager;
     private final GameFlowManager gameFlowManager;
 
+    /**
+     * Constructs a GameController with a board supplier.
+     *
+     * @param boardSupplier supplier that creates the game board
+     * @param eventPublisher the event publisher for game events
+     */
     public GameController(Supplier<Board> boardSupplier, GameEventPublisher eventPublisher) {
         this(requireBoard(boardSupplier), eventPublisher);
     }
 
+    /**
+     * Constructs a GameController with a pre-created board.
+     *
+     * @param board the game board
+     * @param eventPublisher the event publisher for game events
+     */
     public GameController(Board board, GameEventPublisher eventPublisher) {
         this.board = Objects.requireNonNull(board, "board");
         this.eventPublisher = Objects.requireNonNull(eventPublisher, "eventPublisher");

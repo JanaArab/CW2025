@@ -16,6 +16,23 @@ import java.util.EnumMap;
 import java.util.Objects;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
+
+/**
+ * Handles keyboard input and maps key presses to game commands.
+ * Uses the Command pattern to decouple input handling from game actions.
+ *
+ * <p>Key features:</p>
+ * <ul>
+ *   <li>Maps keyboard keys to game commands (move, rotate, drop)</li>
+ *   <li>Supports both gameplay commands and global commands</li>
+ *   <li>Can invert horizontal controls for special game modes</li>
+ *   <li>Respects pause and game over states</li>
+ * </ul>
+ *
+ * @see GameCommand
+ * @see CommandRegistry
+ * @see GameActionInvoker
+ */
 public class InputHandler implements GameActionInvoker, InputCommandRegistrar {
     private static final Logger LOGGER = LoggerFactory.getLogger(InputHandler.class);
     private final Map<KeyCode, GameCommand> gameplayCommands = new EnumMap<>(KeyCode.class);
@@ -28,6 +45,14 @@ public class InputHandler implements GameActionInvoker, InputCommandRegistrar {
     // When true, left/right inputs are inverted (left -> right, right -> left).
     private volatile boolean invertHorizontal = false;
 
+    /**
+     * Constructs an InputHandler with the specified dependencies.
+     *
+     * @param isPauseSupplier supplier to check if game is paused
+     * @param isGameOverSupplier supplier to check if game is over
+     * @param commandRegistry registry for command bindings
+     * @param inputCommandFactory factory for creating input commands
+     */
     public InputHandler(BooleanSupplier isPauseSupplier,
                         BooleanSupplier isGameOverSupplier,
                         CommandRegistry commandRegistry,
@@ -39,19 +64,32 @@ public class InputHandler implements GameActionInvoker, InputCommandRegistrar {
     }
 
     /**
-     * Enable or disable horizontal inversion. When enabled, moveLeft() will trigger a right event and
-     * moveRight() will trigger a left event. This is used by special levels (e.g. Level 3) to invert controls.
+     * Enables or disables horizontal control inversion.
+     * When enabled, left becomes right and vice versa.
+     *
+     * @param invert true to invert controls, false for normal
      */
     public void setInvertHorizontal(boolean invert) {
         this.invertHorizontal = invert;
     }
 
+    /**
+     * Sets the game controller for command execution.
+     *
+     * @param gameController the game controller to use
+     */
     public void setGameController(IGameController gameController) {
         this.gameController = gameController;
         gameplayCommands.clear();
         commandRegistry.registerCommands(this, this, inputCommandFactory);
     }
 
+    /**
+     * Handles a keyboard event and executes the corresponding command.
+     *
+     * @param keyEvent the keyboard event to process
+     * @return true if the event was handled, false otherwise
+     */
     public boolean handle(KeyEvent keyEvent) {
         if (keyEvent == null)  {
             LOGGER.warn("Key event was null; ignoring input.");

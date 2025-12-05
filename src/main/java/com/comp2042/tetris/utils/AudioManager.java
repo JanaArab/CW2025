@@ -5,6 +5,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javafx.application.Platform;
 
+/**
+ * Singleton class managing all audio playback for the Tetris game.
+ * Provides methods to play various sound effects including:
+ * rotation sounds, brick placement, hover effects, click sounds,
+ * game over audio, and special effects.
+ *
+ * <p>This class uses lazy loading to initialize media players
+ * and provides volume control for all sound effects.</p>
+ *
+ * @see SafeMediaPlayer
+ */
 public final class AudioManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(AudioManager.class);
     private static final AudioManager INSTANCE = new AudioManager();
@@ -24,7 +35,10 @@ public final class AudioManager {
     private volatile double sfxVolume = 1.0;
 
     /**
-     * Set global SFX volume (0.0-1.0). Applies to already-loaded SFX players.
+     * Sets the global sound effects volume.
+     * Applies to all currently loaded SFX players.
+     *
+     * @param vol the volume level (0.0 to 1.0)
      */
     public void setSfxVolume(double vol) {
         if (vol < 0.0) vol = 0.0; if (vol > 1.0) vol = 1.0;
@@ -39,6 +53,11 @@ public final class AudioManager {
         try { if (flickeringPlayer != null) flickeringPlayer.setVolume(vol); } catch (Throwable ignored) {}
     }
 
+    /**
+     * Gets the current sound effects volume.
+     *
+     * @return the current volume level (0.0 to 1.0)
+     */
     public double getSfxVolume() { return sfxVolume; }
 
     // Guard to ensure we only attempt to load media once
@@ -122,10 +141,21 @@ public final class AudioManager {
         }
     }
 
+    /**
+     * Returns the singleton instance of AudioManager.
+     *
+     * @return the AudioManager instance
+     */
     public static AudioManager getInstance() {
         return INSTANCE;
     }
 
+    /**
+     * Enables or disables sound effect suppression.
+     * When suppressed, all SFX calls are ignored.
+     *
+     * @param suppress true to suppress SFX, false to allow
+     */
     public void setSuppressSfx(boolean suppress) {
         this.suppressSfx = suppress;
         if (suppress) {
@@ -133,6 +163,9 @@ public final class AudioManager {
         }
     }
 
+    /**
+     * Plays the rotation sound effect.
+     */
     public void playRotation() {
         if (suppressSfx) {
             LOGGER.debug("playRotation suppressed");
@@ -159,6 +192,9 @@ public final class AudioManager {
         }
     }
 
+    /**
+     * Plays the brick touch/landing sound effect.
+     */
     public void playBricksTouch() {
         if (suppressSfx) return;
         try {
@@ -187,6 +223,9 @@ public final class AudioManager {
         }
     }
 
+    /**
+     * Plays the button hover sound effect.
+     */
     public void playHover() {
         if (suppressSfx) return;
         try {
@@ -208,6 +247,9 @@ public final class AudioManager {
         }
     }
 
+    /**
+     * Plays the button click sound effect.
+     */
     public void playClick() {
         if (suppressSfx) return;
         try {
@@ -229,6 +271,9 @@ public final class AudioManager {
         }
     }
 
+    /**
+     * Plays the game over sound effect.
+     */
     public void playGameOver() {
         try {
             ensureLoaded();
@@ -249,6 +294,9 @@ public final class AudioManager {
         }
     }
 
+    /**
+     * Plays the confetti celebration sound effect.
+     */
     public void playConfetti() {
         if (suppressSfx) return;
         try {
@@ -271,6 +319,9 @@ public final class AudioManager {
         }
     }
 
+    /**
+     * Plays the screen flickering sound effect.
+     */
     public void playFlickering() {
         if (suppressSfx) return;
         try {
@@ -294,7 +345,9 @@ public final class AudioManager {
     }
 
     /**
-     * Returns the total duration in seconds of the flickering audio, or 0 if unavailable.
+     * Returns the total duration of the flickering sound in seconds.
+     *
+     * @return the duration in seconds, or 0 if unavailable
      */
     public double getFlickeringDurationSeconds() {
         try {
@@ -307,7 +360,7 @@ public final class AudioManager {
     }
 
     /**
-     * Stop the flickering SFX if it is playing.
+     * Stops the flickering sound effect if playing.
      */
     public void stopFlickering() {
         try {
@@ -326,6 +379,9 @@ public final class AudioManager {
         }
     }
 
+    /**
+     * Stops all currently playing sound effects.
+     */
     public void stopAll() {
         try { if (rotationPlayer != null) rotationPlayer.stop(); } catch (Throwable ignored) {}
         try { if (bricksTouchPlayer != null) bricksTouchPlayer.stop(); } catch (Throwable ignored) {}

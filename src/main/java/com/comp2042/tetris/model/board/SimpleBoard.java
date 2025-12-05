@@ -1,5 +1,17 @@
 /**
- * handles all functions in the game
+ * Implements the game board logic for Tetris.
+ * This class handles all core game mechanics including brick movement,
+ * rotation, collision detection, and row clearing.
+ *
+ * <p>The board uses a 2D matrix where:</p>
+ * <ul>
+ *   <li>0 represents an empty cell</li>
+ *   <li>Non-zero values represent filled cells with specific colors</li>
+ * </ul>
+ *
+ * @see Board
+ * @see BrickGenerator
+ * @see BrickRotator
  */
 
 package com.comp2042.tetris.model.board;
@@ -31,9 +43,25 @@ public class SimpleBoard implements Board {
     private GameLevel currentLevel;
     private int currentBrickRotationCount = 0;
 
+    /**
+     * Constructs a SimpleBoard with default brick generator, rotator, and score.
+     *
+     * @param rows the number of rows in the board
+     * @param cols the number of columns in the board
+     */
     public SimpleBoard(int rows, int cols) {
         this(rows, cols, new RandomBrickGenerator(), new BrickRotator(), new Score());
     }
+
+    /**
+     * Constructs a SimpleBoard with custom components for testing or special game modes.
+     *
+     * @param rows the number of rows in the board
+     * @param cols the number of columns in the board
+     * @param brickGenerator the generator for creating new bricks
+     * @param brickRotator the rotator for handling brick rotation
+     * @param score the score tracker
+     */
     public SimpleBoard(int rows, int cols, BrickGenerator brickGenerator, BrickRotator brickRotator, Score score) {
         this.rows = rows;
         this.cols = cols;
@@ -44,11 +72,17 @@ public class SimpleBoard implements Board {
         this.currentLevel = new ClassicLevel();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setLevel(GameLevel level) {
         this.currentLevel = level;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean moveBrickDown() {
         Point p = new Point(currentOffset);
@@ -84,6 +118,9 @@ public class SimpleBoard implements Board {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean moveBrickLeft() {
         Point p = new Point(currentOffset);
@@ -99,6 +136,9 @@ public class SimpleBoard implements Board {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean moveBrickRight() {
         Point p = new Point(currentOffset);
@@ -114,6 +154,9 @@ public class SimpleBoard implements Board {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean rotateLeftBrick() {
         int limit = currentLevel.getRotationLimit();
@@ -133,6 +176,9 @@ public class SimpleBoard implements Board {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean createNewBrick() {
         currentBrickRotationCount = 0;
@@ -154,12 +200,18 @@ public class SimpleBoard implements Board {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int[][] getBoardMatrix() {
         //return a deep copy of current game matrix
         return MatrixOperations.copy(currentGameMatrix);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ViewData getViewData() {
         int ghostY = calculateGhostPosition();
@@ -189,11 +241,17 @@ public class SimpleBoard implements Board {
         return (int) testPos.getY();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void mergeBrickToBackground() {
         currentGameMatrix = MatrixOperations.merge(currentGameMatrix, brickRotator.getCurrentShape(), (int) currentOffset.getX(), (int) currentOffset.getY());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ClearRow clearRows() {
         ClearRow clearRow = MatrixOperations.checkRemoving(currentGameMatrix);
@@ -202,12 +260,18 @@ public class SimpleBoard implements Board {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Score getScore() {
         return score;
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void newGame() {
         currentGameMatrix = new int[rows][cols];

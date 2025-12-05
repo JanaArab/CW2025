@@ -1,4 +1,3 @@
-
 package com.comp2042.tetris.main;
 
 import javafx.application.Application;
@@ -15,8 +14,30 @@ import com.comp2042.tetris.view.UIConstants;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Main entry point for the Tetris JavaFX application.
+ * This class initializes the JavaFX application, sets up the game components,
+ * and displays the main game window.
+ *
+ * <p>The application follows the MVC architecture pattern where:</p>
+ * <ul>
+ *   <li>Model: Game logic in the model package (Board, Bricks, Score)</li>
+ *   <li>View: FXML layouts and BoardRenderer</li>
+ *   <li>Controller: GuiController and GameController</li>
+ * </ul>
+ *
+ * @author COMP2042
+ * @version 1.0
+ */
 public class Main extends Application {
 
+    /**
+     * Starts the JavaFX application by loading the FXML layout,
+     * initializing game components, and displaying the main window.
+     *
+     * @param primaryStage the primary stage for this application
+     * @throws Exception if the FXML layout cannot be loaded or game components fail to initialize
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
 

@@ -18,7 +18,16 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
-
+/**
+ * Renders the Tetris game board and brick displays using JavaFX.
+ * This class handles all visual aspects of the game including:
+ * the main board, active falling brick, ghost brick preview, and next brick queue.
+ *
+ * <p>The renderer uses GridPane layouts and Rectangle shapes to display
+ * the game state with color-coded cells for different brick types.</p>
+ *
+ * @see ViewData
+ */
 public class BoardRenderer {
 
     private static final int HIDDEN_TOP_ROWS = 2;
@@ -38,6 +47,15 @@ public class BoardRenderer {
     private Double cachedOriginX = null;
     private Double cachedOriginY = null;
 
+    /**
+     * Constructs a BoardRenderer with the specified UI components.
+     *
+     * @param gamePanel the GridPane for displaying the main board
+     * @param brickPanel the GridPane for the active falling brick
+     * @param ghostBrickPanel the GridPane for the ghost brick preview
+     * @param nextBrickPanel the GridPane for next brick previews
+     * @param brickSize the pixel size of each brick cell
+     */
     public BoardRenderer(GridPane gamePanel, GridPane brickPanel, GridPane ghostBrickPanel, GridPane nextBrickPanel, int brickSize) {
         this.gamePanel = gamePanel;
         this.brickPanel = brickPanel;
@@ -46,6 +64,12 @@ public class BoardRenderer {
         this.brickSize = brickSize;
     }
 
+    /**
+     * Initializes the board display with the given matrix and brick data.
+     *
+     * @param boardMatrix the initial board state
+     * @param brick the view data containing brick information
+     */
     public void initialize(int[][] boardMatrix, ViewData brick) {
         initializeBoard(boardMatrix);
         initializeActiveBrick(brick.getBrickData());
@@ -55,6 +79,12 @@ public class BoardRenderer {
         updateGhostBrickPosition(brick);
     }
 
+    /**
+     * Refreshes the brick display with updated position and shape.
+     *
+     * @param brick the current view data
+     * @param isPaused whether the game is paused (skips refresh if true)
+     */
     public void refreshBrick(ViewData brick, boolean isPaused) {
         if (isPaused || activeBrickMatrix == null) {
             return;
@@ -67,6 +97,11 @@ public class BoardRenderer {
         refreshNextBrick(brick.getNextBricksData());
     }
 
+    /**
+     * Updates the game board background display.
+     *
+     * @param board the current board matrix state
+     */
     public void refreshGameBackground(int[][] board) {
         if (displayMatrix == null) {
             return;
@@ -414,6 +449,11 @@ public class BoardRenderer {
     }
 
 
+    /**
+     * Returns the main game panel GridPane.
+     *
+     * @return the game panel
+     */
     public GridPane getGamePanel() {
         return gamePanel;
     }

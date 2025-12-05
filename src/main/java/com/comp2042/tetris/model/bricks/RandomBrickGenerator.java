@@ -5,6 +5,18 @@ import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Generates bricks using a bag randomization system.
+ * This ensures fair distribution of all brick types by shuffling
+ * a complete set of all seven pieces before dispensing them.
+ *
+ * <p>The bag system prevents long droughts of specific pieces
+ * while maintaining unpredictability in the sequence.</p>
+ *
+ * @see BrickGenerator
+ * @see BrickBagPolicy
+ * @see ShuffleBagPolicy
+ */
 public class RandomBrickGenerator implements BrickGenerator {
 
     private final List<Brick> brickList;
@@ -15,10 +27,19 @@ public class RandomBrickGenerator implements BrickGenerator {
 
     private final int previewSize;
 
+    /**
+     * Constructs a RandomBrickGenerator with default bag policy and preview size.
+     */
     public RandomBrickGenerator() {
         this(new ShuffleBagPolicy(), 3);
     }
 
+    /**
+     * Constructs a RandomBrickGenerator with custom bag policy and preview size.
+     *
+     * @param bagPolicy the policy for creating shuffled bags of bricks
+     * @param previewSize the number of bricks to keep in the preview queue
+     */
     public RandomBrickGenerator(BrickBagPolicy bagPolicy, int previewSize) {
         this.bagPolicy = bagPolicy;
         this.previewSize = Math.max(1, previewSize);
@@ -27,18 +48,27 @@ public class RandomBrickGenerator implements BrickGenerator {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Brick getBrick() {
         refillIfNeeded();
         return nextBricks.poll();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Brick getNextBrick() {
         refillIfNeeded();
         return nextBricks.peek();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Brick> getNextBricks(int count) {
         refillIfNeeded();
@@ -47,6 +77,9 @@ public class RandomBrickGenerator implements BrickGenerator {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Refills the queue with new shuffled bags when running low.
+     */
     private void refillIfNeeded() {
         while (nextBricks.size() < previewSize) {
             nextBricks.addAll(bagPolicy.createBag(brickList));
