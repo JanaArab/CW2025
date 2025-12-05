@@ -18,4 +18,8 @@ public interface GameLevel {
     default boolean isNextBrickHidden() {
         return false;
     }
+
+    default boolean areControlsInverted() {
+        return false;
+    }
 }

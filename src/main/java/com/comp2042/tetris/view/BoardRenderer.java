@@ -229,8 +229,6 @@ public class BoardRenderer {
             return;
         }
 
-        // Calculate and cache the origin offset on first update
-        // This prevents jitter from fluctuating scene bounds on subsequent updates
         if (cachedOriginX == null || cachedOriginY == null) {
             Bounds boardBounds = gamePanel.localToScene(gamePanel.getBoundsInLocal());
             Bounds layerBounds = brickPanel.getParent().localToScene(brickPanel.getParent().getBoundsInLocal());
@@ -238,17 +236,12 @@ public class BoardRenderer {
             cachedOriginY = boardBounds.getMinY() - layerBounds.getMinY();
         }
 
-        // Calculate position using cached origin and logical brick coordinates
-        // Since brick position is always an integer and step size is constant,
-        // this produces stable, whole-pixel positions
         double xOffset = cachedOriginX + brick.getXPosition() * horizontalStep();
         double yOffset = cachedOriginY + hiddenRowsOffset() + brick.getYPosition() * verticalStep();
 
-        // Round to whole pixels for pixel-perfect alignment
         long targetX = Math.round(xOffset);
         long targetY = Math.round(yOffset);
 
-        // Only update if position actually changed to reduce layout thrashing
         if (brickPanel.getLayoutX() != targetX || brickPanel.getLayoutY() != targetY) {
             brickPanel.setLayoutX(targetX);
             brickPanel.setLayoutY(targetY);
@@ -306,20 +299,9 @@ public class BoardRenderer {
         return -HIDDEN_TOP_ROWS * verticalStep();
     }
 
-   /* private Rectangle createTile(Color color) {
-        Rectangle rectangle = new Rectangle(brickSize, brickSize);
-        rectangle.setArcHeight(9);
-        rectangle.setArcWidth(9);
-        rectangle.setFill(color);
-        // Enable snap-to-pixel for crisp rendering
-        rectangle.setSmooth(false);
-        return rectangle;
-    }*/
-
     private Rectangle createTile(Color color) {
         Rectangle rectangle = new Rectangle(brickSize, brickSize);
 
-        // Slightly smaller rounding for a cleaner, modern look
         rectangle.setArcHeight(8);
         rectangle.setArcWidth(8);
         rectangle.setSmooth(true);
@@ -371,9 +353,7 @@ public class BoardRenderer {
             return;
         }
 
-        // Ghost bricks have no gradient or lighting effects, just a simple fill with lower opacity
         rectangle.setFill(baseColor);
-        // Set stroke to white for highlighted edges around the whole shape
         rectangle.setStroke(Color.rgb(255, 255, 255, 0.8));
         rectangle.setStrokeWidth(2.0);
         rectangle.setStrokeType(javafx.scene.shape.StrokeType.INSIDE);
@@ -433,10 +413,7 @@ public class BoardRenderer {
         return board;
     }
 
-    /**
-     * Returns the game panel GridPane for animation purposes.
-     * @return the game panel
-     */
+
     public GridPane getGamePanel() {
         return gamePanel;
     }

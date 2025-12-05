@@ -1,5 +1,6 @@
 package com.comp2042.tetris.controller;
 
+import com.comp2042.tetris.controller.core.GameFlowManager;
 import com.comp2042.tetris.model.board.Board;
 import com.comp2042.tetris.model.board.ClearRow;
 import com.comp2042.tetris.model.data.ViewData;
@@ -156,6 +157,11 @@ class GameFlowManagerTest {
 
         @Override
         public void setLevel(com.comp2042.tetris.model.level.GameLevel level) {
+            // no-op for test stub
+        }
+
+        @Override
+        public void addRows(int[][] rows) {
             // no-op for test stub
         }
     }

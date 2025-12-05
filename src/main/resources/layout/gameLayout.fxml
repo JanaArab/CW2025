@@ -6,19 +6,20 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.shape.Rectangle?>
 <?import java.net.URL?>
-<StackPane fx:controller="com.comp2042.tetris.controller.GuiController"
+<StackPane fx:controller="com.comp2042.tetris.controller.ui.GuiController"
            prefHeight="720" prefWidth="900"
            maxHeight="720" maxWidth="900"
            xmlns:fx="http://javafx.com/fxml"
            styleClass="root">
     <children>
-        <Pane>
-            <Pane fx:id="background1" styleClass="starBackground" prefWidth="900" prefHeight="720" />
 
-            <Pane fx:id="background2" styleClass="starBackground" prefWidth="900" prefHeight="720" layoutY="-720" />
+
+        <!-- Star animation layer - placed early so it appears behind UI elements -->
+        <Pane fx:id="pixelStarLayer" mouseTransparent="true" pickOnBounds="false" prefWidth="900" prefHeight="720" opacity="4" visible="true" managed="true">
         </Pane>
-        <Pane fx:id="pixelStarLayer" mouseTransparent="true" pickOnBounds="false" prefWidth="900" prefHeight="720" />
+
         <HBox fx:id="mainContent" alignment="CENTER" spacing="50" visible="false" managed="false">
             <VBox alignment="TOP_LEFT" spacing="15" styleClass="side-panel" style="-fx-padding: 60 0 0 0;">
                 <VBox spacing="0">
@@ -94,7 +95,7 @@
         <StackPane fx:id="mainMenuOverlay" styleClass="main-menu-overlay" visible="true" managed="true" StackPane.alignment="CENTER">
             <VBox fx:id="mainMenuCard" spacing="28" alignment="CENTER" styleClass="menu-card">
                 <VBox alignment="CENTER" spacing="6" styleClass="menu-title">
-                    <Label text="GAlAXY" styleClass="title-galaxy"/>
+                    <Label text="GALAXY" styleClass="title-galaxy"/>
                     <HBox alignment="CENTER" spacing="4" styleClass="title-tetris">
                         <Label text="T" styleClass="title-tetris-letter, letter-red"/>
                         <Label text="E" styleClass="title-tetris-letter, letter-orange"/>
@@ -153,17 +154,17 @@
                     </StackPane>
                     <Button fx:id="levelL1Button" onAction="#handleLevelL1" styleClass="pause-btn, level-l1">
                         <graphic>
-                            <Label text="L1" styleClass="pause-btn-label"/>
+                            <Label text="TurboRush" styleClass="pause-btn-label"/>
                         </graphic>
                     </Button>
                     <Button fx:id="levelL2Button" onAction="#handleLevelL2" styleClass="pause-btn, level-l2">
                         <graphic>
-                            <Label text="L2" styleClass="pause-btn-label"/>
+                            <Label text="QuadLock" styleClass="pause-btn-label"/>
                         </graphic>
                     </Button>
                     <Button fx:id="levelL3Button" onAction="#handleLevelL3" styleClass="pause-btn, level-l3">
                         <graphic>
-                            <Label text="L3 (Hard)" styleClass="pause-btn-label"/>
+                            <Label text="Disorder Zone" styleClass="pause-btn-label"/>
                         </graphic>
                     </Button>
                 </VBox>
@@ -186,6 +187,7 @@
               StackPane.alignment="CENTER"/>
 
         <Pane styleClass="frontFrame" mouseTransparent="true"/>
+
 
         <!-- Score notification popups group -->
         <Group fx:id="groupNotification" StackPane.alignment="CENTER" mouseTransparent="true" pickOnBounds="false">
@@ -212,7 +214,7 @@
                     </Button>
                     <Button onAction="#cancelAction" styleClass="pause-btn-primary">
                         <graphic>
-                            <Label text="✕ No" styleClass="pause-btn-label"/>
+                            <Label fx:id="cancelButtonLabel" text="✕ No" styleClass="pause-btn-label"/>
                         </graphic>
                     </Button>
                 </HBox>
@@ -242,7 +244,7 @@
         </StackPane>
 
         <!-- Tutorial Panel -->
-        <StackPane fx:id="tutorialOverlay" styleClass="pause-menu-overlay" visible="false" managed="false" StackPane.alignment="CENTER">
+        <StackPane fx:id="tutorialOverlay" styleClass="music-overlay" visible="false" managed="false" StackPane.alignment="CENTER" style="-fx-background-radius: 10;">
              <VBox spacing="12" alignment="CENTER" styleClass="tutorial-card">
                 <Label text="HOW TO PLAY" styleClass="settings-title"/>
                 <VBox spacing="8" alignment="CENTER">

@@ -1,4 +1,4 @@
-package com.comp2042.tetris.controller;
+package com.comp2042.tetris.controller.core;
 
 import com.comp2042.tetris.controller.command.GameCommand;
 import com.comp2042.tetris.controller.command.InputCommandFactory;
@@ -24,7 +24,7 @@ public class InputHandler implements GameActionInvoker, InputCommandRegistrar {
     private final BooleanSupplier isGameOverSupplier;
     private final CommandRegistry commandRegistry;
     private final InputCommandFactory inputCommandFactory;
-    private  IGameController gameController;
+    private IGameController gameController;
     // When true, left/right inputs are inverted (left -> right, right -> left).
     private volatile boolean invertHorizontal = false;
 

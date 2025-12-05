@@ -4,8 +4,9 @@
 * which will increase testability
 * in GuiController we override the methods mentioned in the interface   */
 
-package com.comp2042.tetris.controller;
+package com.comp2042.tetris.controller.ui;
 
+import com.comp2042.tetris.controller.core.IGameController;
 import com.comp2042.tetris.model.data.ViewData ;
 
 

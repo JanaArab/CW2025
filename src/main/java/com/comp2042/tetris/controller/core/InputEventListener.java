@@ -3,7 +3,7 @@
  * comes to keys
  */
 
-package com.comp2042.tetris.controller;
+package com.comp2042.tetris.controller.core;
 
 
 import com.comp2042.tetris.model.event.MoveEvent;

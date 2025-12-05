@@ -1,14 +1,13 @@
 package com.comp2042.tetris.testharness;
 
-import com.comp2042.tetris.controller.InputHandler;
-import com.comp2042.tetris.controller.IGameController;
-import com.comp2042.tetris.controller.InputEventListener;
+import com.comp2042.tetris.controller.core.InputHandler;
+import com.comp2042.tetris.controller.core.IGameController;
+import com.comp2042.tetris.controller.core.InputEventListener;
 import com.comp2042.tetris.controller.command.DefaultCommandRegistry;
 import com.comp2042.tetris.controller.command.DefaultInputCommandFactory;
 import com.comp2042.tetris.controller.command.InputCommandFactory;
 import com.comp2042.tetris.controller.command.CommandRegistry;
 import com.comp2042.tetris.model.event.MoveEvent;
-import com.comp2042.tetris.model.event.EventSource;
 
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;

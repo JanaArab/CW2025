@@ -1,7 +1,7 @@
 package com.comp2042.tetris.main;
 
-import com.comp2042.tetris.controller.GameController;
-import com.comp2042.tetris.controller.IGameController;
+import com.comp2042.tetris.controller.core.GameController;
+import com.comp2042.tetris.controller.core.IGameController;
 import com.comp2042.tetris.model.board.SimpleBoard;
 import com.comp2042.tetris.model.event.GameEventPublisher;
 import com.comp2042.tetris.model.event.SimpleGameEventBus;

@@ -30,4 +30,9 @@ public class Level3 extends ClassicLevel {
     public boolean isNextBrickHidden() {
         return true;
     }
+
+    @Override
+    public boolean areControlsInverted() {
+        return true;
+    }
 }

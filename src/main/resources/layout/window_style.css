@@ -1,0 +1,646 @@
+.root {
+    -fx-theme-primary: #18dcff;
+    -fx-theme-primary-light: #5ce4ff;
+    -fx-theme-primary-lighter: #8cefff;
+    -fx-theme-primary-dark: #0a8fb3;
+    -fx-theme-primary-darker: #0a3d5c;
+
+    -fx-theme-secondary: #8b5cf6;
+    -fx-theme-secondary-light: #a78bfa;
+    -fx-theme-secondary-lighter: #c4b5fd;
+    -fx-theme-secondary-lightest: #e9d5ff;
+    -fx-theme-secondary-dark: #7c3aed;
+    -fx-theme-secondary-darker: #6d28d9;
+    -fx-theme-secondary-darkest: #5b21b6;
+
+    -fx-theme-success: #10b981;
+    -fx-theme-success-light: #34d399;
+    -fx-theme-success-lighter: #6ee7b7;
+    -fx-theme-success-dark: #059669;
+    -fx-theme-success-darker: #047857;
+
+    -fx-theme-danger: #ff4d6d;
+    -fx-theme-danger-light: #ffa0b1;
+    -fx-theme-danger-lighter: #ffc4d0;
+    -fx-theme-danger-dark: #dc2626;
+    -fx-theme-danger-darker: #991b1b;
+    -fx-theme-danger-darkest: #7f1d1d;
+
+    -fx-theme-warning: #ff9f1a;
+    -fx-theme-warning-light: #ffc26a;
+    -fx-theme-warning-lighter: #ffd98a;
+    -fx-theme-warning-dark: #e07a00;
+
+    -fx-theme-info: #2ed573;
+    -fx-theme-info-light: #7ae9a7;
+    -fx-theme-info-lighter: #a4f4be;
+    -fx-theme-info-dark: #1a7d44;
+
+    -fx-theme-text-dark: #0a3d5c;
+    -fx-theme-text-light: #e9d5ff;
+    -fx-theme-text-white: #ffffff;
+
+    -fx-theme-bg-dark: rgba(0, 0, 0, 0.95);
+    -fx-theme-bg-overlay: rgba(0, 0, 0, 0.8);
+    -fx-theme-bg-card: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5));
+
+    -fx-background-color: black;
+    -fx-max-width: 900px;
+    -fx-max-height: 720px;
+    -fx-pref-width: 900px;
+    -fx-pref-height: 720px;
+}
+
+
+.starBackground {
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-image: url("controller_Navy1.png");
+}
+
+.frontFrame {
+    -fx-background-image: url("controller_Navy2.png");
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
+.gameBoard {
+    -fx-border-color: -fx-theme-secondary;
+    -fx-border-width: 3px;
+    -fx-border-radius: 4px;
+    -fx-background-color: rgba(0, 0, 0, 0.2);
+    -fx-effect: dropshadow(three-pass-box, rgba(139, 92, 246, 0.6), 15, 0, 0, 0);
+    -fx-max-width: 264;
+    -fx-max-height: 424;
+}
+
+.nextBoard {
+    -fx-border-color: -fx-theme-secondary;
+    -fx-border-width: 3px;
+    -fx-border-radius: 4px;
+    -fx-background-color: rgba(0, 0, 0, 0.2);
+    -fx-max-width: 120;
+    -fx-max-height: 320;
+    -fx-min-width: 120;
+    -fx-min-height: 320;
+    -fx-padding: 15 10 15 10;
+}
+
+.scoreBoard, .timerBoard {
+    -fx-border-color: transparent;
+    -fx-border-width: 0px;
+    -fx-border-radius: 0px;
+    -fx-background-color: transparent;
+    -fx-max-width: 120;
+    -fx-max-height: 40;
+    -fx-min-width: 120;
+    -fx-min-height: 40;
+    -fx-padding: 0;
+}
+
+#activeBrickLayer, #ghostBrickLayer {
+    -fx-max-width: 240;
+    -fx-max-height: 380;
+}
+
+.ghostBrick {
+    -fx-opacity: 0.25;
+    -fx-effect: null;
+}
+
+
+.nextBrickLabel {
+    -fx-font-family: "Let's go Digital";
+    -fx-padding: 20px 0 0 0;
+    -fx-font-size: 16px;
+    -fx-text-fill: yellow;
+}
+
+.score-title, .timer-title, .panel-title {
+    -fx-font-family: "SubSpace";
+    -fx-text-fill: -fx-theme-text-white;
+    -fx-font-size: 26;
+    -fx-padding: 0;
+}
+
+.scoreClass, .timerClass {
+    -fx-font-family: "Subspace";
+    -fx-font-size: 28;
+    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #ffffff 0%, #e0f7ff 20%, #7ed6ff 50%, #00d2d3 80%, -fx-theme-primary 100%);
+    -fx-text-fill: -fx-theme-text-white;
+}
+
+.timerClass {
+    -fx-text-fill: #ffd32a;
+}
+
+.bonusStyle {
+    -fx-font-family: "SubSpace";
+    -fx-font-size: 40px;
+    -fx-font-weight: bold;
+    -fx-text-fill: linear-gradient(from 0% 0% to 100% 100%, -fx-theme-secondary-lightest 0%, -fx-theme-secondary-lighter 50%, -fx-theme-secondary 100%);
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.8), 10, 0.5, 0, 0);
+}
+
+.gameOverStyle {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 52px;
+    -fx-text-fill: linear-gradient(#aef6ff 0%, #4cc8ff 45%, #0f6eff 100%);
+    -fx-background-color: transparent;
+    -fx-effect: dropshadow(gaussian, #0d58ff, 20, 0.7, 0, 0),
+                dropshadow(gaussian, black, 30, 0.95, 0, 0);
+}
+
+
+.info-panel {
+    -fx-border-color: -fx-theme-text-white;
+    -fx-border-width: 2;
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+.game-title, .title-galaxy {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 18px;
+    -fx-text-fill: #7ed6ff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.75), 10, 0.4, 0, 0);
+}
+
+.game-title {
+    -fx-font-size: 24px;
+}
+
+.title-tetris {
+    -fx-padding: 4 0 0 0;
+}
+
+.title-tetris-letter {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 80px;
+    -fx-text-alignment: center;
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.7), 10, 0.5, 0, 1);
+    -fx-scale-x: 1.0;
+    -fx-scale-y: 1.0;
+    -fx-cursor: hand;
+}
+
+.title-tetris-letter:hover {
+    -fx-scale-x: 1.15;
+    -fx-scale-y: 1.15;
+    -fx-border-color: rgba(255, 255, 255, 1.0);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 22, 0.5, 0, 3),
+                innershadow(gaussian, rgba(0,0,0,0.25), 10, 0.25, 0, 1),
+                dropshadow(three-pass-box, rgba(255,255,255,0.6), 8, 0.4, 0, 0);
+}
+
+.title-tetris-letter.letter-red { -fx-text-fill: -fx-theme-danger; }
+.title-tetris-letter.letter-orange { -fx-text-fill: -fx-theme-warning; }
+.title-tetris-letter.letter-yellow { -fx-text-fill: #ffd32a; }
+.title-tetris-letter.letter-green { -fx-text-fill: -fx-theme-info; }
+.title-tetris-letter.letter-cyan { -fx-text-fill: -fx-theme-primary; }
+.title-tetris-letter.letter-purple { -fx-text-fill: #a55eea; }
+
+.settings-title, .confirmation-title, .tutorial-title {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 16px;
+    -fx-text-fill: -fx-theme-secondary-lighter;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.8), 12, 0.6, 0, 0),
+                dropshadow(gaussian, rgba(0, 0, 0, 0.9), 8, 0.5, 0, 2);
+    -fx-padding: 0 0 8 0;
+}
+
+.tutorial-title {
+    -fx-font-size: 24px;
+    -fx-text-fill: -fx-theme-secondary;
+}
+
+
+.btn-base {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 12px;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-border-width: 3px;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 0, 0, 3, 3);
+    -fx-scale-x: 1.0;
+    -fx-scale-y: 1.0;
+}
+
+.btn-base:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.btn-base:pressed {
+    -fx-translate-y: 3;
+    -fx-effect: none;
+}
+
+.menu-button {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 12px;
+    -fx-text-fill: -fx-theme-primary-darker;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-border-width: 3px;
+    -fx-border-color: -fx-theme-primary-darker;
+    -fx-background-color: linear-gradient(to bottom,
+        -fx-theme-primary-light 0%, -fx-theme-primary-light 10%,
+        -fx-theme-primary 10%, -fx-theme-primary 85%,
+        -fx-theme-primary-dark 85%, -fx-theme-primary-dark 100%);
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 0, 0, 3, 3);
+    -fx-scale-x: 1.0;
+    -fx-scale-y: 1.0;
+}
+
+.menu-button:hover {
+    -fx-background-color: linear-gradient(to bottom,
+        -fx-theme-primary-lighter 0%, -fx-theme-primary-lighter 20%,
+        -fx-theme-primary-light 20%, -fx-theme-primary-light 85%,
+        -fx-theme-primary 85%, -fx-theme-primary 100%);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.menu-button:pressed {
+    -fx-background-color: linear-gradient(to bottom,
+        -fx-theme-primary-dark 0%, -fx-theme-primary-dark 20%,
+        -fx-theme-primary 20%, -fx-theme-primary 85%,
+        -fx-theme-primary-light 85%, -fx-theme-primary-light 100%);
+    -fx-translate-y: 3;
+    -fx-effect: none;
+}
+
+.menu-button-label {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 12px;
+    -fx-text-fill: #222;
+}
+
+.menu-button-arrow {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 14px;
+    -fx-text-fill: #1e272e;
+}
+
+.menu-button.secondary {
+    -fx-text-fill: #1c4a1c;
+    -fx-border-color: #0f3a0f;
+    -fx-background-color: linear-gradient(to bottom,
+        -fx-theme-info-light 0%, -fx-theme-info-light 20%,
+        -fx-theme-info 20%, -fx-theme-info 85%,
+        -fx-theme-info-dark 85%, -fx-theme-info-dark 100%);
+}
+
+.menu-button.secondary:hover {
+    -fx-background-color: linear-gradient(to bottom,
+        -fx-theme-info-lighter 0%, -fx-theme-info-lighter 20%,
+        -fx-theme-info-light 20%, -fx-theme-info-light 85%,
+        -fx-theme-info 85%, -fx-theme-info 100%);
+}
+
+.menu-button.danger {
+    -fx-text-fill: #4d0d0d;
+    -fx-border-color: #5a0c0c;
+    -fx-background-color: linear-gradient(to bottom,
+        -fx-theme-danger-light 0%, -fx-theme-danger-light 20%,
+        -fx-theme-danger 20%, -fx-theme-danger 85%,
+        #b33349 85%, #b33349 100%);
+}
+
+.menu-button.danger:hover {
+    -fx-background-color: linear-gradient(to bottom,
+        -fx-theme-danger-lighter 0%, -fx-theme-danger-lighter 20%,
+        -fx-theme-danger-light 20%, -fx-theme-danger-light 85%,
+        -fx-theme-danger 85%, -fx-theme-danger 100%);
+}
+
+.pause-btn {
+    -fx-font-family: "Press Start 2P";
+    -fx-background-radius: 3;
+    -fx-border-radius: 3;
+    -fx-border-width: 2px;
+    -fx-border-color: -fx-theme-secondary-darker;
+    -fx-background-color: linear-gradient(to bottom, -fx-theme-secondary-dark 0%, -fx-theme-secondary-darkest 100%);
+    -fx-padding: 4 8;
+    -fx-min-width: 0;
+    -fx-pref-width: USE_COMPUTED_SIZE;
+    -fx-max-width: 400;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 3, 0, 2, 2);
+}
+
+.pause-btn-label {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 10px;
+    -fx-text-fill: -fx-theme-secondary-lightest;
+}
+
+.pause-btn:hover {
+    -fx-background-color: linear-gradient(to bottom, -fx-theme-secondary 0%, -fx-theme-secondary-darker 100%);
+    -fx-border-color: #9b5eea;
+    -fx-effect: dropshadow(three-pass-box, rgba(139,92,246,0.6), 6, 0.5, 0, 0);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.pause-btn:pressed {
+    -fx-translate-y: 3;
+    -fx-effect: none;
+}
+
+.pause-btn-primary {
+    -fx-background-color: linear-gradient(to bottom, -fx-theme-success 0%, -fx-theme-success-dark 100%);
+    -fx-border-color: -fx-theme-success-darker;
+}
+
+.pause-btn-primary:hover {
+    -fx-background-color: linear-gradient(to bottom, -fx-theme-success-light 0%, -fx-theme-success 100%);
+    -fx-border-color: -fx-theme-success-lighter;
+    -fx-effect: dropshadow(three-pass-box, rgba(16, 185, 129, 0.6), 6, 0.5, 0, 0);
+}
+
+.pause-btn-primary:pressed {
+    -fx-background-color: linear-gradient(to bottom, -fx-theme-success-dark 0%, -fx-theme-success-darker 100%);
+}
+
+.pause-btn-danger {
+    -fx-background-color: linear-gradient(to bottom, -fx-theme-danger-dark 0%, -fx-theme-danger-darker 100%);
+    -fx-border-color: -fx-theme-danger-darkest;
+}
+
+.pause-btn-danger:hover {
+    -fx-background-color: linear-gradient(to bottom, #ef4444 0%, -fx-theme-danger-dark 100%);
+    -fx-border-color: #f87171;
+    -fx-effect: dropshadow(three-pass-box, rgba(220, 38, 38, 0.6), 6, 0.5, 0, 0);
+}
+
+.pause-btn-danger:pressed {
+    -fx-background-color: linear-gradient(to bottom, -fx-theme-danger-darker 0%, -fx-theme-danger-darkest 100%);
+}
+
+.pause-btn-small {
+    -fx-background-radius: 3;
+    -fx-border-radius: 3;
+    -fx-border-width: 2px;
+    -fx-border-color: #2E4F4F;
+    -fx-background-color: #4682B4;
+    -fx-padding: 2 4;
+    -fx-min-width: 0;
+    -fx-pref-width: USE_COMPUTED_SIZE;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 3, 0, 2, 2);
+}
+
+
+.level-classic {
+    -fx-text-fill: #022b35;
+    -fx-border-color: #0ab0d1;
+    -fx-background-color: linear-gradient(to bottom, #4fdfff 0%, #16caff 100%);
+}
+
+.level-classic:hover {
+    -fx-background-color: linear-gradient(to bottom, #7fefff 0%, #4fdfff 100%);
+    -fx-border-color: #4fe0ff;
+}
+
+.level-classic:pressed {
+    -fx-background-color: linear-gradient(to bottom, #16caff 0%, #0aa0c0 100%);
+}
+
+.level-l1 {
+    -fx-text-fill: #04260a;
+    -fx-border-color: #27a24a;
+    -fx-background-color: linear-gradient(to bottom, #8ff1a0 0%, -fx-theme-info 100%);
+}
+
+.level-l1:hover {
+    -fx-background-color: linear-gradient(to bottom, #bfffcf 0%, #8ff1a0 100%);
+    -fx-border-color: -fx-theme-info-light;
+}
+
+.level-l1:pressed {
+    -fx-background-color: linear-gradient(to bottom, -fx-theme-info 0%, -fx-theme-info-dark 100%);
+}
+
+.level-l2 {
+    -fx-text-fill: #3a1900;
+    -fx-border-color: -fx-theme-warning-dark;
+    -fx-background-color: linear-gradient(to bottom, -fx-theme-warning-light 0%, -fx-theme-warning 100%);
+}
+
+.level-l2:hover {
+    -fx-background-color: linear-gradient(to bottom, -fx-theme-warning-lighter 0%, -fx-theme-warning-light 100%);
+    -fx-border-color: #ffb347;
+}
+
+.level-l2:pressed {
+    -fx-background-color: linear-gradient(to bottom, -fx-theme-warning 0%, #c26a00 100%);
+}
+
+.level-l3 {
+    -fx-text-fill: #4d0d0d;
+    -fx-border-color: #5a0c0c;
+    -fx-background-color: linear-gradient(to bottom,
+        -fx-theme-danger-light 0%, -fx-theme-danger-light 20%,
+        -fx-theme-danger 20%, -fx-theme-danger 85%,
+        #b33349 85%, #b33349 100%);
+}
+
+.level-l3:hover {
+    -fx-background-color: linear-gradient(to bottom, -fx-theme-danger-lighter 0%, -fx-theme-danger 100%);
+    -fx-border-color: #f87171;
+}
+
+.level-l3:pressed {
+    -fx-background-color: linear-gradient(to bottom, -fx-theme-danger-darker 0%, -fx-theme-danger-darkest 100%);
+}
+
+.pause-btn.level-classic .pause-btn-label,
+.pause-btn.level-l1 .pause-btn-label,
+.pause-btn.level-l2 .pause-btn-label,
+.pause-btn.level-l3 .pause-btn-label {
+    -fx-text-fill: #000000;
+}
+
+.back-black .pause-btn-label {
+    -fx-text-fill: #000000;
+}
+
+
+.main-menu-overlay {
+    -fx-background-color: transparent;
+}
+
+.pause-menu-overlay {
+    -fx-background-color: -fx-theme-bg-overlay;
+    -fx-max-width: 750px;
+    -fx-max-height: 500px;
+    -fx-background-radius: 20px;
+    -fx-translate-y: -30px;
+}
+
+.confirmation-overlay, .music-overlay {
+    -fx-background-color: -fx-theme-bg-overlay;
+    -fx-max-width: 670px;
+    -fx-max-height: 440px;
+    -fx-background-radius: 10px;
+    -fx-translate-y: -12px;
+}
+
+.menu-card, .pause-menu-card, .level-menu-card, .tutorial-card,
+.confirmation-card, .music-card, .settings-card {
+    -fx-padding: 20 30 20 30;
+    -fx-background-color: -fx-theme-bg-card;
+    -fx-border-color: -fx-theme-secondary;
+    -fx-border-width: 3px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 20, 0.5, 0, 0),
+                innershadow(gaussian, rgba(0, 0, 0, 0.15), 8, 0.3, 0, 0);
+    -fx-alignment: center;
+}
+
+.pause-menu-card {
+    -fx-padding: 15 25 15 25;
+    -fx-min-width: 300;
+    -fx-pref-width: 150;
+    -fx-min-height: 250;
+    -fx-pref-height: 90;
+    -fx-max-width: 400;
+    -fx-max-height: 200;
+    -fx-alignment: center;
+}
+
+.level-menu-card {
+    -fx-padding: 20 20 20 20;
+    -fx-min-width: 300;
+    -fx-pref-width: 200;
+    -fx-min-height: 150;
+    -fx-pref-height: 100;
+    -fx-max-width: 500;
+    -fx-max-height: 300;
+    -fx-alignment: center;
+}
+
+.tutorial-card {
+    -fx-padding: 20 20 20 20;
+    -fx-min-width: 450;
+    -fx-pref-width: 500;
+    -fx-min-height: 200;
+    -fx-pref-height: 240;
+    -fx-max-width: 550;
+    -fx-max-height: 300;
+    -fx-alignment: center;
+}
+
+.confirmation-card, .music-card {
+    -fx-padding: 15 20 15 20;
+    -fx-min-width: 350;
+    -fx-pref-width: 400;
+    -fx-min-height: 150;
+    -fx-pref-height: 180;
+    -fx-max-width: 450;
+    -fx-max-height: 240;
+    -fx-alignment: center;
+}
+
+.settings-card {
+    -fx-padding: 20 30 20 30;
+    -fx-spacing: 12;
+    -fx-alignment: center;
+}
+
+.setting-item {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 10px;
+    -fx-text-fill: -fx-theme-secondary-lightest;
+}
+
+.menu-title {
+    -fx-spacing: 8;
+}
+
+
+.game-label {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 48px;
+    -fx-fill: transparent;
+    -fx-stroke: cyan;
+    -fx-stroke-width: 2;
+    -fx-effect: dropshadow(gaussian, cyan, 10, 0.8, 0, 0);
+}
+
+.over-label {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 48px;
+    -fx-fill: transparent;
+    -fx-stroke: red;
+    -fx-stroke-width: 2;
+    -fx-effect: dropshadow(gaussian, red, 10, 0.8, 0, 0);
+}
+
+
+.curtain {
+    -fx-background-color: black;
+    -fx-max-width: 900px;
+    -fx-max-height: 720px;
+    -fx-min-width: 900px;
+    -fx-min-height: 720px;
+}
+
+.rotation-notification {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+    -fx-background-radius: 0;
+    -fx-min-height: 0;
+    -fx-min-width: 0;
+}
+
+.rotation-notification .bonusStyle {
+    -fx-font-family: "SubSpace";
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: linear-gradient(from 0% 0% to 100% 100%, #ffffff 0%, #e0f7ff 20%, #7ed6ff 50%);
+    -fx-padding: 0 6 0 0;
+}
+
+.group-notification-left-center {
+    -fx-alignment: center-left;
+}
+
+.level-hint-container {
+    -fx-alignment: center;
+    -fx-spacing: 6;
+    -fx-pref-width: USE_COMPUTED_SIZE;
+    -fx-pref-height: USE_COMPUTED_SIZE;
+}
+
+.level-hint {
+    -fx-font-family: "Press Start 2P";
+    -fx-font-size: 14px;
+    -fx-background-color: -fx-theme-bg-dark;
+    -fx-text-fill: -fx-theme-text-white;
+    -fx-padding: 10 14;
+    -fx-background-radius: 6;
+    -fx-opacity: 0;
+    -fx-translate-y: -12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 8, 0.3, 0, 4);
+    -fx-max-width: 480;
+    -fx-wrap-text: true;
+}
+
+.level-hint-container:hover .level-hint {
+    -fx-opacity: 1;
+    -fx-translate-y: -30;
+}
