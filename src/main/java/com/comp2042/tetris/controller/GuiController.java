@@ -80,15 +80,11 @@ public class GuiController extends MenuController implements Initializable, IGui
 
     private GuiControllerDependencies dependencies;
 
-    private ShootingStarAnimator shootingStarAnimator;
-    private PixelStarAnimator pixelStarAnimator;
-    private NebulaCloudAnimator nebulaCloudAnimator;
+    private VisualEffectsManager visualEffectsManager;
 
     private int lastRotationUsed = -1;
 
     private int rotationPopupTicks = 0;
-    private Timeline flickerScheduler;
-    private final Random random = new Random();
 
     private SoundManager soundManager;
 
@@ -100,9 +96,6 @@ public class GuiController extends MenuController implements Initializable, IGui
     public void initialize(URL location, ResourceBundle resources) {
         setupFont();
         if (gameOverPanel != null) gameOverPanel.setVisible(false);
-        setupNebulaClouds();
-        setupPixelStars();
-        setupShootingStars();
         gameTimer = new GameTimer(timerLabel);
 
         soundManager = new SoundManager(this);
@@ -194,51 +187,11 @@ public class GuiController extends MenuController implements Initializable, IGui
             DistortionAnimator distortionAnimator = new DistortionAnimator();
             staticAnimator.play(staticScreen, () -> {
                 if (mainMenuOverlay != null) distortionAnimator.applyGlitchTransition(mainMenuOverlay, 3.5);
-                if (pixelStarLayer != null) {
-                    LOGGER.info("Starting animation layer fade-in. Current opacity: {}", pixelStarLayer.getOpacity());
-                    FadeTransition fadeIn = new FadeTransition(Duration.seconds(2.0), pixelStarLayer);
-                    fadeIn.setFromValue(0.0);
-                    fadeIn.setToValue(1.0);
-                    fadeIn.setOnFinished(e -> LOGGER.info("Animation layer fade-in complete. Opacity: {}", pixelStarLayer.getOpacity()));
-                    fadeIn.play();
-                } else {
-                    LOGGER.warn("pixelStarLayer is null - animations will not be visible");
+                // Delegate visual effects intro to VisualEffectsManager
+                if (visualEffectsManager != null) {
+                    visualEffectsManager.playIntroSequence(null);
                 }
             });
-        }
-    }
-
-    private void setupNebulaClouds() {
-        if (pixelStarLayer != null) {
-            nebulaCloudAnimator = new NebulaCloudAnimator();
-            nebulaCloudAnimator.fillWithClouds(pixelStarLayer, 5);
-            LOGGER.info("Nebula clouds created: {} children in pixelStarLayer", pixelStarLayer.getChildren().size());
-        } else {
-            LOGGER.warn("Cannot setup nebula clouds - pixelStarLayer is null");
-        }
-    }
-
-    private void setupPixelStars() {
-        if (pixelStarLayer != null) {
-            pixelStarAnimator = new PixelStarAnimator();
-            pixelStarAnimator.fillScreenWithStars(pixelStarLayer, 150);
-            LOGGER.info("Pixel stars created: {} children in pixelStarLayer", pixelStarLayer.getChildren().size());
-        } else {
-            LOGGER.warn("Cannot setup pixel stars - pixelStarLayer is null");
-        }
-    }
-
-    private void setupShootingStars() {
-        if (pixelStarLayer != null) {
-            shootingStarAnimator = new ShootingStarAnimator();
-            Timeline starTimeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-                if (Math.random() < 0.8) shootingStarAnimator.createAndAnimateStar(pixelStarLayer);
-            }));
-            starTimeline.setCycleCount(Animation.INDEFINITE);
-            starTimeline.play();
-            LOGGER.info("Shooting star timeline started");
-        } else {
-            LOGGER.warn("Cannot setup shooting stars - pixelStarLayer is null");
         }
     }
 
@@ -249,6 +202,7 @@ public class GuiController extends MenuController implements Initializable, IGui
         this.inputController = dependencies.inputController();
         this.boardRenderer = dependencies.boardRenderer();
         this.gameViewPresenter = dependencies.gameViewPresenter();
+        this.visualEffectsManager = dependencies.visualEffectsManager();
         configureInputCommands();
         updatePauseUi(false);
 
@@ -257,6 +211,11 @@ public class GuiController extends MenuController implements Initializable, IGui
 
         if (inputController != null && gamePanel != null) {
             inputController.setupKeyboardInput(gamePanel);
+        }
+
+        // Setup visual effects using the VisualEffectsManager
+        if (visualEffectsManager != null) {
+            visualEffectsManager.setupBackgroundEffects();
         }
     }
 
@@ -335,7 +294,9 @@ public class GuiController extends MenuController implements Initializable, IGui
 
     @Override
     public void gameOver() {
-        stopFlickerEffect();
+        if (visualEffectsManager != null) {
+            visualEffectsManager.stopFlickerEffect();
+        }
         ensureConfigured();
         gameActive = false;
         updatePauseUi(false);
@@ -474,6 +435,8 @@ public class GuiController extends MenuController implements Initializable, IGui
     Group getGroupNotification() { return groupNotification; }
     OverlayPanel getGameOverPanel() { return gameOverPanel; }
     BorderPane getGameBoard() { return gameBoard; }
+    Pane getPixelStarLayer() { return pixelStarLayer; }
+    Pane getMainContent() { return mainContent; }
 
     @FXML
     private void startNewGameDirect() {
@@ -530,20 +493,17 @@ public class GuiController extends MenuController implements Initializable, IGui
         } catch (Throwable ignored) {}
     }
     @Override
-    protected void startFlickerEffect() { flickerScheduler = new Timeline(new KeyFrame(Duration.seconds(30), e -> performFlicker())); flickerScheduler.setCycleCount(Timeline.INDEFINITE); flickerScheduler.play(); }
+    protected void startFlickerEffect() {
+        if (visualEffectsManager != null) {
+            visualEffectsManager.startFlickerEffect();
+        }
+    }
 
     @Override
-    protected void stopFlickerEffect() { if (flickerScheduler != null) { flickerScheduler.stop(); flickerScheduler = null; } if (gamePanel != null) gamePanel.setOpacity(1.0); if (mainContent != null) mainContent.setOpacity(1.0); try { AudioManager.getInstance().stopFlickering(); } catch (Throwable ignored) {} }
-    private void performFlicker() {
-        if (mainContent == null) return;
-        try { AudioManager.getInstance().playFlickering(); } catch (Throwable ignored) {}
-        Timeline flickerAnim = new Timeline(); int flickerCount = 10 + random.nextInt(10); double stepInterval = 0.05;
-        try { double audioDur = AudioManager.getInstance().getFlickeringDurationSeconds(); double visualDur = flickerCount * stepInterval; if (audioDur > visualDur + 0.05) stepInterval = audioDur / flickerCount; } catch (Throwable ignored) {}
-        for (int i = 0; i < flickerCount; i++) { double timeOffset = i * stepInterval; double randomOpacity = 0.3 + random.nextDouble() * 0.7; flickerAnim.getKeyFrames().add(new KeyFrame(Duration.seconds(timeOffset), evt -> mainContent.setOpacity(randomOpacity))); }
-        flickerAnim.getKeyFrames().add(new KeyFrame(Duration.seconds(flickerCount * stepInterval), evt -> mainContent.setOpacity(1.0)));
-        flickerAnim.play();
-        double flickerDurationSeconds = flickerCount * stepInterval;
-        try { PauseTransition stopSound = new PauseTransition(Duration.seconds(flickerDurationSeconds)); stopSound.setOnFinished(e -> { try { AudioManager.getInstance().stopFlickering(); } catch (Throwable ignored) {} }); stopSound.play(); } catch (Throwable ignored) {}
+    protected void stopFlickerEffect() {
+        if (visualEffectsManager != null) {
+            visualEffectsManager.stopFlickerEffect();
+        }
     }
 
     @Override

@@ -11,10 +11,12 @@ import com.comp2042.tetris.view.GameViewPresenter;
 import com.comp2042.tetris.view.NotificationAnimator;
 import com.comp2042.tetris.view.OverlayPanel;
 import com.comp2042.tetris.view.UIConstants;
+import com.comp2042.tetris.view.VisualEffectsManager;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 
 import java.util.Objects;
 
@@ -29,6 +31,8 @@ public class DefaultGuiControllerDependenciesFactory {
         Group groupNotification = controller.getGroupNotification();
         OverlayPanel gameOverPanel = controller.getGameOverPanel();
         BorderPane gameBoard = controller.getGameBoard();
+        Pane pixelStarLayer = controller.getPixelStarLayer();
+        Pane mainContent = controller.getMainContent();
 
         GameStateManager gameStateManager = new GameStateManager();
         AnimationHandler animationHandler = new AnimationHandler(
@@ -56,7 +60,21 @@ public class DefaultGuiControllerDependenciesFactory {
                 gameOverPanel,
                 notificationAnimator);
 
-        return new GuiControllerDependencies(animationHandler, inputHandler, inputController, commandRegistry, boardRenderer, gameViewPresenter);
+        VisualEffectsManager visualEffectsManager = new VisualEffectsManager(
+                pixelStarLayer,
+                mainContent,
+                gamePanel
+        );
+
+        return new GuiControllerDependencies(
+                animationHandler,
+                inputHandler,
+                inputController,
+                commandRegistry,
+                boardRenderer,
+                gameViewPresenter,
+                visualEffectsManager
+        );
     }
 
 }
