@@ -133,7 +133,7 @@ public class GuiController extends MenuController implements Initializable, IGui
             if (levelClassicButton != null) {
                 // Popup-based hint (more reliable and won't be clipped) that appears immediately on hover
                 Platform.runLater(() -> {
-                    installLevelHint(levelClassicButton, "This is your normal tetris game with a galxy twist, HAVE FUN");
+                    installLevelHint(levelClassicButton, "This is your normal tetris game with a galaxy twist, HAVE FUN");
                 });
             }
             // Also attach hints to L1/L2/L3
@@ -318,6 +318,7 @@ public class GuiController extends MenuController implements Initializable, IGui
     private void showGameOverConfirmationDialog() {
         closeCurtains(() -> {
             if (confirmationMessage != null) confirmationMessage.setText("Play again?");
+            if (cancelButtonLabel != null) cancelButtonLabel.setText("Main Menu");
 
             pendingConfirmationAction = () -> {
                 setNodeVisibility(confirmationOverlay, false);

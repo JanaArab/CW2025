@@ -15,7 +15,7 @@
            StackPane.alignment="CENTER">
     <VBox fx:id="mainMenuCard" spacing="28" alignment="CENTER" styleClass="menu-card">
         <VBox alignment="CENTER" spacing="6" styleClass="menu-title">
-            <Label text="GAlAXY" styleClass="title-galaxy"/>
+            <Label text="GALAXY" styleClass="title-galaxy"/>
             <HBox alignment="CENTER" spacing="4" styleClass="title-tetris">
                 <Label text="T" styleClass="title-tetris-letter, letter-red"/>
                 <Label text="E" styleClass="title-tetris-letter, letter-orange"/>

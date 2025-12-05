@@ -70,6 +70,9 @@ public abstract class MenuController {
     protected Label confirmationMessage;
 
     @FXML
+    protected Label cancelButtonLabel;
+
+    @FXML
     protected StackPane musicControlOverlay;
 
     @FXML
@@ -335,6 +338,7 @@ public abstract class MenuController {
     @FXML
     protected void confirmAction(ActionEvent actionEvent) {
         setNodeVisibility(confirmationOverlay, false);
+        if (cancelButtonLabel != null) cancelButtonLabel.setText("✕ No");
         if (pendingConfirmationAction != null) {
             pendingConfirmationAction.run();
             pendingConfirmationAction = null;
@@ -346,6 +350,7 @@ public abstract class MenuController {
     @FXML
     protected void cancelAction(ActionEvent actionEvent) {
         setNodeVisibility(confirmationOverlay, false);
+        if (cancelButtonLabel != null) cancelButtonLabel.setText("✕ No");
         if (pendingCancelAction != null) pendingCancelAction.run();
         else setNodeVisibility(pauseMenuOverlay, true);
         pendingCancelAction = null;
