@@ -6,8 +6,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import com.comp2042.tetris.controller.GuiController;
-import com.comp2042.tetris.controller.DefaultGuiControllerDependenciesFactory;
+import com.comp2042.tetris.controller.ui.GuiController;
+import com.comp2042.tetris.controller.ui.DefaultGuiControllerDependenciesFactory;
 import com.comp2042.tetris.model.event.GameEventBusProvider;
 import com.comp2042.tetris.model.event.GameEventListener;
 import com.comp2042.tetris.model.event.GameEventPublisher;
@@ -20,7 +20,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        URL location = getClass().getClassLoader().getResource("gameLayout.fxml");
+        URL location = getClass().getClassLoader().getResource("layout/gameLayout.fxml");
         ResourceBundle resources = null;
         FXMLLoader fxmlLoader = new FXMLLoader(location, resources);
         Parent root = fxmlLoader.load();

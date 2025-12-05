@@ -1,7 +1,7 @@
 package com.comp2042.tetris.controller;
 
+import com.comp2042.tetris.controller.ui.SoundManager;
 import com.comp2042.tetris.utils.SafeMediaPlayer;
-import javafx.scene.control.Slider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

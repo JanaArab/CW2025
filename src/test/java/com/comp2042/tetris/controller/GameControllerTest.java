@@ -1,5 +1,6 @@
 package com.comp2042.tetris.controller;
 
+import com.comp2042.tetris.controller.core.GameController;
 import com.comp2042.tetris.model.board.Board;
 import com.comp2042.tetris.model.board.ClearRow;
 import com.comp2042.tetris.model.data.ViewData;

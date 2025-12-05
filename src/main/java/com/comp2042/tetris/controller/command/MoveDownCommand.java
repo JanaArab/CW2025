@@ -1,6 +1,6 @@
 package com.comp2042.tetris.controller.command;
 
-import com.comp2042.tetris.controller.GameActionInvoker;
+import com.comp2042.tetris.controller.core.GameActionInvoker;
 public class MoveDownCommand implements GameCommand{
 
     private final GameActionInvoker gameActionInvoker;
