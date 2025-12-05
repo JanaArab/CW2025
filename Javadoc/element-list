@@ -1,0 +1,15 @@
+com.comp2042.tetris.controller.command
+com.comp2042.tetris.controller.core
+com.comp2042.tetris.controller.ui
+com.comp2042.tetris.controller.ui.handlers
+com.comp2042.tetris.game
+com.comp2042.tetris.main
+com.comp2042.tetris.model.board
+com.comp2042.tetris.model.bricks
+com.comp2042.tetris.model.data
+com.comp2042.tetris.model.event
+com.comp2042.tetris.model.level
+com.comp2042.tetris.model.score
+com.comp2042.tetris.testharness
+com.comp2042.tetris.utils
+com.comp2042.tetris.view
