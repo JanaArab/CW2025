@@ -30,9 +30,6 @@
   - [6.2 Modified Java Classes](#62-modified-java-classes)
 - [7.0 Unexpected Challenges](#70-unexpected-challenges)
 - [8.0 Testing](#80-testing)
-  - [8.1 JUnit Testing Overview](#81-junit-testing-overview)
-  - [8.2 Test Coverage by Package](#82-test-coverage-by-package)
-  - [8.3 Running Tests](#83-running-tests)
 
 ---
 
@@ -420,42 +417,22 @@ The game was redesigned with a **Galaxy Tetris** theme, featuring a retro gamebo
 
 ## 8.0 Testing
 
-### 8.1 JUnit Testing Overview
-
-Unit tests were written using **JUnit 5** to verify the correctness of refactored components and ensure new features work as expected. Tests follow the **Arrange-Act-Assert** pattern and focus on isolated unit testing.
-
 Tests located in `src/test/java/com/comp2042/tetris/`:
 
-### 8.2 Test Coverage by Package
+| Package | Test Focus |
+|---------|------------|
+| `controller/` | GameController, GameFlowManager, InputHandler, SoundManager |
+| `controller/command/` | Command pattern implementations |
+| `model/board/` | Board logic, collision detection |
+| `model/bricks/` | Brick generation, rotation |
+| `model/event/` | Event system |
+| `model/level/` | Level configurations |
+| `model/score/` | Score calculations |
+| `game/` | Game loop |
+| `utils/` | Utility classes |
+| `view/` | View components |
 
-| Package | Test Class | What It Tests |
-|---------|------------|---------------|
-| `controller/` | `GameControllerTest` | Game state transitions, brick spawning, game over detection |
-| `controller/` | `GameFlowManagerTest` | Pause/resume, level transitions, garbage row scheduling |
-| `controller/` | `InputHandlerTest` | Key mappings, command execution |
-| `controller/` | `SoundManagerTest` | Volume controls, mute functionality |
-| `controller/command/` | `GameCommandTest` | All command implementations (move, rotate, drop) |
-| `model/board/` | `SimpleBoardTest` | Brick placement, collision detection, row clearing |
-| `model/board/` | `GarbageMechanicTest` | Garbage row generation and insertion |
-| `model/board/` | `ClearRowTest` | Row clearing logic verification |
-| `model/board/` | `WallCollisionTest` | Wall boundary collision detection |
-| `model/bricks/` | `RandomBrickGeneratorTest` | Brick bag randomisation |
-| `model/bricks/` | `BrickRotatorTest` | Rotation matrix transformations |
-| `model/bricks/` | `BrickTypesTest` | All 7 tetromino types validation |
-| `model/bricks/` | `ShuffleBagPolicyTest` | 7-bag randomisation algorithm |
-| `model/event/` | `SimpleGameEventBusTest` | Event publishing and subscription |
-| `model/event/` | `GameStateSnapshotTest` | Game state capture and restore |
-| `model/level/` | `GameLevelTest` | Level configurations (L1, L2, L3) |
-| `model/score/` | `ScoreManagerTest` | Score calculation, high score tracking |
-| `model/score/` | `DefaultScorePolicyTest` | Points per line, combo bonuses |
-| `model/score/` | `ScoreCalculatorTest` | Score computation logic |
-| `game/` | `AnimationHandlerTest` | Animation coordination and callbacks |
-| `game/` | `GameStateManagerTest` | Game state management |
-| `utils/` | `MatrixOperationsTest` | Matrix rotation, transposition |
-| `view/` | `RowClearAnimatorTest` | Row clear animation timing |
-
-### 8.3 Running Tests
-
+**Running Tests:**
 ```bash
 mvn test                           # Run all tests
 mvn test -Dtest=GameControllerTest # Run specific test
@@ -464,3 +441,12 @@ mvn test jacoco:report             # With coverage report
 
 ---
 
+## Acknowledgements
+
+- Original Tetris game design by Alexey Pajitnov
+- JavaFX framework by Oracle
+- Course materials from COMP2042 Software Maintenance
+
+---
+
+*Last Updated: December 2025*
