@@ -30,6 +30,9 @@
   - [6.2 Modified Java Classes](#62-modified-java-classes)
 - [7.0 Unexpected Challenges](#70-unexpected-challenges)
 - [8.0 Testing](#80-testing)
+  - [8.1 JUnit Testing Overview](#81-junit-testing-overview)
+  - [8.2 Test Coverage by Package](#82-test-coverage-by-package)
+  - [8.3 Running Tests](#83-running-tests)
 
 ---
 
