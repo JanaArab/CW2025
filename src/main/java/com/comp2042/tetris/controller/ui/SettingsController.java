@@ -14,6 +14,12 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Controller for the settings/music control screen.
+ * Manages volume sliders for music and sound effects.
+ *
+ * @see SettingsEventHandler
+ */
 public class SettingsController implements Initializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SettingsController.class);
@@ -81,4 +87,3 @@ public class SettingsController implements Initializable {
         }
     }
 }
-

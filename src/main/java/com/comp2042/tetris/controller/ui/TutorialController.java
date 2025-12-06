@@ -11,6 +11,12 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Controller for the tutorial screen.
+ * Displays game instructions and controls to the user.
+ *
+ * @see TutorialEventHandler
+ */
 public class TutorialController implements Initializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TutorialController.class);
@@ -55,4 +61,3 @@ public class TutorialController implements Initializable {
         }
     }
 }
-

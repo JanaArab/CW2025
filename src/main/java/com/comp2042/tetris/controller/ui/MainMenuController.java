@@ -12,6 +12,14 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Controller for the main menu screen.
+ * Handles user interactions with the main menu buttons including
+ * start game, settings, tutorial, and exit.
+ *
+ * @see MenuEventHandler
+ */
+
 public class MainMenuController implements Initializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MainMenuController.class);
@@ -83,4 +91,3 @@ public class MainMenuController implements Initializable {
         }
     }
 }
-

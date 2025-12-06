@@ -10,6 +10,23 @@ import com.comp2042.tetris.model.score.ScoreManager;
 
 import java.util.Objects;
 
+/**
+ * Manages the flow of game events when bricks move down.
+ * Handles collision detection, brick placement, row clearing,
+ * and garbage row mechanics.
+ *
+ * <p>This class coordinates between:</p>
+ * <ul>
+ *   <li>The Board for movement and collision</li>
+ *   <li>The ScoreManager for scoring</li>
+ *   <li>The EventPublisher for notifying listeners</li>
+ *   <li>The GarbageMechanic for special level features</li>
+ * </ul>
+ *
+ * @see Board
+ * @see ScoreManager
+ * @see GarbageMechanic
+ */
 public class GameFlowManager {
     private final Board board;
     private final GameEventPublisher eventPublisher;

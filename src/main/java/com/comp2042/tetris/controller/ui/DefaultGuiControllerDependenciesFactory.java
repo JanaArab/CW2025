@@ -21,7 +21,31 @@ import javafx.scene.layout.Pane;
 
 import java.util.Objects;
 
+/**
+ * Factory class for creating GuiController dependencies.
+ * Initializes and wires together all the components needed by GuiController.
+ *
+ * <p>Creates and configures:</p>
+ * <ul>
+ *   <li>AnimationHandler for game loop</li>
+ *   <li>InputHandler and InputController for keyboard input</li>
+ *   <li>BoardRenderer for visual display</li>
+ *   <li>GameViewPresenter for UI updates</li>
+ *   <li>VisualEffectsManager for special effects</li>
+ * </ul>
+ *
+ * @see GuiControllerDependencies
+ * @see GuiController
+ */
 public class DefaultGuiControllerDependenciesFactory {
+
+    /**
+     * Creates all dependencies for the GuiController.
+     *
+     * @param controller the GuiController to create dependencies for
+     * @return a GuiControllerDependencies containing all required components
+     * @throws NullPointerException if controller is null
+     */
     public GuiControllerDependencies create(GuiController controller) {
         Objects.requireNonNull(controller, "controller");
         GridPane gamePanel = controller.getGamePanel();

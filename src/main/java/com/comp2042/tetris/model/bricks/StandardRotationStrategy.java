@@ -2,6 +2,16 @@ package com.comp2042.tetris.model.bricks;
 import com.comp2042.tetris.utils.MatrixOperations;
 import java.awt.Point;
 
+/**
+ * Standard implementation of {@link RotationStrategy} with wall-kick support.
+ * Attempts to find valid positions by trying horizontal offsets when
+ * the initial rotation position is blocked.
+ *
+ * <p>Wall-kick offsets tried: -1, +1, -2, +2 from current position.</p>
+ *
+ * @see RotationStrategy
+ * @see BrickRotator
+ */
 public class StandardRotationStrategy implements RotationStrategy {
     private static final int[] KICKS = {-1, 1, -2, 2};
     private static final int HIDDEN_TOP_ROWS = 2;

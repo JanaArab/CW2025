@@ -2,6 +2,13 @@ package com.comp2042.tetris.controller.command;
 
 import com.comp2042.tetris.controller.core.GameActionInvoker;
 
+/**
+ * Default implementation of {@link InputCommandFactory}.
+ * Creates concrete command instances for all game actions.
+ *
+ * @see InputCommandFactory
+ * @see GameCommand
+ */
 public class DefaultInputCommandFactory implements InputCommandFactory  {
     @Override
     public GameCommand createMoveLeftCommand(GameActionInvoker gameActionInvoker) {

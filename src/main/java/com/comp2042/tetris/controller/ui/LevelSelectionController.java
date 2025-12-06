@@ -12,6 +12,12 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Controller for the level selection screen.
+ * Allows users to choose between different game levels with varying difficulties.
+ *
+ * @see LevelSelectionEventHandler
+ */
 public class LevelSelectionController implements Initializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LevelSelectionController.class);
@@ -100,4 +106,3 @@ public class LevelSelectionController implements Initializable {
         }
     }
 }
-

@@ -8,6 +8,12 @@ import javafx.util.Duration;
 
 import java.util.Random;
 
+/**
+ * Controller for the game over screen.
+ * Displays animated "GAME OVER" text with flickering and shake effects.
+ *
+ * @see com.comp2042.tetris.controller.core.GameOverManager
+ */
 public class GameOverController {
 
     @FXML

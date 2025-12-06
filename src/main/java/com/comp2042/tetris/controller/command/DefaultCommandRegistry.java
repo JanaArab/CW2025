@@ -4,6 +4,22 @@ import com.comp2042.tetris.controller.core.GameActionInvoker;
 import com.comp2042.tetris.controller.core.InputCommandRegistrar;
 import javafx.scene.input.KeyCode;
 
+/**
+ * Default implementation of {@link CommandRegistry} that registers standard Tetris controls.
+ * Maps keyboard keys to game commands for movement, rotation, and instant drop.
+ *
+ * <p>Default key bindings:</p>
+ * <ul>
+ *   <li>Left/A - Move left</li>
+ *   <li>Right/D - Move right</li>
+ *   <li>Down/S - Soft drop</li>
+ *   <li>Up/W - Rotate</li>
+ *   <li>Space - Hard drop (instant)</li>
+ * </ul>
+ *
+ * @see CommandRegistry
+ * @see GameCommand
+ */
 public class DefaultCommandRegistry implements CommandRegistry {
     @Override
     public void registerCommands(GameActionInvoker gameActionInvoker,

@@ -12,6 +12,12 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Controller for confirmation dialogs.
+ * Displays a confirmation message with confirm and cancel buttons.
+ *
+ * @see ConfirmationEventHandler
+ */
 public class ConfirmationDialogController implements Initializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfirmationDialogController.class);
@@ -74,4 +80,3 @@ public class ConfirmationDialogController implements Initializable {
         }
     }
 }
-

@@ -12,6 +12,13 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Controller for the pause menu screen.
+ * Handles user interactions during game pause including resume, new game,
+ * settings, return to main menu, and exit.
+ *
+ * @see MenuEventHandler
+ */
 public class PauseMenuController implements Initializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PauseMenuController.class);
@@ -91,4 +98,3 @@ public class PauseMenuController implements Initializable {
         }
     }
 }
-

@@ -11,6 +11,12 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Controller for the main game view screen.
+ * Manages the game board, score display, timer, and next brick preview.
+ *
+ * @see GuiController
+ */
 public class GameViewController implements Initializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GameViewController.class);
@@ -87,4 +93,3 @@ public class GameViewController implements Initializable {
         }
     }
 }
-
