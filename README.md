@@ -47,27 +47,25 @@
 
 ### 1.2 Building and Running
 
+**Clone the repository:**
 ```bash
-# Clone the repository
-git clone [repository-url]
+git clone https://github.com/JanaArab/CW2025.git
 cd CW2025
+```
 
-# Clean and compile
-mvn clean compile
-
-# Run the application
-mvn javafx:run
-
-# Run tests
-mvn test
-
-# Build JAR package
-mvn clean package
+**Compile and Run:**
+```bash
+mvn clean compile javafx:run
 ```
 
 **Windows (Maven Wrapper):**
 ```cmd
-mvnw.cmd javafx:run
+mvnw.cmd clean compile javafx:run
+```
+
+**Run tests:**
+```bash
+mvn test
 ```
 
 ### 1.3 IDE Setup
