@@ -30,6 +30,7 @@
   - [6.2 Modified Java Classes](#62-modified-java-classes)
 - [7.0 Unexpected Challenges](#70-unexpected-challenges)
 - [8.0 Testing](#80-testing)
+- [9.0 Summary](#90-summary)
 
 ---
 
@@ -441,12 +442,15 @@ mvn test jacoco:report             # With coverage report
 
 ---
 
-## Acknowledgements
+## 9.0 Summary
 
-- Original Tetris game design by Alexey Pajitnov
-- JavaFX framework by Oracle
-- Course materials from COMP2042 Software Maintenance
+| Area | Accomplishments |
+|------|-----------------|
+| **Architecture** | Refactored into clean MVC architecture with clear package structure |
+| **Code Quality** | Applied all 5 SOLID principles throughout the codebase |
+| **Design Patterns** | Implemented Singleton, Factory, Command, Observer, Strategy, and Builder patterns |
+| **Features** | Added 27 working features including 4 game levels, visual effects, and audio system |
+| **UI/UX** | Created 7 distinct screens with a retro gameboy-style galaxy theme |
+| **Testing** | Comprehensive test coverage across all major components |
 
----
-
-*Last Updated: December 2025*
+The game was redesigned to look like a classic Gameboy, with the gameplay area sitting inside a retro handheld controller frame. I went with a galaxy theme twinkling stars, shooting stars, and nebula clouds in the background to make it feel more immersive and fun to look at. I also added sound effects and background music to bring everything together and make playing more enjoyable. While working on all these visual and audio improvements, I made sure to keep the code clean and organised by applying SOLID principles and design patterns, so it's easy to maintain and build on in the future.
